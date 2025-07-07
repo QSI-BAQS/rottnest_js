@@ -141,6 +141,42 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 		return this.state.rrBuffer;
 	}
 
+
+	/**
+	 * Shows an architecture settings selector
+	 * in a similar manner to the settings modal
+	 */
+	showArchitectureSettings() {
+		this.state.appStateData.archSettingsActive = true;
+		this.triggerUpdate();
+	}
+
+	/**
+	 * Closes the architecture settings that
+	 * was present for selection
+	 */
+	closeArchitectureSettings() {
+		this.state.appStateData.archSettingsActive = false;
+		this.triggerUpdate();
+	}
+	/**
+	 * Shows an program settings selector
+	 * in a similar manner to the settings modal
+	 */
+	showProgramSettings() {
+		this.state.appStateData.progSettingsActive = true;
+		this.triggerUpdate();
+	}
+
+	/**
+	 * Closes the program settings that
+	 * was present for selection
+	 */
+	closeProgramSettings() {
+		this.state.appStateData.progSettingsActive = false;
+		this.triggerUpdate();
+	}
+
 	readyAppService() {
 		const appReady = AppServiceModule
 			.ConnectionReady();

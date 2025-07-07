@@ -33,6 +33,7 @@ import {ProjectDetails} from '../model/Project.ts';
 import LogoEvents from './global/LogoEvents.ts';
 // Import the ConnectionStatusButton component
 import ConnectionStatusButton from './global/DynamicButton.tsx';
+import PluginConfigEvents from './global/PluginConfigEvents.ts';
 
 /**
  * GlobalBarProps, has a reference to
@@ -184,6 +185,26 @@ class GlobalBar extends React.Component<GlobalBarProps, {}> {
 			events: NullEvents,
 			style: styles.separator,
 			iconComponent: <></>
+		},
+		{ 
+			id: 300, 
+			name: "Reconnect", 
+			toolTip: "Reconnect to API", 
+			image: "HelpImage",
+			events: ReconnectEvent,
+			helpId: "reconnect",
+			style: styles.reconnect,
+			iconComponent: <RollbackOutlined />
+		},
+		{ 
+			id: 400, 
+			name: "lat2d", 
+			toolTip: "Architecture Selected", 
+			image: "HelpImage",
+			events: PluginConfigEvents,
+			helpId: "",
+			style: styles.reconnect,
+			iconComponent: < />
 		},
 		{ 
 			id: 200, 

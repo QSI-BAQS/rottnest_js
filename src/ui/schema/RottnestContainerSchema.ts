@@ -32,6 +32,8 @@ type TabViewStateData = {
 type RottnestAppState = {
 	settingsActive: boolean
 	newProjectActive: boolean
+	archSettingsActive: boolean
+	progSettingsActive: boolean
 	helpActive: boolean
 	colourblindActive: boolean
 	tourMode: boolean
@@ -126,6 +128,8 @@ const RTStateDefault: RottnestState =
 			tourStep: 0,
 			settingsActive: false,
 			newProjectActive: false,
+			archSettingsActive: false,
+			progSettingsActive: false,
 			zoomValue: 100,
 			colourblindActive: false,
 			helpActive: false,
