@@ -1,0 +1,163 @@
+.pluginSettings {
+
+	position: absolute;
+	background-color: #2f2f2e;
+	width: 30%;
+	z-index: 5;
+	left: 45%;
+	top: 10%;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	border: 1px #484642 solid;
+	border-radius: 5px;
+	padding-bottom: 1em;
+}
+
+.pluginHeader {
+	display: flex;
+	justify-content: flex-end;
+	margin-left: 1em;
+	margin-right: 1em;
+	margin-top: 1em;
+	height: 20px;
+	font-size: 7pt;
+	color: #888682;
+	width: calc(100% - 2em);
+}
+
+.pluginDropDown {
+	width: calc(100% - 2em);
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 1em;
+	margin-right: 1em;
+}
+
+
+.pluginHeaderLabel {
+	flex: 1;
+	justify-self: flex-start;
+}
+
+.pluginTextArea {
+	width: 90%;
+	height: 300px;
+	margin-left: 1em;
+	margin-right: 1em;
+	margin-bottom: 1em;
+	overflow-y: scroll;
+	overflow-x: scroll;
+}
+
+.savePluginConfig {
+	display: flex;
+	background-color: #2ec27e;
+	color: #000000;
+	border: 1px #8ff0a4 solid;
+	border-radius: 5px;
+	margin: auto;
+}
+
+.pluginMid {
+	display: flex;
+	margin-right: 1em;
+}
+
+.pluginConfigTextSpace {
+	padding-top: 1em;
+}
+
+.pluginExit {
+	justify-self: center;
+	align-self: center;
+	padding: 0;
+	display: block;
+	background-color: #484642;
+	color: #ffffff;
+	border: 1px #686662 solid;
+	border-radius: 5px;
+	width: 2em;
+	height: 2em;
+	font-size: 7.5pt;
+}
+
+.pluginSep {
+	flex: 1;
+}
+
+.pluginConfig {
+	justify-self: flex-end;
+	background-color: #986a44;
+	color: #000000;
+	border: 1px #cdab8f solid;
+	border-radius: 5px;
+	margin-left: 1em;
+}
+
+.pluginApply {
+	background-color: #2ec27e;
+	color: #000000;
+	border: 1px #8ff0a4 solid;
+	border-radius: 5px;
+	margin-left: 1em;
+}
+
+.pluginArch {
+	padding: 0;
+	justify-content: start;
+	background-color: #693074;
+	color: #ffffff;
+	border: 1px #794084 solid;
+	border-radius: 5px;
+	width: 55px;
+	height: 35px;
+	font-size: 8pt;
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.pluginProgram {
+	padding: 0;
+	background-color: #306374;
+	color: #ffffff;
+	border: 1px #447788 solid;
+	width: 55px;
+	height: 35px;
+	border-radius: 5px;
+	font-size: 8pt;
+	overflow-x: hidden;
+	overflow-y: hidden;
+
+}
+
+
+.settingsForm * {
+	display: block;
+	width: 100%;
+}
+
+.settingsForm label {
+	padding-top: 0.5em;
+}
+
+.settingsForm button {
+	display: inline-flex;
+	width: 30%;
+	margin-top: 1em;
+	justify-content: center;
+}
+
+.settingsForm .settingsApply {
+	margin-left: auto;
+	justify-items: flex-end;
+	color: rgba(255, 255, 255, 0.87);
+}
+
+.settingsCancel {
+	background-color: #dd2727;
+}
+
+.buttonSegment {
+	display: flex;
+	margin-top: 1em;
+}

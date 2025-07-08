@@ -164,8 +164,8 @@
 .help,
 .run,
 .reconnect {
-  flex: 0.7 !important;
-  min-width: 40px;
+  flex: 0.9 !important;
+  min-width: 60px;
   /* Set minimum width */
 }
 

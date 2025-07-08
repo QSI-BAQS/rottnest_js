@@ -1,9 +1,11 @@
 import { AppServiceClient } from "../../../net/AppService";
-import { MSG_REMAP } from "../../../net/MessageRemap";
+import { MSG_REMAP, MSG_GLOBAL_MAP } from "../../../net/MessageRemap";
 import { RottRunResultMSG } from "../../../net/Messages";
 import RottnestContainer from "../../container/RottnestContainer";
 import { CommEventOps, CommOpQueue, CommsActions } from "./CommsOps";
 
+import {ProgramPlugin } from '../../../model/plugin/Program.ts'
+import { ArchitecturePlugin } from '../../../model/plugin/Architecture.ts'
 /**
  *
  * RTCCommEvents is a collection of events that is relevant for the RottnestContainer
@@ -26,7 +28,75 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
 			}
 		}
   },
-  
+  recvArchList: {
+    evkey: MSG_GLOBAL_MAP['arch_list'],
+    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+    	
+			const plist = m.getJSON().payload.arch_list;
+			let newArchs: Array<ArchitecturePlugin> = [];
+			console.log(plist)
+			for(const prg of plist) {
+				newArchs.push({
+					identifier: prg['arch_name'],
+					api_map: {}
+				})
+			}
+			
+    	rtc.state.appStateData.archData.architectures = newArchs;
+    	if(newArchs.length > 0) {
+    		rtc.state.appStateData.archData.current = newArchs[0]
+    	}
+    	console.log("triggering: arch_list")
+    	rtc.triggerUpdate();
+		}
+  },
+  recvProgramGetCurrent: {
+    evkey: MSG_GLOBAL_MAP['program_get_current'],
+    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+			const prg = m.getJSON().payload.prg;
+			let newProg: ProgramPlugin = {
+				name: prg['prg_name'],
+				params: prg['prg_params'].map((p: any) =>
+					{ return{ param: p.name, kind: 'any'}}) //TODO: Fix the kind
+			};
+			
+    	rtc.state.appStateData.progData.current = newProg;
+    	console.log("triggering: get_current_program")
+    	rtc.triggerUpdate();
+		}
+  },
+  recvProgramList: {
+    evkey: MSG_GLOBAL_MAP['program_list'],
+    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+			const plist = m.getJSON().payload.prg_list;
+			let newProgData: Array<ProgramPlugin> = [];
+			console.log(plist)
+			for(const prg of plist) {
+				newProgData.push({
+					name: prg['name'],
+					params: prg['params'].map((p: any) =>
+						{ return{ param: p.name, kind: 'any'}}) //TODO: Fix the kind
+				})
+			}
+			
+    	rtc.state.appStateData.progData.programs = newProgData
+    	rtc.triggerUpdate();
+		}
+  },
+  recvArchConfig: {
+    evkey: MSG_GLOBAL_MAP['arch_get_config'],
+    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+    	rtc.state.appStateData.archData.config = m['config']
+    	rtc.triggerUpdate();
+		}
+  },
+  recvProgramConfig: {
+    evkey: MSG_GLOBAL_MAP['program_get_config'],
+    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+    	rtc.state.appStateData.progData.config = m['config']
+    	rtc.triggerUpdate();
+		}
+  },
   recvGetRouter: {
     evkey: MSG_REMAP['get_router'],
     evtrigger: (appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
@@ -144,7 +214,9 @@ const RTCDispatchOperations = [
 			if(appService.isConnected()) {	
 				appService.sendMessage(MSG_REMAP['subtype']);
 				appService.sendMessage(MSG_REMAP['get_root_graph']);
-				appService.sendMessage(MSG_REMAP['get_args']);
+				appService.sendMessage(MSG_GLOBAL_MAP['arch_list']);
+				appService.sendMessage(MSG_GLOBAL_MAP['program_list']);
+				appService.sendMessage(MSG_GLOBAL_MAP['program_get_current']);
 			}
 		}
 	},

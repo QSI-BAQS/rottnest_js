@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react';
+import React, {MouseEvent, ReactElement} from 'react';
 
 import HelpEvent from './global/Help.ts';
 import LoadEvent, { hiddenInputProc } from './global/Load.ts';
@@ -33,7 +33,9 @@ import {ProjectDetails} from '../model/Project.ts';
 import LogoEvents from './global/LogoEvents.ts';
 // Import the ConnectionStatusButton component
 import ConnectionStatusButton from './global/DynamicButton.tsx';
-import PluginConfigEvents from './global/PluginConfigEvents.ts';
+import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings } from './global/settings/GeneralSettings.tsx';
+import { ArchitecturePluginGetName } from '../model/plugin/Architecture.ts';
+import { ProgramPluginGetName } from '../model/plugin/Program.ts';
 
 /**
  * GlobalBarProps, has a reference to
@@ -111,12 +113,84 @@ const BarItem: React.FC<BarItemData> = (props) => {
 	);
 };
 
+export type GlobalBarData = {
+	archData: PluginObjectProps,
+	progData: PluginObjectProps
+}
+
 /**
  * GlobalBar object that will be set at the top of the
  * application.
  */
-class GlobalBar extends React.Component<GlobalBarProps, {}> {
-		
+class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
+
+	state: GlobalBarData = {
+		archData: {
+			title: 'Arch',
+			issueFn: (rott:RottnestContainer) => { return ArchitecturePluginGetName(rott
+				.getCurrentArch()); },
+			styleName: 'pluginArch',
+			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestContainer) => {
+				rott.showArchitectureSettings();
+			},
+			settings: {
+				plgname: 'Architecture',
+				index: 0,
+				selected: '',
+				config: '',
+				plgItemsGetter: (rott: RottnestContainer) => rott.getArchItems(),
+				container: this.props.container,
+				saveDataFn: (data: PluginPackage) => {
+					const rott = data.container;
+					rott.saveArchData(data.pluginData);
+				},
+				saveConfigFn: (data: PluginPackage) => {
+					const rott = data.container;
+					rott.saveArchConfig(data.pluginData);
+					
+				},
+				cancelFn: (data: PluginPackage) => {
+					const rott = data.container;
+					rott.closeArchitectureSettings();
+					
+				}
+			}
+		},
+		progData: {
+			title: 'Program',
+			issueFn: (rott:RottnestContainer) => {
+				return ProgramPluginGetName(rott.getCurrentExe()); },
+			styleName: 'pluginProgram',
+			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestContainer) => {
+				rott.showProgramSettings();
+			},
+			settings: {
+				plgname: 'Program',
+				index: 0,
+				selected: '',
+				config: '',
+				plgItemsGetter: (rott: RottnestContainer) => rott.getProgramList(),
+				container: this.props.container,
+				saveDataFn: (data: PluginPackage) => {
+					const rott = data.container;
+					rott.saveProgramConfig(data.pluginData);
+					
+				},
+				saveConfigFn: (data: PluginPackage) => {
+					const rott = data.container;
+					rott.saveProgramConfig(data.pluginData);
+					
+				},
+				cancelFn: (data: PluginPackage) => {
+					const rott = data.container;
+					rott.closeProgramSettings();
+					
+				}
+				
+			}
+		}
+	}
+	
 	barItems: Array<BarItemDescription> = [
 		{ 
 			id: 200,
@@ -187,24 +261,24 @@ class GlobalBar extends React.Component<GlobalBarProps, {}> {
 			iconComponent: <></>
 		},
 		{ 
-			id: 300, 
-			name: "Reconnect", 
-			toolTip: "Reconnect to API", 
-			image: "HelpImage",
-			events: ReconnectEvent,
-			helpId: "reconnect",
-			style: styles.reconnect,
-			iconComponent: <RollbackOutlined />
-		},
-		{ 
 			id: 400, 
-			name: "lat2d", 
+			name: "ArchOption", 
 			toolTip: "Architecture Selected", 
 			image: "HelpImage",
-			events: PluginConfigEvents,
-			helpId: "",
+			events: NullEvents,
+			helpId: "arch_help",
 			style: styles.reconnect,
-			iconComponent: < />
+			iconComponent: <PluginObject {...this.state.archData} />
+		},
+		{ 
+			id: 500, 
+			name: "ProgramOption", 
+			toolTip: "Program Selected", 
+			image: "HelpImage",
+			events: NullEvents,
+			helpId: "program_help",
+			style: styles.reconnect,
+			iconComponent: <PluginObject {...this.state.progData} />
 		},
 		{ 
 			id: 200, 
@@ -309,7 +383,7 @@ class GlobalBar extends React.Component<GlobalBarProps, {}> {
 				// Use the standard BarItem component
 				renderItems.push(
 					<BarItem 
-						key={idx}
+						key={`bar_it_${idx}`}
 						containerRef={container}
 						description={item}
 						updatable={componentMap.get(item.id)}
@@ -317,6 +391,17 @@ class GlobalBar extends React.Component<GlobalBarProps, {}> {
 				);
 			}
 		});
+
+		const archPluginActive = container.state.appStateData.archSettingsActive;
+		const programPluginActive = container.state.appStateData.progSettingsActive;
+		const archSettings = this.state.archData.settings;
+		const programSettings = this.state.progData.settings;
+
+		const archPluginMenu = (archPluginActive ?
+			<PluginSettings {...archSettings} /> : <></>);
+		
+		const programPluginMenu = (programPluginActive ?
+			<PluginSettings {...programSettings} /> : <></>);
 
 		return (
 			<div 
@@ -332,6 +417,8 @@ class GlobalBar extends React.Component<GlobalBarProps, {}> {
 				<ul className={styles.barItemList}>
 					{renderItems}
 				</ul>
+				{archPluginMenu}
+				{programPluginMenu}
 			</div>
 		);
 	}

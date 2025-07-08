@@ -2,9 +2,8 @@
 
 import RottnestContainer from "../container/RottnestContainer.tsx"
 
-const leftClick = (rott: RottnestContainer) => {
+const leftClick = (_rott: RottnestContainer) => {
   //To implement
-  rott.showArchitectureSettings();
 }
 
 const auxEvent = (_: RottnestContainer) => {}

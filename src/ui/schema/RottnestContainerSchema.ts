@@ -12,6 +12,8 @@ import RottnestContainer from '../container/RottnestContainer.tsx';
 import { ValidationExecutor } from '../../vald/Validation.ts';
 
 import VisData from '../vis/VisData.ts';
+import { ArchitecturePlugin, ArchitecturePluginConfig } from '../../model/plugin/Architecture.ts';
+import { ProgramPlugin, ProgramPluginConfig } from '../../model/plugin/Program.ts';
 
 export type AppCommData = {
 	appService: AppServiceClient
@@ -44,6 +46,17 @@ type RottnestAppState = {
 		selectedSubTool: number
 		selectedRegion: number
 		selectedRegionType: string | null 
+	},
+	archData: {
+		architectures: Array<ArchitecturePlugin>,
+		config: ArchitecturePluginConfig,
+		current: ArchitecturePlugin
+	},
+	progData: {
+		programs: Array<ProgramPlugin>,
+		config: ProgramPluginConfig
+		current: ProgramPlugin
+
 	}
 }
 
@@ -139,6 +152,16 @@ const RTStateDefault: RottnestState =
 				selectedRegion: -1,
 				selectedRegionType: null
 			},
+			archData: {
+				architectures: [],
+				config: { config: '' },
+				current: { identifier: 'N/A', api_map: {} }
+			},
+			progData: {
+				programs: [],
+				config: { config: ''},
+				current: { name: 'N/A', params: [] }
+			}
 		},		
 		tabData: {
 			selectedTabIndex: 0,

@@ -28,6 +28,9 @@ import { RegionCell, RegionData, Regions }
 
 
 import styles from '../styles/RottnestContainer.module.css';
+import { PluginData, PluginEntry } from '../global/settings/GeneralSettings.tsx';
+import { ProgramPlugin, ProgramPluginToEntry } from '../../model/plugin/Program.ts';
+import { ArchitecturePlugin, ArchitecturesToEntry } from '../../model/plugin/Architecture.ts';
 
 
 /**
@@ -36,18 +39,10 @@ import styles from '../styles/RottnestContainer.module.css';
 type RottnestProperties = {};
 
 
-
-
-
-
-
-
 type ComponentMonitor = {
 	designSpace: DesignSpace | null
 	settingsForm: SettingsForm | null
 }
-
-
 
 
 /**
@@ -72,53 +67,7 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 
 	helpData: HelpDataCollection
 		= HelpUISchema.DataDefaults();
-
 	opers: RottnestContainerOperations = this.schemaData.getOperations();
-
-  /*state: RottnestState = {
-		projectDetails: {
-			projectName: 'Project1', 
-			author: 'User',
-			width: 20,
-			height: 20,
-			description: 'Quick Description'
-		},
-		regionList: new RegionDataList(),
-		subTypes: RottnestSubKinds,	
-		routerList: new Map(),
-		subTypesRecvd: false,
-		routerListRcvd: false,
-		selectedRouterIndex: 0,
-		errorMessage: '',
-		errorDisplay: false,
-		appStateData: {
-			settingsActive: false,
-			newProjectActive: false,
-			zoomValue: 100,
-			colourblindActive: false,
-			helpActive: false,
-			tourMode: false, 
-       	 		tourStep: 0,
-			componentData: {
-				selectedTool: 0,
-				selectedSubTool: 0,
-				selectedRegion: -1,
-				selectedRegionType: null
-			},
-		},		
-		tabData: {
-			selectedTabIndex: 0,
-			availableTabs: [true, false, false, false],
-			tabNames: ['Architecture', 'Call Graph', 
-				'Visualiser', 'Run Chart']
-		},
-		graphViewData: RottCallGraphDefault(),	
-		visData: {},
-		rrBuffer: new RunResultBuffer()
-	};
-		},*/
-
-
 	state: RottnestState = this.schemaData
 		.getData()
 		.rtstate;
@@ -147,6 +96,7 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	 * in a similar manner to the settings modal
 	 */
 	showArchitectureSettings() {
+		this.state.appStateData.progSettingsActive = false;
 		this.state.appStateData.archSettingsActive = true;
 		this.triggerUpdate();
 	}
@@ -164,6 +114,7 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	 * in a similar manner to the settings modal
 	 */
 	showProgramSettings() {
+		this.state.appStateData.archSettingsActive = false;
 		this.state.appStateData.progSettingsActive = true;
 		this.triggerUpdate();
 	}
@@ -903,6 +854,46 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 		this.triggerUpdate();
 	}
 
+	// TODO: Check this method
+	saveArchData(_data: PluginData) {
+			
+	}
+
+	// TODO: Check this method
+	saveArchConfig(_data: PluginData) {
+		
+	}
+
+	// TODO: Check this method
+	saveProgramData(_data: PluginData) {
+		
+	}
+
+	// TODO: Check this method
+	saveProgramConfig(_data: PluginData) {
+		
+	}
+
+	getArchItems(): Array<PluginEntry> {
+		return this.state.appStateData.archData.architectures.map((a) => {
+			return ArchitecturesToEntry(a);
+		})
+	}
+
+	getProgramList(): Array<PluginEntry> {
+		return this.state.appStateData.progData.programs.map((p) => {
+			return ProgramPluginToEntry(p);
+		})
+	}
+
+	getCurrentExe(): ProgramPlugin {
+		return this.state.appStateData.progData.current
+	}
+
+	getCurrentArch(): ArchitecturePlugin {
+		return this.state.appStateData.archData.current
+	}
+	
 	render() {
 		const rottContainer = this;
 		const updateables = new Map();
@@ -913,6 +904,7 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 			.settingsActive;
 		const newProjectActive = this.state.appStateData
 			.newProjectActive;
+
 
 		const newProjectElement = newProjectActive ? 
 			<NewProjectForm rootContainer={rottContainer}/> :
@@ -944,7 +936,7 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 				{errorComponent}
 				{helpComponent}
 			
-				<GlobalBar 	componentMap={updateables}
+				<GlobalBar componentMap={updateables}
 						container={rottContainer} 
 				/>
 			
