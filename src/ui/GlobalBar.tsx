@@ -127,26 +127,29 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 	state: GlobalBarData = {
 		archData: {
 			title: 'Arch',
-			issueFn: (rott:RottnestContainer) => { return ArchitecturePluginGetName(rott
-				.getCurrentArch()); },
+			issueFn: (rott: RottnestContainer) => {
+				return ArchitecturePluginGetName(rott.getCurrentArch()); },
 			styleName: 'pluginArch',
 			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestContainer) => {
 				rott.showArchitectureSettings();
 			},
+			container: this.props.container,
 			settings: {
 				plgname: 'Architecture',
 				index: 0,
 				selected: '',
-				config: '',
+				getConfig: (rott: RottnestContainer) => rott.getArchConfig(),
 				plgItemsGetter: (rott: RottnestContainer) => rott.getArchItems(),
 				container: this.props.container,
 				saveDataFn: (data: PluginPackage) => {
 					const rott = data.container;
 					rott.saveArchData(data.pluginData);
+					rott.closeArchitectureSettings();
 				},
 				saveConfigFn: (data: PluginPackage) => {
 					const rott = data.container;
 					rott.saveArchConfig(data.pluginData);
+					rott.closeArchitectureSettings();
 					
 				},
 				cancelFn: (data: PluginPackage) => {
@@ -164,21 +167,24 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestContainer) => {
 				rott.showProgramSettings();
 			},
+			container: this.props.container,
 			settings: {
 				plgname: 'Program',
 				index: 0,
 				selected: '',
-				config: '',
+				getConfig: (rott: RottnestContainer) => rott.getProgramConfig(),
 				plgItemsGetter: (rott: RottnestContainer) => rott.getProgramList(),
 				container: this.props.container,
 				saveDataFn: (data: PluginPackage) => {
 					const rott = data.container;
 					rott.saveProgramConfig(data.pluginData);
+					rott.closeProgramSettings();
 					
 				},
 				saveConfigFn: (data: PluginPackage) => {
 					const rott = data.container;
 					rott.saveProgramConfig(data.pluginData);
+					rott.closeProgramSettings();
 					
 				},
 				cancelFn: (data: PluginPackage) => {
@@ -264,17 +270,17 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			id: 400, 
 			name: "ArchOption", 
 			toolTip: "Architecture Selected", 
-			image: "HelpImage",
+			image: "",
 			events: NullEvents,
 			helpId: "arch_help",
 			style: styles.reconnect,
-			iconComponent: <PluginObject {...this.state.archData} />
+			iconComponent: <></>
 		},
 		{ 
 			id: 500, 
 			name: "ProgramOption", 
 			toolTip: "Program Selected", 
-			image: "HelpImage",
+			image: "",
 			events: NullEvents,
 			helpId: "program_help",
 			style: styles.reconnect,
@@ -370,7 +376,13 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 		// Process each bar item
 		this.barItems.forEach((item, idx) => {
 			// Check if this is the reconnect button
-			if (item.name === "Reconnect" && item.events === ReconnectEvent) {
+			if (item.name === "ProgramOption") {
+				renderItems.push(<PluginObject {...this.state.progData} />);
+				 				
+			} else if (item.name === "ArchOption") {
+				renderItems.push(<PluginObject {...this.state.archData} />);
+
+			} else if (item.name === "Reconnect" && item.events === ReconnectEvent) {
 				// Use our ConnectionStatusButton instead
 				renderItems.push(
 					<ConnectionStatusButton 
@@ -389,7 +401,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 						updatable={componentMap.get(item.id)}
 					/>
 				);
-			}
+				}
 		});
 
 		const archPluginActive = container.state.appStateData.archSettingsActive;

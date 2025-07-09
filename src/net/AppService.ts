@@ -35,6 +35,8 @@ export class AppServiceClient {
 	socket: WebSocket | null = null;
 	buffer: Array<AppServiceMessage> = [];
 	bufferCapacity: number = 256;
+
+	sendQueue: Array<string> = [];
 	
 	receiveTriggers: Map<string, 
 		ASRecvCallback> = new Map();
@@ -98,6 +100,28 @@ export class AppServiceClient {
 			return false;
 		}
 	}
+	
+	enqueueMessage(message: string) {
+		this.sendQueue.push(message);
+	}
+
+	consumeFromQueue(): boolean {
+		const message = this.sendQueue.shift();
+		if(message !== undefined) {
+			if(this.socket) {
+				this.socket.send(
+					JSON.stringify({
+						message,
+						payload: {}
+					})	
+				);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	
 
 	sendMessage(message: string) {
 		

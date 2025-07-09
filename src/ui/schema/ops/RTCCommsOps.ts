@@ -20,21 +20,19 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
     evtrigger: (appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
       let kinds = appService
 				.retrieveSubTypes(m);
+			appService.consumeFromQueue();
 			if(kinds) {
 				rtc.updateSubTypes(kinds);
 
-				appService
-				.sendMessage(MSG_REMAP['get_router']);
 			}
 		}
   },
   recvArchList: {
     evkey: MSG_GLOBAL_MAP['arch_list'],
-    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+    evtrigger: (appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
     	
 			const plist = m.getJSON().payload.arch_list;
 			let newArchs: Array<ArchitecturePlugin> = [];
-			console.log(plist)
 			for(const prg of plist) {
 				newArchs.push({
 					identifier: prg['arch_name'],
@@ -46,13 +44,13 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
     	if(newArchs.length > 0) {
     		rtc.state.appStateData.archData.current = newArchs[0]
     	}
-    	console.log("triggering: arch_list")
     	rtc.triggerUpdate();
+			appService.consumeFromQueue();
 		}
   },
   recvProgramGetCurrent: {
     evkey: MSG_GLOBAL_MAP['program_get_current'],
-    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+    evtrigger: (appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
 			const prg = m.getJSON().payload.prg;
 			let newProg: ProgramPlugin = {
 				name: prg['prg_name'],
@@ -61,16 +59,19 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
 			};
 			
     	rtc.state.appStateData.progData.current = newProg;
-    	console.log("triggering: get_current_program")
+    	rtc.makeNotification({
+    		header: "Program Set",
+    		body: "Retrieved the current executable from the server"
+    	})
     	rtc.triggerUpdate();
+			appService.consumeFromQueue();
 		}
   },
   recvProgramList: {
     evkey: MSG_GLOBAL_MAP['program_list'],
-    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+    evtrigger: (appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
 			const plist = m.getJSON().payload.prg_list;
 			let newProgData: Array<ProgramPlugin> = [];
-			console.log(plist)
 			for(const prg of plist) {
 				newProgData.push({
 					name: prg['name'],
@@ -81,20 +82,23 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
 			
     	rtc.state.appStateData.progData.programs = newProgData
     	rtc.triggerUpdate();
+			appService.consumeFromQueue();
 		}
   },
   recvArchConfig: {
     evkey: MSG_GLOBAL_MAP['arch_get_config'],
-    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
-    	rtc.state.appStateData.archData.config = m['config']
+    evtrigger: (appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+    	rtc.state.appStateData.archData.config.config = m.getJSON().payload.config;
     	rtc.triggerUpdate();
+			appService.consumeFromQueue();
 		}
   },
   recvProgramConfig: {
     evkey: MSG_GLOBAL_MAP['program_get_config'],
-    evtrigger: (_appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
-    	rtc.state.appStateData.progData.config = m['config']
+    evtrigger: (appService: AppServiceClient, rtc: RottnestContainer, m: any) => {
+    	rtc.state.appStateData.progData.config.config = m.getJSON().payload.config;
     	rtc.triggerUpdate();
+			appService.consumeFromQueue();
 		}
   },
   recvGetRouter: {
@@ -103,9 +107,10 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
       let kinds = appService
 					.retrieveRouters(
 						rtc.state.subTypes,m);
-				if(kinds) {
-					rtc.updateRouterList(kinds);
-				}
+			if(kinds) {
+				rtc.updateRouterList(kinds);
+			}
+			appService.consumeFromQueue();
 		}
   },
   recvUseArch: {
@@ -116,6 +121,7 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
 					let arch_id = someMsg.getJSON().payload.arch_id;
 					appService.runResult(new RottRunResultMSG(arch_id));
 				}
+				appService.consumeFromQueue();
 		  }
   },
   recvErr: {
@@ -185,12 +191,13 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
 				rtc.state.graphViewData
 				= graph;
 			}       
+			appService.consumeFromQueue();
 		}
 	},
 
 	recvGetArgs: {
     evkey: MSG_REMAP['get_args'],
-    evtrigger: (_a: AppServiceClient, _r: RottnestContainer, _m: any) => {
+    evtrigger: (appService: AppServiceClient, _r: RottnestContainer, _m: any) => {
       /*let kinds = appService
 					.retrieveArgs(m);
 				if(kinds) {
@@ -198,6 +205,7 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
 				.updateArgsList(kinds);
 				
 				}*/
+			appService.consumeFromQueue();
 		}
 	  
 	}
@@ -212,11 +220,15 @@ const RTCDispatchOperations = [
 		opkey: "initial",
 		operation: (appService: AppServiceClient, _rtc: RottnestContainer) => {
 			if(appService.isConnected()) {	
-				appService.sendMessage(MSG_REMAP['subtype']);
-				appService.sendMessage(MSG_REMAP['get_root_graph']);
-				appService.sendMessage(MSG_GLOBAL_MAP['arch_list']);
-				appService.sendMessage(MSG_GLOBAL_MAP['program_list']);
-				appService.sendMessage(MSG_GLOBAL_MAP['program_get_current']);
+				appService.enqueueMessage(MSG_REMAP['subtype']);
+				appService.enqueueMessage(MSG_REMAP['get_router']);
+				appService.enqueueMessage(MSG_GLOBAL_MAP['arch_list']);
+				appService.enqueueMessage(MSG_GLOBAL_MAP['arch_get_config']);
+				appService.enqueueMessage(MSG_GLOBAL_MAP['program_list']);
+				appService.enqueueMessage(MSG_GLOBAL_MAP['program_get_config']);
+				appService.enqueueMessage(MSG_GLOBAL_MAP['program_get_current']);
+				appService.enqueueMessage(MSG_REMAP['get_root_graph']);
+				appService.consumeFromQueue();
 			}
 		}
 	},

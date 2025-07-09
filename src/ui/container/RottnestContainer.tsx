@@ -31,6 +31,8 @@ import styles from '../styles/RottnestContainer.module.css';
 import { PluginData, PluginEntry } from '../global/settings/GeneralSettings.tsx';
 import { ProgramPlugin, ProgramPluginToEntry } from '../../model/plugin/Program.ts';
 import { ArchitecturePlugin, ArchitecturesToEntry } from '../../model/plugin/Architecture.ts';
+import { MSG_GLOBAL_MAP } from '../../net/MessageRemap.ts';
+import { NotifyMessage, NotifyMessageSpace, NotifyQueue } from '../global/notify/NotifyMessage.tsx';
 
 
 /**
@@ -76,6 +78,8 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 		new RegionsSnapshotStack();
 	currentRDBuffer: RegionData = 
 		new RegionData();
+
+	notifyQueue: NotifyQueue = new NotifyQueue();
 
 	constructor(props: RottnestProperties) {
 		super(props);
@@ -606,7 +610,9 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 		return null;
 	}
 
-
+	makeNotification(msg: NotifyMessage) {
+		this.state.notifyQueue.enqueueMessage(msg);
+	}
 
 	/**
 	 * Applys the current regiondata buffer to 
@@ -736,6 +742,8 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 			.componentData.selectedSubTool;
 	}
 
+	
+
 	/**
 	 * Creates a settings form component that
 	 * will allow the user to update project details
@@ -760,6 +768,7 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	triggerUpdate() {
 		const newState = {...this.state};
 		this.setState(newState);
+		
 	}
 
 	/**
@@ -855,23 +864,50 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	}
 
 	// TODO: Check this method
-	saveArchData(_data: PluginData) {
+	saveArchData(data: PluginData) {
+		const arch = this.state.appStateData
+			.archData.architectures.find(
+				(e: ArchitecturePlugin) => e.identifier === data.plgKey);
+		if(arch) {
+			this.state.appStateData.archData.current = arch;
+			this.triggerUpdate();
+		} 
 			
 	}
 
 	// TODO: Check this method
-	saveArchConfig(_data: PluginData) {
+	saveArchConfig(data: PluginData) {
 		
+		this.state.appStateData.progData.config.config = data.plgValue;
+		this.triggerUpdate();
+		this.commData.appService.sendObj(MSG_GLOBAL_MAP['arch_set_config'],
+			{ config: data.plgValue });
 	}
 
 	// TODO: Check this method
-	saveProgramData(_data: PluginData) {
-		
+	saveProgramData(data: PluginData) {
+		const prog = this.state.appStateData
+			.progData.programs.find((e: ProgramPlugin) => e.name === data.plgKey);
+		if(prog) {
+			this.state.appStateData.progData.current = prog;
+			this.triggerUpdate();
+		} 
 	}
 
 	// TODO: Check this method
-	saveProgramConfig(_data: PluginData) {
-		
+	saveProgramConfig(data: PluginData) {
+		this.state.appStateData.progData.config.config = data.plgValue;
+		this.triggerUpdate();
+		this.commData.appService.sendObj(MSG_GLOBAL_MAP['program_set_config'],
+			{ config: data.plgValue });
+	}
+
+	getProgramConfig(): string {
+		return this.state.appStateData.progData.config.config;
+	}
+
+	getArchConfig(): string {
+		return this.state.appStateData.archData.config.config;
 	}
 
 	getArchItems(): Array<PluginEntry> {
@@ -909,9 +945,14 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 		const newProjectElement = newProjectActive ? 
 			<NewProjectForm rootContainer={rottContainer}/> :
 		<></>
+
+		//const notifyMsg = this.state.notifyQueue.dequeueProxy();
+		//const notifyMsgRender = notifyMsg !== null ? notifyMsg.getElement() : <></>;
 	
 		updateables.set(100, [`${zoomValue}%`, 
 			rottContainer]);
+		updateables.set(400, this.getCurrentArch().identifier);
+		updateables.set(500, this.getCurrentExe().name);
 	
 		const errorComponent = this.state.errorDisplay ? 
 			<ErrorDisplay message={this.state.errorMessage} 
@@ -935,7 +976,7 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 				{newProjectElement}
 				{errorComponent}
 				{helpComponent}
-			
+				<NotifyMessageSpace queue={this.state.notifyQueue} />
 				<GlobalBar componentMap={updateables}
 						container={rottContainer} 
 				/>

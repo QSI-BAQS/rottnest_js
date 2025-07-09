@@ -31,10 +31,10 @@ export interface PluginSettingsProps {
   plgname: string;
   index: number;
   selected: string;
-  config: string;
   plgItemsGetter: (rott: RottnestContainer) => Array<PluginEntry>
   container: RottnestContainer;
   // callbacks on plugin data
+  getConfig: (rott: RottnestContainer) => string;
   saveDataFn: (data: PluginPackage) => void;
   saveConfigFn: (data: PluginPackage) => void;
   cancelFn:(data:PluginPackage) => void;
@@ -61,10 +61,11 @@ export class PluginSettings
   state: PluginSettingsData = {
     index: this.props.index,
     selected: this.props.selected,
-    config: this.props.config,
-    configActive: false
+    configActive: false,
+    config: this.props.getConfig(this.props.container)
         
   }
+
 
   toggleConfig() {
     this.state.configActive = !this.state.configActive;
@@ -76,7 +77,7 @@ export class PluginSettings
    * data
    */
   updateState(data: PluginSettingsData) {
-    this.setState(data);    
+    this.setState(data);  
   }
 
   /**
@@ -143,7 +144,8 @@ export class PluginSettings
     const container = this.props.container;
     const plglabel = this.props.plgname;
     const plgOptions = this.props.plgItemsGetter(container);
-    const plgConfig = this.props.config;
+    const plgConfig = this.state.config;
+    console.log(this.props.getConfig(container));
     
     const ref = this;
     const saveDataOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
@@ -151,6 +153,7 @@ export class PluginSettings
     };
     const saveConfigOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
       ref.saveConfig();
+      
     };
 
     const configOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
@@ -248,6 +251,7 @@ export type PluginObjectProps = {
   styleName: string
   response: (data: MouseEvent<HTMLButtonElement>, rott: RottnestContainer) => void
   settings: PluginSettingsProps
+  container: RottnestContainer
   
 }
 
@@ -261,9 +265,9 @@ export function PluginObject(props: PluginObjectProps) {
   const styleKey = props.styleName;  
   const responseFn = props.response;
   const rott = props.settings.container;
-  const issued = props.issueFn(rott);
-  console.log(issued);
-  
+  const issued = issueFn(rott);
+
+    
   const evfn = (e: MouseEvent<HTMLButtonElement>) => {
     responseFn(e, rott)
   }
@@ -272,7 +276,7 @@ export function PluginObject(props: PluginObjectProps) {
     <>
       <button className={styles[styleKey]} onClick={evfn}>
         <div>{title}</div>
-        <div>{issueFn(rott)}</div>
+        <div>{issued}</div>
       </button>
     </>
   )

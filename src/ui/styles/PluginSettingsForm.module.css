@@ -114,6 +114,8 @@
 	font-size: 8pt;
 	overflow-x: hidden;
 	overflow-y: hidden;
+	margin-top: 0.5em;
+	margin-left: 0.5em;
 }
 
 .pluginProgram {
@@ -127,6 +129,8 @@
 	font-size: 8pt;
 	overflow-x: hidden;
 	overflow-y: hidden;
+	margin-top: 0.5em;
+	margin-left: 0.5em;
 
 }
 

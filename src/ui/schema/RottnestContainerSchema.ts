@@ -14,6 +14,7 @@ import { ValidationExecutor } from '../../vald/Validation.ts';
 import VisData from '../vis/VisData.ts';
 import { ArchitecturePlugin, ArchitecturePluginConfig } from '../../model/plugin/Architecture.ts';
 import { ProgramPlugin, ProgramPluginConfig } from '../../model/plugin/Program.ts';
+import { NotifyQueue } from '../global/notify/NotifyMessage.tsx';
 
 export type AppCommData = {
 	appService: AppServiceClient
@@ -80,6 +81,7 @@ export type RottnestState = {
 	graphViewData: RottCallGraph
 	rrBuffer: RunResultBuffer
 	valexec: ValidationExecutor
+	notifyQueue: NotifyQueue
 }
 
 /**
@@ -128,6 +130,7 @@ const RTStateDefault: RottnestState =
 			height: 20,
 			description: 'Quick Description'
 		},
+		notifyQueue: new NotifyQueue(),
 		regionList: new RegionDataList(),
 		subTypes: RottnestSubKinds,	
 		routerList: new Map(),
