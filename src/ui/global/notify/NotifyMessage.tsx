@@ -51,9 +51,11 @@ export type NotifyQueueProps = {
 export class NotifyMessageSpace extends Component<NotifyQueueProps, NotifySpaceData> {
 
   state:NotifySpaceData = {
-    activeView: null
+    activeView: null,
   };
 
+  timer: ReturnType<typeof setTimeout> | null = null;
+  
   checkQueueAndPop() {
     
     const av = this.state.activeView;
@@ -74,6 +76,7 @@ export class NotifyMessageSpace extends Component<NotifyQueueProps, NotifySpaceD
     }
   }
 
+
   componentDidMount(): void {
     this.checkQueueAndPop()
   }
@@ -81,6 +84,7 @@ export class NotifyMessageSpace extends Component<NotifyQueueProps, NotifySpaceD
   componentDidUpdate(): void {
     this.checkQueueAndPop()
   }
+
 
   
   render() {
@@ -144,6 +148,32 @@ export class NotifyMessageView extends Component<NotifyViewProps, NotifyViewStat
 
   state: NotifyViewState = {
     toShow: true
+  }
+
+  timer: ReturnType<typeof setTimeout> | null = null;
+  
+  timeAndRemove() {
+    const ref = this;
+    if(this.timer === null) {
+      this.timer = setTimeout(() => {
+        ref.state.toShow = false;
+        const nstate = {...ref.state};
+        ref.setState(nstate);
+        ref.props.proxy.setFinished();
+        ref.props.deactivate();
+      }, 5000);
+    }
+  }
+
+  componentDidMount(): void {
+    this.timeAndRemove();
+  }
+  
+  componentWillUnmount() {
+    if(this.timer !== null) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
   }
 
   render() {

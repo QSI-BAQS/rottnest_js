@@ -62,7 +62,7 @@ export const RTCCommEvents: CommEventOps<RottnestContainer> = {
     	rtc.makeNotification({
     		header: "Program Set",
     		body: "Retrieved the current executable from the server"
-    	})
+    	});
     	rtc.triggerUpdate();
 			appService.consumeFromQueue();
 		}
