@@ -33,6 +33,7 @@ import { ProgramPlugin, ProgramPluginToEntry } from '../../model/plugin/Program.
 import { ArchitecturePlugin, ArchitecturesToEntry } from '../../model/plugin/Architecture.ts';
 import { MSG_GLOBAL_MAP } from '../../net/MessageRemap.ts';
 import { NotifyMessage, NotifyMessageSpace, NotifyQueue } from '../global/notify/NotifyMessage.tsx';
+import { UpdateTrigger } from '../../service/RefreshService.ts';
 
 
 /**
@@ -46,6 +47,37 @@ type ComponentMonitor = {
 	settingsForm: SettingsForm | null
 }
 
+
+/**
+ * This is the rewrite of the rottnest container
+ */
+export class RottnestApplication extends React.Component<RottnestProperties, {}>
+	implements UpdateTrigger {
+
+
+	
+
+	/**
+	 * Requires to be implemented as part of update
+	 * trigger interface
+	 */
+	triggerUpdate(): void {
+		let nstate = {...this.state};
+		this.setState(nstate);
+	}
+
+
+	/**
+	 * Main render call for the RottnestApplication object
+	 */
+	render() {
+
+		return (
+			<>
+			</>
+		)
+	}
+}
 
 /**
  * Container for the main application
@@ -96,41 +128,9 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 
 
 	/**
-	 * Shows an architecture settings selector
-	 * in a similar manner to the settings modal
-	 */
-	showArchitectureSettings() {
-		this.state.appStateData.progSettingsActive = false;
-		this.state.appStateData.archSettingsActive = true;
-		this.triggerUpdate();
-	}
-
-	/**
-	 * Closes the architecture settings that
-	 * was present for selection
-	 */
-	closeArchitectureSettings() {
-		this.state.appStateData.archSettingsActive = false;
-		this.triggerUpdate();
-	}
-	/**
 	 * Shows an program settings selector
 	 * in a similar manner to the settings modal
 	 */
-	showProgramSettings() {
-		this.state.appStateData.archSettingsActive = false;
-		this.state.appStateData.progSettingsActive = true;
-		this.triggerUpdate();
-	}
-
-	/**
-	 * Closes the program settings that
-	 * was present for selection
-	 */
-	closeProgramSettings() {
-		this.state.appStateData.progSettingsActive = false;
-		this.triggerUpdate();
-	}
 
 	readyAppService() {
 		const appReady = AppServiceModule
@@ -182,23 +182,6 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 		} catch(err) {
 			console.error("Failed to load help data:", err);
 		}
-
-		//const appService = AppServiceModule
-		//	.GetAppServiceInstance();
-		//if(!appService.isConnected()) {
-		//	appService.connect();
-			//TODO: Fix this ASAP, 
-			//this is really gross
-			//const appService = AppServiceModule
-			//.GetAppServiceInstance();
-					/*appService.sendMsg(
-				JSON.stringify(
-				{
-					cmd: 'subtype',
-				}));
-			}*/
-
-		//}
 	}
 
 	componentWillUnmount() {

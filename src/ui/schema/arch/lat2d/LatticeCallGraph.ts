@@ -22,7 +22,7 @@ export class LatticeCallGraphView extends Component<{}, {}> implements ArchWorks
   render() {
 
     return (<></>)
-  } 
+  }
 }
 
 /**
@@ -32,10 +32,15 @@ export class LatticeCallGraphView extends Component<{}, {}> implements ArchWorks
 export class LatticeCallGraphState implements ArchitectureCallGraph {
 
   callgraph: LatticeCallGraph = LatticeCallGraphDefault();
-
+  graphViewData: any = {};
 
   makeWorkspaceGroup(): ArchWorkspaceGroup {
     return new LatticeCallGraphUIGroup();
   }
+
+  
+	getCGGraph() {
+		return this.graphViewData;
+	}
   
 }

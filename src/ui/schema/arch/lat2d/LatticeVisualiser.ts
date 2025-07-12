@@ -11,10 +11,16 @@ export class LatticeVisualiserUIGroup implements ArchWorkspaceGroup {
   }
 }
 
+
 export class LatticeVisualiserContainer {
   
 }
 
+/**
+ * Lattice Player state,
+ * Will keep track of the current player for Lat2D when the visualiser is
+ * engaged
+ */
 export class LatticePlayerState implements ArchitecturePlayerState {
 
   frameNo: number = 0;
@@ -48,13 +54,18 @@ export class LatticePlayerState implements ArchitecturePlayerState {
   }
 }
 
-
+/**
+ * LatticeVisualiserPlayer,
+ * Used to by the application to play and control the player state of
+ * the visualiser
+ */
 export class LatticeVisualiserPlayer implements ArchitectureVisualiserPlayer {
   
   changeFrame(frameNo: number, state: ArchitecturePlayerState): void {
     state.setFrame(frameNo);
   }
 
+  //TODO: Fix this
   togglePlay(state: ArchitecturePlayerState): boolean {
     return false;
   }
@@ -74,10 +85,12 @@ export class LatticeVisualiserPlayer implements ArchitectureVisualiserPlayer {
     
   }
 
+  //TODO: Fix this
   play(state: ArchitecturePlayerState): void {
     
   }
   
+  //TODO: Fix this
   stop(state: ArchitecturePlayerState): void {
     
   }
@@ -93,10 +106,19 @@ export class LatticeVisualiser implements ArchitectureVisualiser {
   visualiser: LatticeVisualiserContainer = new LatticeVisualiserContainer();
   visData: any = {};
 
+  /**
+   * Constructs an architecture workspace group that will
+   * be used by the front end in order to display
+   * the content appropriately
+   */
   makeWorkspaceGroup(): ArchWorkspaceGroup {
     return new LatticeVisualiserUIGroup();
   }
 
+  /**
+   * Constructs a visualiser playerm will need to
+   * allow the data to be attached to the visualiser
+   */
   makePlayer(): ArchitectureVisualiserPlayer {
     return new LatticeVisualiserPlayer()
   }
@@ -110,6 +132,9 @@ export class LatticeVisualiser implements ArchitectureVisualiser {
     // getVisData(object: ArchitectureObject)
   }
 
+  /**
+   * Sets the visualisation data
+   */
   setVisData(visData: any) {
     this.visData = visData; 
   }

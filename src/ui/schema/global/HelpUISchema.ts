@@ -1,6 +1,6 @@
-import RottnestContainer from "../container/RottnestContainer";
-import { HelpBoxData } from "../container/HelpContainer";
-import { ContainerSchema } from "./Schema";
+import RottnestContainer from "../../container/RottnestContainer.ts";
+import { HelpBoxData } from "../../container/HelpContainer.ts";
+import { ContainerSchema } from "../Schema.ts";
 
 export type HelpDataCollection = Array<HelpBoxData>;
 

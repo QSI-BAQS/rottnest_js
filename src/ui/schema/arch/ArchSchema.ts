@@ -1,3 +1,6 @@
+import { AppServiceClient } from "../../../net/AppService";
+import { Services } from "../../../service/Services";
+import { CommEventOps, CommOpQueue } from "../global/ops/CommsOps";
 import { ArchWorkspaceGroup } from "./ArchWorkspace";
 
 
@@ -17,7 +20,7 @@ export type ArchitectureProject<T> = {
  * that will provide interfaces for sub components
  */
 export interface ArchitectureSchema {
-  createArchitecture(args: Map<string, string | number>): ArchitectureObject; 
+  createArchitecture<T=any, E=any>(services: Services, args: Map<string, string | number>): ArchitectureObject<T, E>; 
 }
 
 /**
@@ -47,11 +50,34 @@ export interface ArchitectureObject<T=any, E=any> {
   // Serializer module
   getSerializer(): ArchitectureSerializer<T>;
 
+  // ConnectionManager
+  getConnectionManager(): ArchitectureConnectionManager;
+
   // Extensions 
   getExtensions(): ArchitectureExtensions<E>;
 
-    
+  // Services
+  getServices(): Services;
 }
+
+/**
+ * Connection Manager will have some ability to manage the websocket
+ * connection as it receives messages from the application
+ *
+ * getNetworkService will return an AppService client that will
+ * grant the architecture the ability to send messages
+ *
+ */
+export interface ArchitectureConnectionManager {
+  getCommunicationEvents(): CommEventOps<ArchitectureObject>;
+
+  setCommunicationEvents(evemts: CommEventOps<ArchitectureObject>): void;
+
+  getOnOpenOperations(): CommOpQueue<ArchitectureObject>;
+
+  getNetworkService(): AppServiceClient;
+}
+
 
 /**
  * Extension object, used to retrieve additional data

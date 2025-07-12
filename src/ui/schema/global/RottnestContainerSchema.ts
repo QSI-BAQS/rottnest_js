@@ -1,24 +1,22 @@
+import {ProjectDetails} from '../../../model/Project';
+import {RegionDataList } from '../../../model/RegionDataList';
+import {RunResultBuffer} from '../../../model/RunResult.ts';
+import { ContainerSchema } from '../Schema.ts';
+import { RouterAggr } from '../../../net/Messages';
+import { RottnestKindMap } from '../../../model/RegionKindMap';
+import { RottCallGraph, RottCallGraphDefault } from '../../../model/CallGraph';
+import { AppServiceClient } from '../../../net/AppService';
+import AppServiceModule from '../../../net/AppServiceModule';
+import RottnestContainer from '../../container/RottnestContainer.tsx';
+import { ValidationExecutor } from '../../../vald/Validation.ts';
 
-import {ProjectDetails} from '../../model/Project';
-import {RegionDataList } from '../../model/RegionDataList';
-import {RunResultBuffer} from '../../model/RunResult.ts';
-import { ContainerSchema } from './Schema.ts';
-import { RouterAggr } from '../../net/Messages';
-import { RottnestKindMap } from '../../model/RegionKindMap';
-import { RottCallGraph, RottCallGraphDefault } from '../../model/CallGraph';
-import { AppServiceClient } from '../../net/AppService';
-import AppServiceModule from '../../net/AppServiceModule';
-import RottnestContainer from '../container/RottnestContainer.tsx';
-import { ValidationExecutor } from '../../vald/Validation.ts';
-
-import VisData from '../vis/VisData.ts';
-import { ArchitecturePlugin, ArchitecturePluginConfig } from '../../model/plugin/Architecture.ts';
-import { ProgramPlugin, ProgramPluginConfig } from '../../model/plugin/Program.ts';
-import { NotifyQueue } from '../global/notify/NotifyMessage.tsx';
+import VisData from '../../vis/VisData.ts';
+import { ArchitecturePlugin, ArchitecturePluginConfig } from '../../../model/plugin/Architecture.ts';
+import { ProgramPlugin, ProgramPluginConfig } from '../../../model/plugin/Program.ts';
+import { NotifyQueue } from '../../global/notify/NotifyMessage.tsx';
 
 export type AppCommData = {
 	appService: AppServiceClient
-
 }
 
 type TabViewStateData = {	
@@ -42,18 +40,18 @@ type RottnestAppState = {
 	tourMode: boolean
   tourStep: number
 	zoomValue: number
-	componentData: {
+	componentData: { // Should be moved out
 		selectedTool: number
 		selectedSubTool: number
 		selectedRegion: number
 		selectedRegionType: string | null 
 	},
-	archData: {
+	archData: { //Consider moving out
 		architectures: Array<ArchitecturePlugin>,
 		config: ArchitecturePluginConfig,
 		current: ArchitecturePlugin
 	},
-	progData: {
+	progData: { //Consider moving out
 		programs: Array<ProgramPlugin>,
 		config: ProgramPluginConfig
 		current: ProgramPlugin
@@ -66,20 +64,20 @@ type RottnestAppState = {
  * rendering and data
  */
 export type RottnestState = {
-	projectDetails: ProjectDetails
-	appStateData: RottnestAppState
-	regionList: RegionDataList
-	subTypes: RottnestKindMap
-	routerList: Map<string, RouterAggr>
-	tabData: TabViewStateData
-	subTypesRecvd: boolean
-	visData: any
-	routerListRcvd: boolean
-	selectedRouterIndex: number
+	projectDetails: ProjectDetails // Moved to interface - ArchSchema.ts
+	appStateData: RottnestAppState 
+	regionList: RegionDataList //Designer (Done) - LatticeDesign.ts
+	subTypes: RottnestKindMap  //Designer (Done) - LatticeDesign.ts
+	routerList: Map<string, RouterAggr> //Designer (Done) - LatticeDesign.ts
+	tabData: TabViewStateData //---
+	subTypesRecvd: boolean // Not done
+	visData: any // Not done
+	routerListRcvd: boolean // Not done
+	selectedRouterIndex: number // Not done
 	errorDisplay: boolean
 	errorMessage: string
-	graphViewData: RottCallGraph
-	rrBuffer: RunResultBuffer
+	graphViewData: RottCallGraph // CallGraph (Done) - LatticeCallGraph.ts
+	rrBuffer: RunResultBuffer 
 	valexec: ValidationExecutor
 	notifyQueue: NotifyQueue
 }
@@ -124,7 +122,9 @@ const RTCommData: AppCommData = {
 const RTStateDefault: RottnestState = 
 {
 		projectDetails: {
-			projectName: 'Project1', 
+			name: 'Project1',
+			version: '1',
+			architecture: 'lat2d',
 			author: 'User',
 			width: 20,
 			height: 20,

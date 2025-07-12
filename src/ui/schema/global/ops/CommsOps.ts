@@ -126,7 +126,7 @@ export class CommOpQueue<T> {
   }
 
   /**
-   *
+   * Generalised dispatch construction method
    */
   static MakeDispatchWith<T>(ops: Array<CommDispatch<T>>) {
     const dispatcher: CommOpQueue<T> = new CommOpQueue();

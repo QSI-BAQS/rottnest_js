@@ -8,7 +8,9 @@ import { RegionData } from './RegionData.ts'
  * This will be used by the settings form/project setup
  */
 export type ProjectDetails = {
-	projectName: string
+	name: string
+	architecture: string
+	version: string,
 	author: string
 	width: number
 	height: number
@@ -19,9 +21,9 @@ export type ProjectDetails = {
  * Aggregate between project details
  * and region list
  */
-export type ProjectAssembly = {
+export type ProjectAssembly<T> = {
 	projectDetails: ProjectDetails
-	regionList: RegionDataList
+	regionList: T
 }
 
 /**
