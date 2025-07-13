@@ -1,3 +1,5 @@
+import { HelpService } from "./HelpService";
+import { InputHookService } from "./InputHookService";
 import { NetworkService } from "./NetworkService";
 import { NotifyService } from "./NotifyService"
 import { RefreshService } from "./RefreshService"
@@ -16,6 +18,10 @@ export interface ServicesHolder {
 
   getNetworkService(): NetworkService;
 
+  getInputService(): InputHookService;
+
+  getHelpService(): HelpService;
+
   getServices(): Services;
 
 }
@@ -31,11 +37,15 @@ export class Services {
   refresh: RefreshService = RefreshService.NoRefresh();
   notify: NotifyService = new NotifyService();
   network: NetworkService = new NetworkService();
+  inputs: InputHookService = new InputHookService();
+  help: HelpService;
 
   constructor(container: ServicesHolder) {
     this.refresh = container.getRefreshService();
     this.notify = container.getNotifyService();
     this.network = container.getNetworkService();
+    this.inputs = container.getInputService();
+    this.help = new HelpService(this.refresh, this.inputs);
   }
 }
 
@@ -55,20 +65,46 @@ export class NoServices extends Services {
  * up class for no-impls
  */
 export class NoServicesHolder implements ServicesHolder {
-  
+
+  /**
+   * Gets no refresh service
+   */
   getRefreshService(): RefreshService {
     return RefreshService.NoRefresh();
   }
 
+  /**
+   * Gets the input service
+   */
+  getInputService(): InputHookService {
+    return new InputHookService();
+  }
+
+  /**
+   * Gets the no notify service
+   */
   getNotifyService(): NotifyService {
     return new NotifyService();
   }
 
+  /**
+   * Gets the network service
+   */
   getNetworkService(): NetworkService {
     return new NetworkService();
   }
 
+  /**
+   * Gets services which is a new instance
+   */
   getServices(): Services {
     return new NoServices();
+  }
+
+  /**
+   * Gets the help server
+   */
+  getHelpService(): HelpService {
+    return new HelpService(this.getRefreshService(), this.getInputService());
   }
 }

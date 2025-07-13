@@ -1,11 +1,12 @@
-import { AppServiceClient } from "../../../net/AppService";
-import { MSG_REMAP, MSG_GLOBAL_MAP } from "../../../net/MessageRemap";
-import { RottRunResultMSG } from "../../../net/Messages";
-import RottnestContainer from "../../container/RottnestContainer";
+import { AppServiceClient } from "../../../../net/AppService";
+import { RottRunResultMSG } from "../../../../net/Messages";
 import { CommEventOps, CommOpQueue, CommsActions } from "./CommsOps";
+import { ProgramPlugin } from '../../../../obj/plugin/Program.ts'
+import { ArchitecturePlugin } from '../../../../obj/plugin/Architecture.ts'
 
-import {ProgramPlugin } from '../../../model/plugin/Program.ts'
-import { ArchitecturePlugin } from '../../../model/plugin/Architecture.ts'
+import { MSG_REMAP, MSG_GLOBAL_MAP } from "../../../../net/MessageRemap";
+import RottnestContainer from "../../../container/RottnestContainer.tsx";
+
 /**
  *
  * RTCCommEvents is a collection of events that is relevant for the RottnestContainer

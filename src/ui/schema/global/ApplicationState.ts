@@ -3,6 +3,16 @@ import { NoArchSchema } from "../arch/noarch/NoArch";
 
 
 /**
+ * Used to monitor specific components
+ * TODO: I think this can be removed
+ */
+//type ComponentMonitor = {
+	//designSpace: DesignSpace | null
+	//settingsForm: SettingsForm | null
+//}
+
+
+/**
  * RottnestApplicationState that will hold onto
  * the schema and object currently selected
  * It will also have access to the globals required as part of construction

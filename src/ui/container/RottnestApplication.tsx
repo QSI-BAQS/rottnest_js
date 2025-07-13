@@ -1,39 +1,29 @@
 import React from 'react';
-import GlobalBar from '../GlobalBar';
+import GlobalBar from '../global/GlobalBar.tsx';
 
-import WorkspaceContainer from './DesignerContainer.tsx';
 import SettingsForm from './SettingsForm';
 import NewProjectForm from './NewProjectForm';
 import ErrorDisplay from './ErrorDisplay.tsx';
 import HelpService from '../help/HelpService';  
-import VisData from '../vis/VisData.ts';
 import AppServiceModule from '../../net/AppServiceModule.ts';
 
-import { RegionsSnapshotStack } 
-	from '../../model/RegionSnapshotStack';
-import { DesignSpace } from '../DesignSpace';
 import { RouterAggr} from '../../net/Messages.ts';
 import { HelpContainer } from './HelpContainer.tsx';
-import { RottCallGraphDefault } from '../../model/CallGraph.ts';
-import { AppCommData, RottnestContainerOperations, RottnestContainerSchema, RottnestState } from '../schema/global/RottnestContainerSchema.ts';
+import { AppCommData, RottnestContainerOperations, RottnestContainerSchema, RottnestState }
+	from '../schema/global/RottnestContainerSchema.ts';
 import { HelpDataCollection, HelpUISchema } from '../schema/global/HelpUISchema.ts';
 import { CommOpQueue, CommsActions } from '../schema/global/ops/CommsOps.ts';
 import { RTCCommActions, RTCOpenOperations } from '../schema/global/ops/RTCCommsOps.ts';
-import { RottnestKindMap, SubKind } 
-	from '../../model/RegionKindMap.ts'
-import {ProjectDetails, ProjectAssembly, ProjectDump } from '../../model/Project';
-import {RegionDataList } from '../../model/RegionDataList';
-import { RegionCell, RegionData, Regions } 
-	from '../../model/RegionData';
 
 
-import styles from '../styles/RottnestContainer.module.css';
 import { PluginData, PluginEntry } from '../global/settings/GeneralSettings.tsx';
-import { ProgramPlugin, ProgramPluginToEntry } from '../../model/plugin/Program.ts';
-import { ArchitecturePlugin, ArchitecturesToEntry } from '../../model/plugin/Architecture.ts';
-import { MSG_GLOBAL_MAP } from '../../net/MessageRemap.ts';
+import { ProgramPlugin, ProgramPluginToEntry } from '../../obj/plugin/Program.ts';
+import { ArchitecturePlugin, ArchitecturesToEntry } from '../../obj/plugin/Architecture.ts';
 import { NotifyMessage, NotifyMessageSpace, NotifyQueue } from '../global/notify/NotifyMessage.tsx';
 import { UpdateTrigger } from '../../service/RefreshService.ts';
+
+import { MSG_GLOBAL_MAP } from '../../net/MessageRemap.ts';
+import styles from '../styles/RottnestContainer.module.css';
 
 
 /**
@@ -54,9 +44,6 @@ type ComponentMonitor = {
 export class RottnestApplication extends React.Component<RottnestProperties, {}>
 	implements UpdateTrigger {
 
-
-	
-
 	/**
 	 * Requires to be implemented as part of update
 	 * trigger interface
@@ -66,6 +53,22 @@ export class RottnestApplication extends React.Component<RottnestProperties, {}>
 		this.setState(nstate);
 	}
 
+	//WARNING: Complete soon
+	async componentDidMount() {
+		this.readyAppService();
+
+		try {
+			this.helpData = await HelpService.loadHelpData('en');
+		} catch(err) {
+			console.error("Failed to load help data:", err);
+		}
+	}
+
+	componentWillUnmount() {
+  		if (this.state.appStateData.helpActive) {
+    			document.removeEventListener('keydown', this.handleEscKey);
+  		}
+	}
 
 	/**
 	 * Main render call for the RottnestApplication object
@@ -105,9 +108,13 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	state: RottnestState = this.schemaData
 		.getData()
 		.rtstate;
+
+	
 	
 	regionStack: RegionsSnapshotStack = 
 		new RegionsSnapshotStack();
+
+		
 	currentRDBuffer: RegionData = 
 		new RegionData();
 
@@ -174,78 +181,12 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 		}
 	}
 
-	async componentDidMount() {
-		this.readyAppService();
-
-		try {
-			this.helpData = await HelpService.loadHelpData('en');
-		} catch(err) {
-			console.error("Failed to load help data:", err);
-		}
-	}
-
-	componentWillUnmount() {
-  		if (this.state.appStateData.helpActive) {
-    			document.removeEventListener('keydown', this.handleEscKey);
-  		}
-	}
 
 	monitorComponent: ComponentMonitor = {
 		designSpace: null,
 		settingsForm: null
 	}
 	
-
-
-	/**
-	 * Calls into the selected region and retrieves the
-	 * list of adjacent regions that it can manually set
-	 */
-	getValidAdjacentsOfSelected() {
-		const adjacentList = [
-			{
-				name: "Not Selected",
-				listIdx: -1,
-				connectorId: 0,
-				direction: 0
-			}
-		]
-		const regionList = this.state.regionList;
-		const selectedRegion = this
-			.getSelectedRegionData();
-
-		if(selectedRegion) {
-			const edges = selectedRegion.edgeAABBs();
-			const aregs = this.state.regionList
-				.discoverFromEdges(edges);
-			const selKind = selectedRegion.getKind();
-			adjacentList	
-				.push(...aregs.map((ar, idx) =>{
-					const kindP = RegionData
-						.PluraliseKind(ar
-						.regionData
-						.getKind())
-					return ({
-						name: kindP,
-						listIdx: 
-							ar.ownIdx
-						!== null ?
-						ar.ownIdx : -1,
-						connectorId: 
-							idx+1,
-						direction: ar.dir
-					})
-				})
-				.filter((ar, _) => {
-					return regionList
-					.canConnectToKind(
-							selKind, 
-							ar.name);
-				}));
-		} 
-		return adjacentList;
-	}
-
 	//NOTE: Moved to LatticeCallGraph.ts
 	getCGGraph() {
 		return this.state.graphViewData;
@@ -259,61 +200,6 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	//NOTE: Moved to LatticeDesign.ts
 	getSelectedRouterIndex() {
 		return this.state.selectedRouterIndex;
-	}
-
-	//NOTE: Moved to LatticeDesign.ts
-	updateRouterList(routers: Map<string, RouterAggr>) {
-		this.state.routerList = routers;
-		this.state.routerListRcvd = true;
-		this.opers.validate(this);
-		this.triggerUpdate();
-	}
-
-	//NOTE: Moved to LatticeDesign.ts
-	updateSubTypes(subTypes: RottnestKindMap) {
-		this.state.subTypes = subTypes;
-		this.state.subTypesRecvd = true;
-		this.opers.validate(this);
-		this.triggerUpdate();
-	}
-
-	//NOTE: Moved to LatticeDesign.ts
-	deleteSelectedRegion(kind: string, idx: number) {
-
-		const selectedObj = this.getRegionList()
-			.retrieveByIdx(kind, idx);
-
-		if(selectedObj) {
-			//1. Add onto the undo stack
-			this.onRegion();
-			
-			//2. Delete
-			selectedObj.markAsDead();	
-		}
-	}
-	
-	toggleHelp() {
-  		const helpActive = !this.state.appStateData.helpActive;
-
-  		this.setState({
-    			appStateData: {
-      				...this.state.appStateData,
-      				helpActive,
-      				tourMode: false
-    			}
-  		});
-
-		if (helpActive) {
-    			document.addEventListener('keydown', this.handleEscKey);
-  		} else {
-    			document.removeEventListener('keydown', this.handleEscKey);
-  		}
-	}
-
-	handleEscKey = (event: KeyboardEvent) => {
-  		if (event.key === 'Escape' && this.state.appStateData.helpActive) {
-    			this.toggleHelp();
-  		}
 	}
 
 	// Moved to LatticeDesign.ts
@@ -462,23 +348,7 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 
 	}
 
-	updateSelectedRegionDataNoUpdate(regData: RegionData) {
-		const getSelectedIdx = this.state.appStateData
-			.componentData.selectedRegion;
 
-		const getSelectedKeyStr = this.state.appStateData
-			.componentData.selectedRegionType;
-		this.getRegionList()
-			.updateByIdx(getSelectedKeyStr, 
-				     getSelectedIdx, 
-				     regData);
-	}
-
-	updateSelectedRegionData(regData: RegionData) {
-		this.updateSelectedRegionDataNoUpdate(regData);
-		this.opers.validate(this);
-		this.triggerUpdate();
-	}
 
 	resetData() {
 		this.state.regionList = new RegionDataList();
@@ -505,195 +375,14 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	       this.monitorComponent.settingsForm = settingsForm;
 	}
 
-	parseLoadedFile(content: string | ArrayBuffer | null) {
-		//TODO: I hate the comparison here
-		//but I am using bad APIs, revisit this later
-		//	:( 
-		//	Broke my rule about violating the type
-		//	system
-		if(content && typeof content == 'string') {
-			const jsonRep = JSON.parse(content);
-			if(jsonRep) {
-				const partialDump: 
-					Partial<ProjectDump> 
-					= jsonRep;
-				const dump: ProjectDump =
-				{
-					project: 
-						partialDump
-						.project 
-						!= null ?
-						jsonRep.project :
-						this.state
-						.projectDetails,
-					regions:
-						partialDump
-						.regions
-						!= null ?
-						jsonRep.regions :
-						this.state
-						.regionList
-				}
-				this.state.projectDetails =
-					dump.project;
-				this.state.regionList = 
-					RegionDataList
-					.fromFlatten(
-						dump.regions);
-				
-				const newState = {...this.state};
-				const dspace = this
-					.monitorComponent
-					.designSpace;
-				if(dspace) {
-					dspace.redoCells(newState
-						.projectDetails
-						.width,
-						newState
-						.projectDetails
-						.height);
-				}
-				this.setState(newState);
-
-				//this.triggerUpdate();
-			}
-			
-		}
-	}
-
 	getProjectDetails() {
 		return this.state.projectDetails;
 	}
 
-	getCurrentRDBuffer(): RegionData {
-		return this.currentRDBuffer;
-	}
 
-	getRegionList(): RegionDataList {
-		return this.state.regionList;
-	}
 	
-	/**
-	 * TODO: Move this function to another place
-	 * 	Centralise the tool/region mapping controls
-	 * 	and make it consistent
-	 */
-	toolToRegionKey(): keyof Regions | null {
-
-		const rtag = RottnestContainer
-			.ToolNumberToRegionKey(this
-				.getToolIndex());
-		if(rtag !== null) {
-			return rtag as keyof Regions;
-		}
-		return null;
-	}
-	
-	static ToolNumberToRegionKey(tnum: number)
-		: string | null {
-		switch(tnum) {
-			case 1:
-				return 'buffers';
-			case 2:
-				return 'bus';
-			case 3:
-				return 'factories';
-			case 4:
-				return 'bellstates';
-			case 5:
-				return 'registers';
-			default:
-				break;
-		}
-
-		return null;
-	}
-
 	makeNotification(msg: NotifyMessage) {
 		this.state.notifyQueue.enqueueMessage(msg);
-	}
-
-	/**
-	 * Applys the current regiondata buffer to 
-	 * the region list. It will then duplicate the
-	 * current regionlist and move on.
-	 */	
-	applyRDBuffer() {
-		const oldBuffer: RegionData = 
-			this.currentRDBuffer;
-		this.currentRDBuffer = new RegionData();
-		//The index 6, is currently the unselect,
-		//this is *not good*
-		if(this.getToolIndex() === 6) {
-			//Clean up
-			//TODO: We need to have callbacks 
-			//for this
-			//I have littered the code with
-			//too much rubbish
-
-			this.onRegion();
-			this.state.regionList
-				.cleanupIntersections(oldBuffer);
-			this.opers.validate(this);
-			this.triggerUpdate();
-		} else {
-			const rkey = this.toolToRegionKey();
-			
-			if(rkey) {
-				const pkey = RegionData
-					.SingularKind(rkey);
-
-				const subkindFor 
-				= this.state
-				.subTypes[
-				pkey as keyof RottnestKindMap];
-
-				let kindex = this.state
-				.appStateData
-				.componentData.selectedSubTool;
-
-
-				if(kindex === 0) {
-					kindex = (subkindFor
-						  .length-1)
-					 % subkindFor.length;
-				}
-
-				const kSubKindDefault 
-				= subkindFor[kindex];
-				
-				
-				oldBuffer.setSubKind(
-					kSubKindDefault.name);
-
-				this.onRegion();
-					
-				this.state.regionList
-					.addData(oldBuffer, 
-						 rkey);
-				
-				this.state.regionList
-				.resolveConnectionsFromTraversal(
-						false);
-
-				let res: RegionCell | undefined 
-					= oldBuffer.cells
-					.values()
-					.next().value;
-
-				if(res) {	
-					const { x, y }: 
-					{ x: number
-					  y: number } 
-						= res;	
-					this
-					.updateSelectedRegion(x,
-							      y);
-					
-				}
-				this.triggerUpdate();
-			}
-		}
 	}
 
 	undoRegion() {
@@ -743,22 +432,6 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 
 	
 
-	/**
-	 * Creates a settings form component that
-	 * will allow the user to update project details
-	 *
-	 */
-	showSettings() {
-
-		this.state.appStateData.settingsActive = true;
-		this.triggerUpdate();
-	}
-	
-	showNewProject() {
-
-		this.state.appStateData.newProjectActive = true;
-		this.triggerUpdate();
-	}
 
 	/**
 	 * Updates the state and triggers a
@@ -770,22 +443,6 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 		
 	}
 
-	/**
-	 * Creates a settings form component that
-	 * will allow the user to update project details
-	 *
-	 */
-	cancelSettings() {
-		this.state.appStateData.settingsActive = false;
-		this.triggerUpdate();
-	}
-
-	cancelNewProject() {
-		this.state.appStateData.newProjectActive = false;
-		this.resetData();
-		this.opers.validate(this);
-		this.triggerUpdate();
-	}
 
 	/**
 	 * Takes the project from settings and writes it

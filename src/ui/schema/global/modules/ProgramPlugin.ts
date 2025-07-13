@@ -6,14 +6,19 @@ import { UpdateTrigger } from "../../../../service/RefreshService";
  * Used to maintain information regarding the program plugins
  * that would be available
  */
-export class ProgramPluginState{
+export class ProgramPluginState {
 
   updateTrigger: UpdateTrigger;
   settingsActive: boolean = false;
   swapFn: (arch: boolean, prog: boolean) => void;
 
-  constructor(trigger: UpdateTrigger) {
+  /**
+   * Constructs the program plugin state
+   * Will have an event trigger to refresh the main container
+   */
+  constructor(trigger: UpdateTrigger, swapFn: (arch: boolean, prog: boolean) => void) {
     this.updateTrigger = trigger;
+    this.swapFn = swapFn;
   }
 
   /**

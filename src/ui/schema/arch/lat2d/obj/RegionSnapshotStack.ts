@@ -1,14 +1,15 @@
 
+import { ArchActionTracker } from '../../ArchActionTracker';
 import {RegionDataList}  from './RegionDataList';
 /**
  * This allows for undo and redo functionality
  * within the container system
  */
-export class RegionsSnapshotStack {
+export class RegionsSnapshotStack implements ArchActionTracker<RegionDataList> {
 	
 	redoListStack: Array<RegionDataList> = [];
 	regionListStack: Array<RegionDataList> = [];
-	capacity: number = 32;
+	capacity: number = 128;
 
 	/**
 	 * New regionList object will be pushed onto
@@ -47,13 +48,14 @@ export class RegionsSnapshotStack {
 	 * region data list in the container
 	 * 
 	 */
-	undoAction(current: RegionDataList): RegionDataList 
-		| null | undefined {
+	undo(current: RegionDataList): RegionDataList | null {
 		//Only valid case
 		if(this.regionListStack.length > 0) {
 			let res = this.regionListStack.shift();
 			this.redoListStack.unshift(current);
-			return res;
+			if(res) {
+				return res;
+			}
 		}
 		return null;
 	}
@@ -64,18 +66,24 @@ export class RegionsSnapshotStack {
 	 * current regiondatalist will then be
 	 * placed in the undo list
 	 */
-	redoAction(current: RegionDataList): RegionDataList 
-		| null | undefined {
+	redo(current: RegionDataList): RegionDataList | null {
 				
 		if(this.redoListStack.length > 0) {
 			let res = this.redoListStack.shift();
 			this.regionListStack.unshift(current);
-			return res;
+			if(res) {
+				return res;
+			}
 		}
 		return null;
 	}
 
-	onAction(current: RegionDataList) {
+	/**
+	 * On an action taken in the designer UI, this will
+	 * take the current buffer and push it down before
+	 * replacing ti with a new one
+	 */
+	action(current: RegionDataList) {
 		this.push(current);
 		this.redoListStack = [];
 	}

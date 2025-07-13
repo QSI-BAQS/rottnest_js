@@ -1,6 +1,7 @@
 import { AppServiceClient } from "../../../net/AppService";
 import { Services } from "../../../service/Services";
 import { CommEventOps, CommOpQueue } from "../global/ops/CommsOps";
+import { ArchActionTracker } from "./ArchActionTracker";
 import { ArchWorkspaceGroup } from "./ArchWorkspace";
 
 
@@ -116,6 +117,9 @@ export interface ArchitectureSerializer<T> {
  * will need to do and update related state operations
  */
 export interface ArchitectureDesigner extends ArchitectureWorkspaceFactory {
+
+  // Returns the action tracker for the designer
+  getActionTracker<T=any>(): ArchActionTracker<T>;
     
 }
 

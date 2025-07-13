@@ -1,5 +1,6 @@
 import { NoServices, Services } from '../../../../service/Services.ts';
 import { ArchitectureCallGraph,
+  ArchitectureConnectionManager,
   ArchitectureDesigner,
   ArchitectureExtensions,
   ArchitectureObject,
@@ -7,6 +8,12 @@ import { ArchitectureCallGraph,
   ArchitectureSchema,
   ArchitectureSerializer,
   ArchitectureVisualiser } from '../ArchSchema.ts';
+import { NoArchCallGraph } from './NoArchCallGraph.ts';
+import { NoArchDesigner } from './NoArchDesigner.ts';
+import { NoArchExtensions } from './NoArchExtensions.ts';
+import { NoArchNetManager } from './NoArchNetwork.ts';
+import { NoArchSerializer } from './NoArchSerializer.ts';
+import { NoArchVisualiser } from './NoArchVisualiser.ts';
 
 
 /**
@@ -95,7 +102,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    * Will have access to the websockets that will be given to it
    */
   getConnectionManager(): ArchitectureConnectionManager {
-    return new NoArchConnectionManager();
+    return new NoArchNetManager(this);
   }
 
   /**

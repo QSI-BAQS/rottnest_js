@@ -16,6 +16,7 @@ import { LatticeVisualiser } from './LatticeVisualiser.ts';
 import { LatticeNetManager } from './LatticeNetManager.ts';
 import { LatticeSerializer } from './io/LatticeSerializer.ts';
 import { Services } from '../../../../service/Services.ts';
+import { RegionDataList } from './obj/RegionDataList.ts';
 
 /**
  * Schema object, typically only one instance which is used to
@@ -37,7 +38,7 @@ export class Lattice2DSchema implements ArchitectureSchema {
  * The Lattice2DArchitecture object that will be a facade object
  * that RottnestContainer will use.
  */
-export class Lattice2DArchitecture implements ArchitectureObject<any, any> {
+export class Lattice2DArchitecture implements ArchitectureObject<RegionDataList, any> {
 
   services: Services;
   components = {
@@ -130,7 +131,9 @@ export class Lattice2DArchitecture implements ArchitectureObject<any, any> {
     return this.components.netmanager;
   }
 
-
+  /**
+   * Gets the services of the application that are registered to the application
+   */
   getServices(): Services {
     return this.services;
   }

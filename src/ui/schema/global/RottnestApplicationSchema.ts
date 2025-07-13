@@ -1,6 +1,3 @@
-import {ProjectDetails} from '../../../model/Project';
-import {RegionDataList } from '../../../model/RegionDataList';
-import {RunResultBuffer} from '../../../model/RunResult.ts';
 import { ContainerSchema } from '../Schema.ts';
 import { RouterAggr } from '../../../net/Messages';
 import { RottnestKindMap } from '../../../model/RegionKindMap';
@@ -21,19 +18,10 @@ import { RottnestApplication } from '../../container/RottnestApplication.tsx';
 import { NotifyService } from '../../../service/NotifyService.ts';
 import { RefreshService } from '../../../service/RefreshService.ts';
 import { NetworkService } from '../../../service/NetworkService.ts';
+import { InputHookService } from '../../../service/InputHookService.ts';
+import { HelpService } from '../../../service/HelpService.ts';
 
 
-/// Will need to do something about this
-export type AppCommData = {
-	appService: AppServiceClient
-}
-
-/// Will need to do something about this
-type TabViewStateData = {	
-	selectedTabIndex: number
-	tabNames: Array<string>
-	availableTabs: Array<boolean>
-}
 
 
 /**
@@ -75,6 +63,20 @@ export class RottnestApplicationServices implements ServicesHolder {
   	return this.services.network;
   }
 
+  /**
+   * Gets the input service
+   */
+  getInputService(): InputHookService {
+  	return this.services.inputs;
+  }
+
+  /**
+   * Gets the help server
+   */
+  getHelpService(): HelpService {
+  	return this.services.help;
+  }
+
 	/**
 	 * Returns the whole services group
 	 */
@@ -83,15 +85,8 @@ export class RottnestApplicationServices implements ServicesHolder {
   }
 }
 
-/**
- * RottnestApplicationState that will hold onto
- * the schema and object currently selected
- * It will also have access to the globals required as part of construction
- */
-export class RottnestArchitectureState {
-	architectureSchema: ArchitectureSchema = new NoArchSchema()
-	architectureObject: ArchitectureObject | null = null;
-}
+
+
 
 /**
  * Application data, the object that will persist and does not
@@ -113,6 +108,20 @@ export class RottnestApplicationData {
 	}
 }
 
+// TODO: Resolve the bottom types next
+
+
+/// Will need to do something about this
+export type AppCommData = {
+	appService: AppServiceClient
+}
+
+/// Will need to do something about this
+type TabViewStateData = {	
+	selectedTabIndex: number
+	tabNames: Array<string>
+	availableTabs: Array<boolean>
+}
 
 /**
  *  Container State information
