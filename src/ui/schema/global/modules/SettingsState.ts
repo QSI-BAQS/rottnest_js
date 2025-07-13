@@ -32,6 +32,13 @@ export class SettingsState {
 		this.trigger.triggerUpdate();
 	}
 
+  resetData() {
+    
+  }
+
+  applySettings()
+    
+  }
 	
 	/**
 	 * Creates a settings form component that
@@ -43,10 +50,19 @@ export class SettingsState {
 		this.trigger.triggerUpdate();
 	}
 
+  /**
+   *
+   */
+  applyNewProject() {
+    
+  }
+	
+  /**
+   *
+   */
 	cancelNewProject() {
 		this.newProjectActive = false;
 		this.resetData();
-		this.opers.validate(this);
-		this.triggerUpdate();
+		this.trigger.triggerUpdate();
 	}
 }
