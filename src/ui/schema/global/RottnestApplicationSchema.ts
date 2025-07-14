@@ -92,9 +92,12 @@ export class RottnestApplicationServices implements ServicesHolder {
  * Application data, the object that will persist and does not
  * need to be used for re-rendering
  */
-export class RottnestApplicationData {
+export class RottnestApplicationModules {
 	appServices: RottnestApplicationServices;
 
+	/**
+	 * Construction that is part of construction application data
+	 */
 	constructor() {
 		this.appServices = new RottnestApplicationServices();
 	}

@@ -4,16 +4,13 @@ import GlobalBar from '../global/GlobalBar.tsx';
 import SettingsForm from './SettingsForm';
 import NewProjectForm from './NewProjectForm';
 import ErrorDisplay from './ErrorDisplay.tsx';
-import HelpService from '../help/HelpService';  
-import AppServiceModule from '../../net/AppServiceModule.ts';
+import HelpWorker from '../help/HelpWorker.tsx';  
 
 import { RouterAggr} from '../../net/Messages.ts';
 import { HelpContainer } from './HelpContainer.tsx';
-import { AppCommData, RottnestContainerOperations, RottnestContainerSchema, RottnestState }
+import { AppCommData, RottnestContainerOperations, RottnestContainerSchema }
 	from '../schema/global/RottnestContainerSchema.ts';
 import { HelpDataCollection, HelpUISchema } from '../schema/global/HelpUISchema.ts';
-import { CommOpQueue, CommsActions } from '../schema/global/ops/CommsOps.ts';
-import { RTCCommActions, RTCOpenOperations } from '../schema/global/ops/RTCCommsOps.ts';
 
 
 import { PluginData, PluginEntry } from '../global/settings/GeneralSettings.tsx';
@@ -24,25 +21,18 @@ import { UpdateTrigger } from '../../service/RefreshService.ts';
 
 import { MSG_GLOBAL_MAP } from '../../net/MessageRemap.ts';
 import styles from '../styles/RottnestContainer.module.css';
+import { RottnestProperties, RottnestState } from '../schema/global/ApplicationState.ts';
+import { RottnestApplicationModules } from '../schema/global/RottnestApplicationSchema.ts';
 
-
-/**
- * At the moment, nothing interesting
- */
-type RottnestProperties = {};
-
-
-type ComponentMonitor = {
-	designSpace: DesignSpace | null
-	settingsForm: SettingsForm | null
-}
 
 
 /**
  * This is the rewrite of the rottnest container
  */
-export class RottnestApplication extends React.Component<RottnestProperties, {}>
+export class RottnestApplication extends React.Component<RottnestProperties, RottnestState>
 	implements UpdateTrigger {
+
+	modules: RottnestApplicationModules = new RottnestApplicationModules();
 
 	/**
 	 * Requires to be implemented as part of update
@@ -53,20 +43,25 @@ export class RottnestApplication extends React.Component<RottnestProperties, {}>
 		this.setState(nstate);
 	}
 
-	//WARNING: Complete soon
-	async componentDidMount() {
-		this.readyAppService();
+	/**
+	 * Will mount components during its load as well as check to see
+	 * if certain objects are ready.
+	 */
+	componentDidMount() {
+		this.state.appState.readyAppService();
 
-		try {
-			this.helpData = await HelpService.loadHelpData('en');
-		} catch(err) {
-			console.error("Failed to load help data:", err);
-		}
+		HelpWorker.loadHelpData('en')
+			.then((_data: any) => { })
+			.catch((err: any) => { console.error("Failed to load help data: ", err)})
 	}
 
+	/**
+	 * Will perform unmounting operations to ensure that
+	 * any side effects don't impact other contexts
+	 */
 	componentWillUnmount() {
-  		if (this.state.appStateData.helpActive) {
-    			document.removeEventListener('keydown', this.handleEscKey);
+  		if (this.modules.getServices().help.isActive()) {
+  			this.modules.getServices().inputs.removeHook('keydown');
   		}
 	}
 
@@ -90,10 +85,6 @@ export class RottnestApplication extends React.Component<RottnestProperties, {}>
  */
 class RottnestContainer extends React.Component<RottnestProperties, RottnestState> {
 
-	rtcCommsActions: CommsActions<RottnestContainer>
-		= RTCCommActions;
-	rtcCommsDispatch: CommOpQueue<RottnestContainer>
-		= RTCOpenOperations;
 	
 	schemaData: RottnestContainerSchema
 		= new RottnestContainerSchema();
@@ -108,17 +99,6 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	state: RottnestState = this.schemaData
 		.getData()
 		.rtstate;
-
-	
-	
-	regionStack: RegionsSnapshotStack = 
-		new RegionsSnapshotStack();
-
-		
-	currentRDBuffer: RegionData = 
-		new RegionData();
-
-	notifyQueue: NotifyQueue = new NotifyQueue();
 
 	constructor(props: RottnestProperties) {
 		super(props);
@@ -139,24 +119,6 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	 * in a similar manner to the settings modal
 	 */
 
-	readyAppService() {
-		const appReady = AppServiceModule
-			.ConnectionReady();
-		const appService = AppServiceModule
-			.GetAppServiceInstance();
-		const selfRef = this;
-		
-		if(appReady) { return; }
-
-		selfRef.rtcCommsActions.ApplyInternal(
-			selfRef.commData.appService, selfRef);
-
-		appService.registerOpenFn(() => { selfRef
-			.rtcCommsDispatch.applyAll(appService, selfRef); });
-		
-		this.commData.appService.connect();
-
-	}
 
 	//Transferred mostly (LatticeVisualiser.ts)
 	getVisData() {

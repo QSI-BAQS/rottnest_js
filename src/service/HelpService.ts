@@ -25,6 +25,13 @@ export class HelpService {
   }
 
   /**
+   * Checks to see if the help is active 
+   */
+  isActive(): boolean {
+    return this.active;
+  }
+
+  /**
    * Will toggle the help display when initiated
    */
 	toggleHelp() {

@@ -6,10 +6,10 @@ export type HelpJsonData = {
   	helpItems: HelpBoxData[];
 };
 
-class HelpService {
+export default class HelpWorker {
 	private static helpData: Map<string, HelpBoxData[]> = new Map();
   
-  	static async loadHelpData(languageCode: string = 'en'): Promise<HelpBoxData[]> {
+	static async loadHelpData(languageCode: string = 'en'): Promise<HelpBoxData[]> {
 		
 		// Have we already loaded?
 		if (this.helpData.has(languageCode)) {
@@ -60,4 +60,3 @@ class HelpService {
   	}
 }
 
-export default HelpService;
