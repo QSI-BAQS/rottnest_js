@@ -2,9 +2,7 @@ import React from 'react';
 import GlobalBar from '../global/GlobalBar.tsx';
 
 import SettingsForm from './SettingsForm';
-import NewProjectForm from './NewProjectForm';
 import ErrorDisplay from './ErrorDisplay.tsx';
-import HelpWorker from '../help/HelpWorker.tsx';
 import { HelpContainer } from './HelpContainer.tsx';
 import { NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
 import { UpdateTrigger } from '../../service/RefreshService.ts';
@@ -60,39 +58,61 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 	}
 
 	/**
+	 * Gets the services from the appstate module
+	 */
+	getServices() {
+		return this.state.appState.modstate.getServices();
+	}
+
+	/**
+	 * Gets the module states from the appstate object
+	 */
+	getModuleStates() {
+		return this.state.appState.modstate.getStates();
+	}
+
+	/**
 	 * TODO: Fix this all
 	 */
 	render() {
 		const rottContainer = this;
 		const updateables = new Map();
-		const zoomState = this.state.appState.modstate.getStates().getZoomState();
-		const zoomValue = zoomState.getZoomValue();
-		const settingsisActive = !this.state.appStateData.settingsActive;
-		const newProjectActive = this.state.appStateData.newProjectActive;
+		const zoomState = this.getModuleStates().getZoomState();
+		const errorState = this.getModuleStates().getErrorState();
+		const notifyService = this.getServices().notify;
+		const helpService = this.getServices().help;
+		const refservice = this.getServices().refresh;
+		//const settingsisActive = !this.state.appStateData.settingsActive;
+		//const newProjectActive = this.state.appStateData.newProjectActive;
 
 
 		//const notifyMsg = this.state.notifyQueue.dequeueProxy();
 		//const notifyMsgRender = notifyMsg !== null ? notifyMsg.getElement() : <></>;
 
-		updateables.set(100, [`${zoomValue}%`, 
-			rottContainer]);
-		updateables.set(400, this.getCurrentArch().identifier);
-		updateables.set(500, this.getCurrentExe().name);
+		const zoomValue = zoomState.getZoomValue();
+		updateables.set(100, [`${zoomValue}%`, rottContainer]);
 
+		//updateables.set(400, this.getCurrentArch().identifier);
+		//updateables.set(500, this.getCurrentExe().name);
+
+		//TODO: New Project Element is to be active
+		/*
 		const newProjectElement = newProjectActive ? 
 			<NewProjectForm rootContainer={rottContainer}/> :
 		<></>;
-
-		const errorComponent = this.state.errorDisplay ? 
-			<ErrorDisplay message={this.state.errorMessage} 
-				rootContainer={this} /> :
+		*/
+		
+		const errorComponent = errorState.hasError() ? 
+			<ErrorDisplay errorState={errorState}
+				refreshService={refservice} /> :
+			
 			<></>;
 
 		// Help Componenet
-		const helpComponent = this.state.appStateData.helpActive ?
+		const helpComponent = helpService.isActive() ?
   			<HelpContainer 
-    				toggleOff={() => this.toggleHelp()}
-    				helpData={this.helpData}
+    				toggleOff={() => helpService.handleEscKey}
+    				helpData={helpService.getHelpData()}
   			/> :
   		<></>;
 
@@ -107,7 +127,7 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 				{errorComponent}
 				{helpComponent}
 				
-				<NotifyMessageSpace queue={this.state.notifyQueue} />
+				<NotifyMessageSpace queue={notifyService.getNotifyQueue()} />
 				<GlobalBar componentMap={updateables} container={rottContainer} />
 		
 				<WorkspaceContainer container={rottContainer} />

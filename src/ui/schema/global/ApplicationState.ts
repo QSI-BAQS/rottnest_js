@@ -12,6 +12,7 @@ import { ArchitectureUIContext } from "../arch/ArchContext";
 import { ArchitectureObject, ArchitectureSchema } from "../arch/ArchSchema";
 import { NoArchSchema } from "../arch/noarch/NoArch";
 import { ArchPluginState } from "./modules/ArchPlugin";
+import { ErrorState } from "./modules/ErrorState";
 import { PluginRepresetationState } from "./modules/PluginRepState";
 import { ProgramPluginState } from "./modules/ProgramPlugin";
 import { ZoomState } from "./modules/ZoomState";
@@ -129,15 +130,24 @@ export class RottnestApplicationComponentStates {
 	archState: ArchPluginState;
 	programState: ProgramPluginState;
 	pluginsState: PluginRepresetationState;
+	errorState: ErrorState;
 
 	constructor(services: Services) {
 		const refresh = services.refresh;
 		this.pluginsState = new PluginRepresetationState();
 		this.zoomState = new ZoomState(100, refresh);
 		this.archState = new ArchPluginState(refresh, this
-			.pluginsState.getCallback())
+			.pluginsState.getCallback());
 		this.programState = new ProgramPluginState(refresh, this
-			.pluginsState.getCallback())
+			.pluginsState.getCallback());
+		this.errorState = new ErrorState();
+	}
+
+	/**
+	 * Gets the error state
+	 */
+	getErrorState() {
+		return this.errorState;
 	}
 
 	/**

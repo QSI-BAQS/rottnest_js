@@ -27,7 +27,7 @@ export class NotifyService {
    * Enqueues a message to be consumed and utilised
    * by other components
    */
-	makeNotification(msg: NotifyMessage) {
-		this._notifyQueue.enqueueMessage(msg);
-	}
+  makeNotification(msg: NotifyMessage) {
+  	this._notifyQueue.enqueueMessage(msg);
+  }
 }

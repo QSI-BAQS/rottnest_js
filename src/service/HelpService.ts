@@ -1,3 +1,5 @@
+import { HelpBoxData } from "../ui/container/HelpContainer";
+import HelpWorker from "../ui/help/HelpWorker";
 import { InputHookParams, InputHookService } from "./InputHookService";
 import { RefreshService } from "./RefreshService";
 
@@ -11,6 +13,9 @@ export class HelpService {
   active: boolean = false;
   update: RefreshService;
   inpService: InputHookService;
+  helpData: Array<HelpBoxData> = []
+  helpDataReady: boolean = false;
+
 
   /**
    * Initialises with the required services to operate
@@ -22,6 +27,19 @@ export class HelpService {
   constructor(update: RefreshService, inputs: InputHookService) {
     this.update = update;
     this.inpService = inputs;
+    const ref = this;
+    HelpWorker.loadHelpData()
+      .then((data) => {
+        ref.helpData = data;
+        ref.helpDataReady = true;
+      });
+  }
+
+  /**
+   * Gets the help data to be used in another container
+   */
+  getHelpData() {
+    return this.helpData;
   }
 
   /**
@@ -43,6 +61,14 @@ export class HelpService {
   		this.inpService.removeHook('keydown');
 		}
 		this.update.triggerRefresh();
+	}
+
+	/**
+	 * Gets a callback for toggle help
+	 */
+	getToggleCallback() {
+	  const ref = this;
+	  return () => ref.toggleHelp();
 	}
 
   /**
