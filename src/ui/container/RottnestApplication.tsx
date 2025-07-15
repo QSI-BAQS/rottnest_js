@@ -7,7 +7,7 @@ import { HelpContainer } from './HelpContainer.tsx';
 import { NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
 import { UpdateTrigger } from '../../service/RefreshService.ts';
 import { RottnestApplicationState, RottnestProperties, RottnestState }
-	from '../schema/global/ApplicationState.ts
+	from '../schema/global/ApplicationState.ts'
 import styles from '../styles/RottnestContainer.module.css';
 import { ArchitectureUIContext } from '../schema/arch/ArchContext.ts';
 
