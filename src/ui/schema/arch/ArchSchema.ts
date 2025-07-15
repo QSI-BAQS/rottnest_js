@@ -40,13 +40,13 @@ export interface ArchitectureObject<T=any, E=any> {
   setProject(project: ArchitectureProject<T>): boolean
 
   // Designer module
-  getDesigner(): ArchitectureDesigner;
+  getDesigner(data?: any): ArchitectureDesigner;
 
   // Visualiser module
-  getVisualiser(): ArchitectureVisualiser;
+  getVisualiser(data?: any): ArchitectureVisualiser;
 
   // Callgraph module
-  getCallGraph(): ArchitectureCallGraph;
+  getCallGraph(data?: any): ArchitectureCallGraph;
 
   // Serializer module
   getSerializer(): ArchitectureSerializer<T>;

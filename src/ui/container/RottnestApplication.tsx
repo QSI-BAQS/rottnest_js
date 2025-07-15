@@ -16,7 +16,7 @@ import { HelpDataCollection, HelpUISchema } from '../schema/global/HelpUISchema.
 import { PluginData, PluginEntry } from '../global/settings/GeneralSettings.tsx';
 import { ProgramPlugin, ProgramPluginToEntry } from '../../obj/plugin/Program.ts';
 import { ArchitecturePlugin, ArchitecturesToEntry } from '../../obj/plugin/Architecture.ts';
-import { NotifyMessage, NotifyMessageSpace, NotifyQueue } from '../global/notify/NotifyMessage.tsx';
+import { NotifyMessage, NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
 import { UpdateTrigger } from '../../service/RefreshService.ts';
 
 import { MSG_GLOBAL_MAP } from '../../net/MessageRemap.ts';
@@ -104,14 +104,12 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 		super(props);
 	}
 
+	//TODO: Is mapped to the errorDisplay component
 	closeError() {
 		this.state.errorDisplay = false;
 		this.triggerUpdate();
 	}
 	
-	getRRBuffer() {
-		return this.state.rrBuffer;
-	}
 
 
 	/**
@@ -144,15 +142,7 @@ class RottnestContainer extends React.Component<RottnestProperties, RottnestStat
 	}
 
 
-	monitorComponent: ComponentMonitor = {
-		designSpace: null,
-		settingsForm: null
-	}
 	
-	//NOTE: Moved to LatticeCallGraph.ts
-	getCGGraph() {
-		return this.state.graphViewData;
-	}
 
 	//NOTE: Moved to LatticeDesign.ts
 	getRouterList() {

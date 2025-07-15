@@ -140,12 +140,13 @@ export class LatticeDesignProject {
 
 				//TODO: Fix this
 				const newState = {...this.state};
-				const dspace = this.monitorComponent.designSpace;
-
-				if(dspace) {
-					dspace.redoCells(newState.projectDetails.width,
-					  newState.projectDetails.height);
-				}
+				//const dspace = this.monitorComponent.designSpace;
+				//TODO: Trigger a re-run of the cells once loaded
+				// 
+				//if(dspace) {
+				// 	dspace.redoCells(newState.projectDetails.width,
+				// 	  newState.projectDetails.height);
+				// }
 				//TODO: Fix this
 				this.setState(newState);
 

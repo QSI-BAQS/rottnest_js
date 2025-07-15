@@ -38,7 +38,18 @@ export class LatticeCallGraphState implements ArchitectureCallGraph {
     return new LatticeCallGraphUIGroup();
   }
 
-  
+  /**
+   * Run Result Buffer, this is a stack of objects that
+   * are held here
+   * TODO: Change run result buffer to do effective buffering
+   */
+  getRRBuffer() {
+    //this.state.rrBuffer;
+  }
+
+  /**
+   *
+   */
 	getCGGraph() {
 		return this.graphViewData;
 	}
