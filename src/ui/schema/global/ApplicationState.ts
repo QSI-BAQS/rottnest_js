@@ -1,4 +1,11 @@
 import AppServiceModule from "../../../net/AppServiceModule";
+import { HelpService } from "../../../service/HelpService";
+import { InputHookService } from "../../../service/InputHookService";
+import { NetworkService } from "../../../service/NetworkService";
+import { NotifyService } from "../../../service/NotifyService";
+import { RefreshService } from "../../../service/RefreshService";
+import { Services, ServicesHolder } from "../../../service/Services";
+import { ArchitectureUIContext } from "../arch/ArchContext";
 import { ArchitectureObject, ArchitectureSchema } from "../arch/ArchSchema";
 import { NoArchSchema } from "../arch/noarch/NoArch";
 
@@ -7,7 +14,8 @@ import { NoArchSchema } from "../arch/noarch/NoArch";
  * that will outline information regarding the build itself
  */
 export type RottnestProperties = {
-	buildid: string
+	buildId?: string,
+	buildDate?: string,
 }
 
 /**
@@ -15,8 +23,8 @@ export type RottnestProperties = {
  * that can invoke an update onto the main container and sub-containers
  */
 export type RottnestState = {
-	archState: RottnestArchitectureState,
 	appState: RottnestApplicationState,
+	appContext: ArchitectureUIContext,
 }
 
 /**
@@ -24,15 +32,20 @@ export type RottnestState = {
  * the schema and object currently selected
  * It will also have access to the globals required as part of construction
  */
-export class RottnestArchitectureState {
-	architectureSchema: ArchitectureSchema = new NoArchSchema()
+export class RottnestApplicationState {
+	appState: RottnestApplicationModulesState;
+	architectureSchema: ArchitectureSchema;
 	architectureObject: ArchitectureObject | null = null;
 
 	/**
 	 * Initialises the architecture state to a default
 	 */
-	constructor() {
-		//TODO: Initialise the state
+	constructor(architectureSchema: ArchitectureSchema = new NoArchSchema()) {
+		this.appState = new RottnestApplicationModulesState();
+		this.architectureSchema = architectureSchema;
+		this.architectureObject = architectureSchema.createArchitecture(
+			this.appState.getServices()
+		);
 	}
 
 	/**
@@ -40,7 +53,10 @@ export class RottnestArchitectureState {
 	 * given
 	 */
 	swapArchitecture(schema: ArchitectureSchema): boolean {
-		return false;
+		this.architectureSchema = schema;
+		this.architectureObject = schema.createArchitecture(this
+			.appState.getServices())
+		return true;
 	}
 }
 
@@ -48,9 +64,19 @@ export class RottnestArchitectureState {
  * RottnestApplicationState, holds onto all the data
  * that the container will need to use to do its job
  */
-export class RottnestApplicationState {
+export class RottnestApplicationModulesState {
+
+	services: RottnestApplicationServices;
 
   constructor() {
+  	this.services = new RottnestApplicationServices();
+  }
+
+	/**
+	 * Gets the services that are available
+	 */
+  getServices(): Services {
+  	return this.services.getServices();
   }
 
   /**
@@ -74,6 +100,69 @@ export class RottnestApplicationState {
     }
 	}
 }
+
+
+/**
+ * Application Services that will be provided to
+ * the architecture objects.
+ */
+export class RottnestApplicationServices implements ServicesHolder {
+
+	services: Services;
+
+	constructor() {
+		this.services = new Services(this);
+	}
+	
+	/**
+	 * Allows the architecture object to retrieve a service
+	 * that allows refreshing of the render upon a change of
+	 * state within their own architecture
+	 */
+  getRefreshService(): RefreshService {
+  	return this.services.refresh;
+  }
+
+	/**
+	 * Allows the architecture to generate notifications
+	 * to allow for arch designer and other components to
+	 * notify the user
+	 */
+  getNotifyService(): NotifyService {
+  	return this.services.notify;
+  }
+
+	/**
+	 * Gets the network services, this allows
+	 * the architecture to interact with the application
+	 * client and network
+	 */
+  getNetworkService(): NetworkService {
+  	return this.services.network;
+  }
+
+  /**
+   * Gets the input service
+   */
+  getInputService(): InputHookService {
+  	return this.services.inputs;
+  }
+
+  /**
+   * Gets the help server
+   */
+  getHelpService(): HelpService {
+  	return this.services.help;
+  }
+
+	/**
+	 * Returns the whole services group
+	 */
+  getServices(): Services {
+  	return this.services;
+  }
+}
+
 
 
 /**

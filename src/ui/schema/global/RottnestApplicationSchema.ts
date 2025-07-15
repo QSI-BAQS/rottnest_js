@@ -7,111 +7,13 @@ import AppServiceModule from '../../../net/AppServiceModule';
 import RottnestContainer from '../../container/RottnestContainer.tsx';
 import { ValidationExecutor } from '../../../vald/Validation.ts';
 
-import VisData from '../../vis/VisData.ts';
-import { ArchitecturePlugin, ArchitecturePluginConfig } from '../../../model/plugin/Architecture.ts';
-import { ProgramPlugin, ProgramPluginConfig } from '../../../model/plugin/Program.ts';
+//import VisData from '../../vis/VisData.ts';
 import { NotifyQueue } from '../../global/notify/NotifyMessage.tsx';
-import { ArchitectureObject, ArchitectureSchema } from '../arch/ArchSchema.ts';
-import { NoArchSchema } from '../arch/noarch/NoArch.ts';
-import { Services, ServicesHolder } from '../../../service/Services.ts';
-import { RottnestApplication } from '../../container/RottnestApplication.tsx';
-import { NotifyService } from '../../../service/NotifyService.ts';
-import { RefreshService } from '../../../service/RefreshService.ts';
-import { NetworkService } from '../../../service/NetworkService.ts';
-import { InputHookService } from '../../../service/InputHookService.ts';
-import { HelpService } from '../../../service/HelpService.ts';
 
 
 
 
-/**
- * Application Services that will be provided to
- * the architecture objects.
- */
-export class RottnestApplicationServices implements ServicesHolder {
 
-	services: Services;
-
-	constructor() {
-		this.services = new Services(this);
-	}
-	
-	/**
-	 * Allows the architecture object to retrieve a service
-	 * that allows refreshing of the render upon a change of
-	 * state within their own architecture
-	 */
-  getRefreshService(): RefreshService {
-  	return this.services.refresh;
-  }
-
-	/**
-	 * Allows the architecture to generate notifications
-	 * to allow for arch designer and other components to
-	 * notify the user
-	 */
-  getNotifyService(): NotifyService {
-  	return this.services.notify;
-  }
-
-	/**
-	 * Gets the network services, this allows
-	 * the architecture to interact with the application
-	 * client and network
-	 */
-  getNetworkService(): NetworkService {
-  	return this.services.network;
-  }
-
-  /**
-   * Gets the input service
-   */
-  getInputService(): InputHookService {
-  	return this.services.inputs;
-  }
-
-  /**
-   * Gets the help server
-   */
-  getHelpService(): HelpService {
-  	return this.services.help;
-  }
-
-	/**
-	 * Returns the whole services group
-	 */
-  getServices(): Services {
-  	return this.services;
-  }
-}
-
-
-
-
-/**
- * Application data, the object that will persist and does not
- * need to be used for re-rendering
- */
-export class RottnestApplicationModules {
-	appServices: RottnestApplicationServices;
-
-	/**
-	 * Construction that is part of construction application data
-	 */
-	constructor() {
-		this.appServices = new RottnestApplicationServices();
-	}
-
-	/**
-	 * Will retrieve the services as part of RottnestApplicationServices
-	 * this is just a quick way to expose it
-	 */
-	getServices(): Services {
-		return this.appServices.getServices();
-	}
-}
-
-// TODO: Resolve the bottom types next
 
 
 /// Will need to do something about this

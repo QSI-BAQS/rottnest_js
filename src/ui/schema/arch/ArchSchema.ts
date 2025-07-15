@@ -21,7 +21,7 @@ export type ArchitectureProject<T> = {
  * that will provide interfaces for sub components
  */
 export interface ArchitectureSchema {
-  createArchitecture<T=any, E=any>(services: Services, args: Map<string, string | number>): ArchitectureObject<T, E>; 
+  createArchitecture<T=any, E=any>(services: Services, args?: Map<string, string | number>): ArchitectureObject<T, E>; 
 }
 
 /**

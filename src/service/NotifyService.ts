@@ -1,4 +1,4 @@
-import { NotifyQueue } from "../ui/global/notify/NotifyMessage";
+import { NotifyQueue, NotifyMessage } from "../ui/global/notify/NotifyMessage";
 
 
 
@@ -22,4 +22,12 @@ export class NotifyService {
   getNotifyQueue() {
     return this._notifyQueue;
   }
+
+  /**
+   * Enqueues a message to be consumed and utilised
+   * by other components
+   */
+	makeNotification(msg: NotifyMessage) {
+		this._notifyQueue.enqueueMessage(msg);
+	}
 }

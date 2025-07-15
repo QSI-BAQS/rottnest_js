@@ -15,16 +15,28 @@ export type ArchUIContextMapping = {
   [key: string]: (o: ArchitectureObject,d: any) => ArchContextReturnObj
 }
 
+
+/**
+ * The initial screen that the application will
+ * use for your architecture
+ */
+export type ArchUIDefaults = {
+  name: string,
+  data: any,
+}
+
 /**
  * Specifies some sensible defaults that are embedded in
  * the predefined class
  */
 export const ArchUIContextDefaults: ArchUIContextMapping = {
-  "designer" : (obj: ArchitectureObject, data: any) => (obj
+  "default"    : (obj: ArchitectureObject, data: any) => (obj
+    .getDesigner(data)),
+  "designer"   : (obj: ArchitectureObject, data: any) => (obj
     .getDesigner(data)),
   "visualiser" : (obj: ArchitectureObject, data: any) => (obj
     .getVisualiser(data)),
-  "callgraph" : (obj: ArchitectureObject, data: any) => (obj
+  "callgraph"  : (obj: ArchitectureObject, data: any) => (obj
     .getCallGraph(data)),
 }
 
@@ -36,15 +48,39 @@ export const ArchUIContextDefaults: ArchUIContextMapping = {
  */
 export class ArchitectureUIContext {
 
+  defaults: ArchUIDefaults;
   switches: ArchUIContextMapping = ArchUIContextDefaults;
   archObject: ArchitectureObject;
   cursor: string = "designer";
 
   /**
-   * Initialises the architecture object
+   * Initialises the architecture object, defaults outlined to
+   * ensure it knows what component to use
    */
-  constructor(object: ArchitectureObject) {
+  constructor(object: ArchitectureObject, defaults: ArchUIDefaults) {
+    this.defaults = defaults;
     this.archObject = object;
+  }
+
+  /**
+   * Used a compatibility method to move
+   * between tabs
+   */
+	updateSelectedTab(idx: number) {
+
+		/*
+		const tabs = this.state.tabData.tabNames;
+		this.state.tabData.selectedTabIndex 
+			= idx % tabs.length;
+		this.triggerUpdate();*/
+	}
+
+  /**
+   * Goes to the default position/home
+   */
+  getDefault(): ArchContextReturnObj {
+    this.cursor = "default";
+    return this.switches['default'](this.archObject, {});
   }
 
   /**

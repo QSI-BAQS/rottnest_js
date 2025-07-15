@@ -25,6 +25,7 @@ class ErrorDisplay extends React.Component<ErrorProps, {}> {
 	rootContainer = this.props.rootContainer;
 
 	clearError() {
+		///TODO: Fix this
 		this.rootContainer.closeError();
 	}
 

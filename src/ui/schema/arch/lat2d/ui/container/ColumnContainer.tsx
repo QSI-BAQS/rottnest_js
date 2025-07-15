@@ -52,7 +52,8 @@ export class ToolContainer extends
 				onMouseMove={
 					(_) => {
 						container
-						.resetDSMove();
+						.resetDSMove(); //This may require a cleaner way to reset the move when
+							//the cursor goes out of bounds
 					}
 				}
 			>

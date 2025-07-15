@@ -25,6 +25,47 @@ export class LatticeDesignBuffer {
 	getCurrentBuffer(): RegionData {
 		return this.buffer;
 	}
+
+
+	/**
+	 * Removes a region from the snapshot list
+	 */
+	undoRegion() {
+		let res = this.snapshots.undo(
+			this.state.regionList
+		);
+		if(res) {
+			this.state.regionList = res;
+			this.opers.validate(this);
+			this.triggerUpdate();
+		}
+		
+	}
+
+	/**
+	 * Redoes an action previously undone
+	 */
+	redoRegion() {
+		let res = this.snapshots.redo(
+			this.state.regionList
+		);
+		if(res) {
+			this.state.regionList = res;
+			this.triggerUpdate();
+		}
+		
+	}
+
+	/**
+	 * Applies work/changes onto the current buffer
+	 * and copies it onto the stack
+	 */
+	onRegion() {
+		this.regionStack.onAction(
+			this.state.regionList.cloneList()
+		);
+	}
+
 	
 	/**
 	 * Applys the current regiondata buffer to 

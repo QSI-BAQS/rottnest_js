@@ -27,3 +27,15 @@ export function ProgramPluginToEntry(prog: ProgramPlugin): PluginEntry {
 export function ProgramPluginGetName(prog: ProgramPlugin): string {
   return prog.name;
 }
+
+
+/**
+ * Default function to initialise the data of ProgramPlugin
+ */
+export function ProgramPluginDefault(): ProgramPlugin {
+
+  return {
+    name: 'N/A',
+    params: []
+  }
+}

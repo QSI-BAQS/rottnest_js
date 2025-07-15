@@ -1,5 +1,5 @@
 
-import { UpdateTrigger } from "../../../../service/RefreshService";
+import { RefreshService } from "../../../../service/RefreshService";
 
 /**
  * Used to maintain information regarding the arch plugins
@@ -7,11 +7,15 @@ import { UpdateTrigger } from "../../../../service/RefreshService";
  */
 export class ArchPluginState{
 
-  updateTrigger: UpdateTrigger;
+  updateTrigger: RefreshService;
   swapFn: (arch: boolean, prog: boolean) => void;
   settingsActive: boolean = false;
 
-  constructor(trigger: UpdateTrigger, swapFn: (arch: boolean, prog: boolean) => void) {
+	/**
+	 * Constructor, requires knowing the current refresh service
+	 * and a callback on what to switch the settings to
+	 */
+  constructor(trigger: RefreshService, swapFn: (arch: boolean, prog: boolean) => void) {
     this.swapFn = swapFn;
     this.updateTrigger = trigger;
   }
@@ -21,7 +25,7 @@ export class ArchPluginState{
    */
 	showArchSettings() {
 	  this.swapFn(true, false);
-		this.updateTrigger.triggerUpdate();
+		this.updateTrigger.triggerRefresh();
 	}
 
 	/**
@@ -30,7 +34,7 @@ export class ArchPluginState{
 	 */
 	closeArchSettings() {
 	  this.swapFn(false, false);
-		this.updateTrigger.triggerUpdate();
+		this.updateTrigger.triggerRefresh();
 	}
   
 }

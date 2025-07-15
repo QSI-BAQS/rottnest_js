@@ -18,3 +18,11 @@ export function ArchitecturesToEntry(prog: ArchitecturePlugin): PluginEntry {
 export function ArchitecturePluginGetName(prog: ArchitecturePlugin): string {
   return prog.identifier;
 }
+
+
+export function ArchPluginDefault(): ArchitecturePlugin {
+  return {
+    identifier: 'NoArch',
+    api_map: {}
+  }
+}

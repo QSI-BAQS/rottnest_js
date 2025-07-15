@@ -3,6 +3,9 @@ import { InputHookService } from "./InputHookService";
 import { NetworkService } from "./NetworkService";
 import { NotifyService } from "./NotifyService"
 import { RefreshService } from "./RefreshService"
+import { ProgramPluginService } from "./ProgramPluginService";
+import { ArchPluginService } from "./ArchPluginService";
+import { UnimplReturn } from "../ui/schema/util/unimpl";
 
 /**
  * ServicesHolder is the container that will
@@ -21,6 +24,10 @@ export interface ServicesHolder {
   getInputService(): InputHookService;
 
   getHelpService(): HelpService;
+
+  getProgramPluginService(): ProgramPluginService;
+
+  getArchPluginService(): ArchPluginService
 
   getServices(): Services;
 
@@ -101,6 +108,20 @@ export class NoServicesHolder implements ServicesHolder {
     return new NoServices();
   }
 
+  /**
+   * Returns the program plugin service
+   */
+  getProgramPluginService(): ProgramPluginService {
+    return UnimplReturn<ProgramPluginService>();
+  }
+
+
+  /**
+   * Returns the arch plugin service
+   */
+  getArchPluginService(): ArchPluginService {
+    return UnimplReturn<ArchPluginService>();
+  }
   /**
    * Gets the help server
    */
