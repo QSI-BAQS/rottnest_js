@@ -1,21 +1,18 @@
 import React, { ChangeEvent, MouseEvent } from "react";
 
-import RottnestContainer from '../../container/RottnestContainer';
 
 import styles from '../../styles/PluginSettingsForm.module.css';
 import { CloseOutlined, ProfileOutlined } from "@ant-design/icons";
+import { PluginData } from "../../../obj/plugin/Generic";
+import RottnestApplication from "../../container/RottnestApplication";
+
 
 /**
- * The plugin save data
+ * Data along with the container to update it appropriately
  */
-export type PluginData = {
-  plgKey: string
-  plgValue: string
-}
-
 export type PluginPackage = {
   pluginData: PluginData,
-  container: RottnestContainer
+  container: RottnestApplication
 }
 
 
@@ -31,10 +28,10 @@ export interface PluginSettingsProps {
   plgname: string;
   index: number;
   selected: string;
-  plgItemsGetter: (rott: RottnestContainer) => Array<PluginEntry>
-  container: RottnestContainer;
+  plgItemsGetter: (rott: RottnestApplication) => Array<PluginEntry>
+  container: RottnestApplication;
   // callbacks on plugin data
-  getConfig: (rott: RottnestContainer) => string;
+  getConfig: (rott: RottnestApplication) => string;
   saveDataFn: (data: PluginPackage) => void;
   saveConfigFn: (data: PluginPackage) => void;
   cancelFn:(data:PluginPackage) => void;
@@ -247,11 +244,11 @@ function PluginSettingsList(props: PluginOptionsData) {
  */
 export type PluginObjectProps = {
   title: string
-  issueFn: (rott:RottnestContainer) => string
+  issueFn: (rott:RottnestApplication) => string
   styleName: string
-  response: (data: MouseEvent<HTMLButtonElement>, rott: RottnestContainer) => void
+  response: (data: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => void
   settings: PluginSettingsProps
-  container: RottnestContainer
+  container: RottnestApplication
   
 }
 

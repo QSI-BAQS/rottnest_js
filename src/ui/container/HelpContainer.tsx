@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from '../styles/HelpContainer.module.css';
 
+/**
+ * HelpBoxData is associated with the
+ * the content to display
+ */
 export type HelpBoxData = {
 	id?: string;
 	title: string;
@@ -10,11 +14,20 @@ export type HelpBoxData = {
 	targetSelector?: string;
 }
 
+/**
+ * Properties for the HelpContainer
+ */
 type HelpContainerProps = {
   	toggleOff: () => void;
   	helpData: Array<HelpBoxData>;
 }
 
+/**
+ * Function Component, used for when it is constant variable assigned to
+ * an arrow function.
+ * HelpContainer will display over the top of the application and use the associated
+ * help data
+ */
 export const HelpContainer: React.FC<HelpContainerProps> = ({ toggleOff, helpData }) => {
   	const [activeTooltip, setActiveTooltip] = useState<HelpBoxData | null>(null);
   	const [tooltipPosition, setTooltipPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 });

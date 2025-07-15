@@ -1,11 +1,11 @@
-import RottnestContainer from '../container/RottnestContainer';
+import RottnestApplication from "../container/RottnestApplication";
 
 const HelpEvent = {
-  	leftClick: (container: RottnestContainer) => {
+  	leftClick: (container: RottnestApplication) => {
     		container.toggleHelp();
   	},
   	
-	auxEvent: (_: RottnestContainer) => {
+	auxEvent: (_: RottnestApplication) => {
     		// No-op
   	}
 }

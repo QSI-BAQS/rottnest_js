@@ -1,4 +1,5 @@
 import { ArchitectureCallGraph, ArchitectureDesigner, ArchitectureObject, ArchitectureVisualiser } from "./ArchSchema";
+import { NoArchObject } from "./noarch/NoArch";
 
 
 /**
@@ -23,6 +24,14 @@ export type ArchUIContextMapping = {
 export type ArchUIDefaults = {
   name: string,
   data: any,
+}
+
+/**
+ *
+ */
+export const ArchUIDefaultData = {
+  name: 'NoArch',
+  data: {}
 }
 
 /**
@@ -57,7 +66,8 @@ export class ArchitectureUIContext {
    * Initialises the architecture object, defaults outlined to
    * ensure it knows what component to use
    */
-  constructor(object: ArchitectureObject, defaults: ArchUIDefaults) {
+  constructor(object: ArchitectureObject = new NoArchObject(),
+    defaults: ArchUIDefaults = ArchUIDefaultData) {
     this.defaults = defaults;
     this.archObject = object;
   }

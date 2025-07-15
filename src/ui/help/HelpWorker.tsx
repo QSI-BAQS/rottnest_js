@@ -6,6 +6,11 @@ export type HelpJsonData = {
   	helpItems: HelpBoxData[];
 };
 
+/**
+ * HelpWorker,
+ * It will load the help data that is currently loaded/packaged with the
+ * application
+ */
 export default class HelpWorker {
 	private static helpData: Map<string, HelpBoxData[]> = new Map();
   

@@ -1,7 +1,8 @@
 import React from "react";
 import styles from '../styles/ErrorList.module.css';
-import RottnestContainer from "../container/RottnestContainer";
 import { RuleResult } from "../../vald/Validator";
+import { ValidationService } from "../../service/ValidatorService";
+import { ArchitectureObject } from "../schema/arch/ArchSchema";
 
 /**
  * The error data will provide a
@@ -39,7 +40,8 @@ type ErrorListData = {
  * of an array of errors
  */
 type ErrorListing = {
-	rtc: RottnestContainer
+	valservice: ValidationService
+	archObject: ArchitectureObject
 	errors: Array<ErrorData>
 }
 
@@ -103,10 +105,11 @@ class ErrorList extends React.Component<ErrorListing, ErrorListData> {
 	 * the default styling will be applied
 	 */
 	render() {
-		const rtc = this.props.rtc;
+		const archobj = this.props.archObject;
+		const valservice = this.props.valservice;
 		const headerName = 'Errors';
-		rtc.opers.validate(rtc); //TODO: This needs to be prompted elsewhere
-		const errBuffers = rtc.state.valexec.getBuffers();
+		valservice.validate(archobj); //TODO: This needs to be prompted elsewhere
+		const errBuffers = valservice.getBuffers();
 		const [_valid, localres] = errBuffers.localbuf;
 		const selfRef = this;
 
@@ -115,7 +118,7 @@ class ErrorList extends React.Component<ErrorListing, ErrorListData> {
 		}
 		
 		const errors = localres.map(
-			(e, i) => <ErrorItem
+			(e: any, i: number) => <ErrorItem
 					idx={i}
 					errorData={e} 
 					selected={i === this.state.selectedIndex }

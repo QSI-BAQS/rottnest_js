@@ -2,12 +2,10 @@
 
 import { AppServiceClient } from "../../../../../net/AppService";
 import { RottRunResultMSG } from "../../../../../net/Messages";
-import { ProgramPlugin } from '../../../../../obj/plugin/Program.ts'
-import { ArchitecturePlugin } from '../../../../../obj/plugin/Architecture.ts'
 import { Lattice2DArchitecture } from "../Lattice2D.ts";
 import { CommEventOps, CommOpQueue, CommsActions } from '../../../global/ops/CommsOps.ts';
 
-import { MSG_REMAP, MSG_GLOBAL_MAP } from "../../../../../net/MessageRemap";
+import { MSG_REMAP } from "../../../../../net/MessageRemap";
 
 /**
  *

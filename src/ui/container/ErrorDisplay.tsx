@@ -1,6 +1,8 @@
 import React from 'react';
+import { ErrorState } from '../schema/global/modules/ErrorState.ts';
+import { NullObject } from '../../util/NullObject.ts';
 import styles from '../styles/ErrorDisplay.module.css';
-import RottnestContainer from './RottnestContainer';
+import { RefreshService } from '../../service/RefreshService.ts';
 
 /**
  * Settings Properties, initialises
@@ -10,9 +12,9 @@ import RottnestContainer from './RottnestContainer';
  * Warning: We have coupled this component
  * 	to the root container.
  */
-type ErrorProps = {
-	message: string
-	rootContainer: RottnestContainer
+export type ErrorProps = {
+	errorState: ErrorState
+	refreshService: RefreshService
 };
 
 
@@ -20,39 +22,50 @@ type ErrorProps = {
  * Settings form component, will be always present
  * in the display but turned off and on when needed
  */
-class ErrorDisplay extends React.Component<ErrorProps, {}> {
+export default class ErrorDisplay extends React.Component<ErrorProps, NullObject> {
 	
-	rootContainer = this.props.rootContainer;
 
+	errorState = this.props.errorState;
+	refreshServce = this.props.refreshService;
+
+	/**
+	 * An event to ensure that the error is 
+	 */
 	clearError() {
-		///TODO: Fix this
-		this.rootContainer.closeError();
+		this.errorState.clearError();
+		this.refreshServce.triggerRefresh();
 	}
 
+	/**
+	 * Renders the error, if an error is not set it will rendering nothing
+	 */
 	render() {
-					
-		const msg = this.props.message;
-		const msgSpl = msg.split("\n").map((e) => {
-			return <pre className={styles.preFormatDump}>{e}</pre>
-		});
-		console.log(msgSpl);
-		return (
-			<div className={styles.errorDisplay} 
-				style={{position:'absolute'}}>
-				<header className={styles.errorHeader}>An issue occurred</header>
-				<div>
-				Either a message from the backend
-				or an event did not trigger correctly.
+		const [isError, errorMsg] = this.errorState.getErrorState();
+		if(isError) {
+			const msg = errorMsg;
+			const msgSpl = msg.split("\n").map((e) => {
+				return <pre className={styles.preFormatDump}>{e}</pre>
+			});
+			console.log(msgSpl);
+			return (
+				<div className={styles.errorDisplay} 
+					style={{position:'absolute'}}>
+					<header className={styles.errorHeader}>An issue occurred</header>
+					<div>
+					Either a message from the backend
+					or an event did not trigger correctly.
+					</div>
+					<div>JSON Dump: </div>
+					<div className={styles.preFormatDump}>{msgSpl}</div>
+					<button onClick={() => {this.clearError() }}
+					className={styles.errorButton}>
+					Got it
+					</button>
 				</div>
-				<div>JSON Dump: </div>
-				<div className={styles.preFormatDump}>{msgSpl}</div>
-				<button onClick={() => {this.clearError() }}
-				className={styles.errorButton}>
-				Got it
-				</button>
-			</div>
-		);
+			);
+		} else {
+			console.warn("No error set but attempt to render was made")
+			return (<></>);
+		}
 	}
 }
-
-export default ErrorDisplay;

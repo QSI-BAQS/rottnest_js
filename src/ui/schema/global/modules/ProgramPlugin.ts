@@ -1,4 +1,4 @@
-import { UpdateTrigger } from "../../../../service/RefreshService";
+import { RefreshService } from "../../../../service/RefreshService";
 
 
 
@@ -8,7 +8,7 @@ import { UpdateTrigger } from "../../../../service/RefreshService";
  */
 export class ProgramPluginState {
 
-  updateTrigger: UpdateTrigger;
+  updateTrigger: RefreshService;
   settingsActive: boolean = false;
   swapFn: (arch: boolean, prog: boolean) => void;
 
@@ -16,7 +16,7 @@ export class ProgramPluginState {
    * Constructs the program plugin state
    * Will have an event trigger to refresh the main container
    */
-  constructor(trigger: UpdateTrigger, swapFn: (arch: boolean, prog: boolean) => void) {
+  constructor(trigger: RefreshService, swapFn: (arch: boolean, prog: boolean) => void) {
     this.updateTrigger = trigger;
     this.swapFn = swapFn;
   }
@@ -26,7 +26,7 @@ export class ProgramPluginState {
    */
 	showProgramSettings() {
 	  this.swapFn(false, true);
-		this.updateTrigger.triggerUpdate();
+		this.updateTrigger.triggerRefresh();
 	}
 
 	/**
@@ -35,7 +35,7 @@ export class ProgramPluginState {
 	 */
 	closeProgramSettings() {
 	  this.swapFn(false, false);
-		this.updateTrigger.triggerUpdate();
+		this.updateTrigger.triggerRefresh();
 	}
   
 }

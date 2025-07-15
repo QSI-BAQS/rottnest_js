@@ -29,7 +29,7 @@ type NewSettingsState = {
  * Settings form component, will be always present
  * in the display but turned off and on when needed
  */
-class NewProjectForm extends React.Component<NewSettingsProps, 
+export default class NewProjectForm extends React.Component<NewSettingsProps, 
 	NewSettingsState> {
 	
 	rootContainer = this.props.rootContainer;
@@ -174,4 +174,3 @@ class NewProjectForm extends React.Component<NewSettingsProps,
 	}
 }
 
-export default NewProjectForm;

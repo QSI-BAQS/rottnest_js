@@ -1,17 +1,19 @@
 import React, {MouseEvent, ReactElement} from 'react';
 
-import HelpEvent from './global/Help.ts';
-import LoadEvent, { hiddenInputProc } from './global/Load.ts';
-import SaveEvent from './global/Save.ts';
-import UndoEvent from './global/Undo.ts';
-import RedoEvent from './global/Redo.ts';
-import ZoomInEvent from './global/ZoomIn.ts';
-import ZoomOutEvent from './global/ZoomOut.ts';
-import SettingsEvent from './global/Settings.ts';
-import NewProjectEvent from './global/NewProject.ts';
-import RunEvents from './global/Run.ts';
-import ReconnectEvent from './global/ReconnectEvent.ts';
-import NullEvents from './global/NullEvents.ts';
+import HelpEvent from './Help.ts';
+import LoadEvent, { hiddenInputProc } from './Load.ts';
+import SaveEvent from './Save.ts';
+import UndoEvent from './Undo.ts';
+import RedoEvent from './Redo.ts';
+import ZoomInEvent from './ZoomIn.ts';
+import ZoomOutEvent from './ZoomOut.ts';
+import SettingsEvent from './Settings.ts';
+import NewProjectEvent from './NewProject.ts';
+import RunEvents from './Run.ts';
+import ReconnectEvent from './ReconnectEvent.ts';
+import NullEvents from './NullEvents.ts';
+import LogoEvents from './LogoEvents.ts';
+import ConnectionStatusButton from './DynamicButton.tsx';
 
 import {  
 	SaveOutlined,
@@ -27,25 +29,26 @@ import {
 	RollbackOutlined,
 } from '@ant-design/icons';
 
-import styles from './styles/GlobalBar.module.css';
-import RottnestContainer from './container/RottnestContainer.tsx';
-import {ProjectDetails} from '../model/Project.ts';
-import LogoEvents from './global/LogoEvents.ts';
-// Import the ConnectionStatusButton component
-import ConnectionStatusButton from './global/DynamicButton.tsx';
-import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings } from './global/settings/GeneralSettings.tsx';
-import { ArchitecturePluginGetName } from '../model/plugin/Architecture.ts';
-import { ProgramPluginGetName } from '../model/plugin/Program.ts';
 
+import { ArchitecturePluginGetName } from '../../obj/plugin/Architecture.ts';
+import { ProgramPluginGetName } from '../../obj/plugin/Program.ts';
+import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings }
+	from './settings/GeneralSettings.tsx';
+
+//TODO: Fix this
+import {ProjectDetails} from '../model/Project.ts';
+
+import RottnestApplication from '../container/RottnestApplication.tsx';
+
+import styles from './styles/GlobalBar.module.css';
 /**
  * GlobalBarProps, has a reference to
  * its container and a component map of values
  * which are a little more dynamic
  */
 type GlobalBarProps = {
-	container: RottnestContainer
-	componentMap: Map<number, [string, 
-		ProjectDetails]>
+	container: RottnestApplication
+	componentMap: Map<number, [string, ProjectDetails]>
 }
 
 /**
@@ -53,8 +56,8 @@ type GlobalBarProps = {
  * that each baritem object will have associated
  */
 type BarItemEvents = {
-	leftClick: (project: RottnestContainer) => void
-	auxEvent: (project: RottnestContainer) => void
+	leftClick: (project: RottnestApplication) => void
+	auxEvent: (project: RottnestApplication) => void
 }
 
 /**
@@ -77,7 +80,7 @@ type BarItemDescription = {
  * from the design space
  */
 type BarItemData = {
-	containerRef: RottnestContainer
+	containerRef: RottnestApplication
 	description: BarItemDescription
 	updatable?: [string, ProjectDetails]
 }
@@ -127,10 +130,10 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 	state: GlobalBarData = {
 		archData: {
 			title: 'Arch',
-			issueFn: (rott: RottnestContainer) => {
+			issueFn: (rott: RottnestApplication) => {
 				return ArchitecturePluginGetName(rott.getCurrentArch()); },
 			styleName: 'pluginArch',
-			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestContainer) => {
+			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => {
 				rott.showArchitectureSettings();
 			},
 			container: this.props.container,
@@ -138,8 +141,8 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				plgname: 'Architecture',
 				index: 0,
 				selected: '',
-				getConfig: (rott: RottnestContainer) => rott.getArchConfig(),
-				plgItemsGetter: (rott: RottnestContainer) => rott.getArchItems(),
+				getConfig: (rott: RottnestApplication) => rott.getArchConfig(),
+				plgItemsGetter: (rott: RottnestApplication) => rott.getArchItems(),
 				container: this.props.container,
 				saveDataFn: (data: PluginPackage) => {
 					const rott = data.container;
@@ -161,10 +164,10 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 		},
 		progData: {
 			title: 'Program',
-			issueFn: (rott:RottnestContainer) => {
+			issueFn: (rott:RottnestApplication) => {
 				return ProgramPluginGetName(rott.getCurrentExe()); },
 			styleName: 'pluginProgram',
-			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestContainer) => {
+			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => {
 				rott.showProgramSettings();
 			},
 			container: this.props.container,
@@ -172,8 +175,8 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				plgname: 'Program',
 				index: 0,
 				selected: '',
-				getConfig: (rott: RottnestContainer) => rott.getProgramConfig(),
-				plgItemsGetter: (rott: RottnestContainer) => rott.getProgramList(),
+				getConfig: (rott: RottnestApplication) => rott.getProgramConfig(),
+				plgItemsGetter: (rott: RottnestApplication) => rott.getProgramList(),
 				container: this.props.container,
 				saveDataFn: (data: PluginPackage) => {
 					const rott = data.container;

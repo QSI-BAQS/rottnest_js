@@ -6,7 +6,7 @@ import { RefreshService } from "../../../../service/RefreshService";
  * It will also outline the state of zoom and if it is able to be
  * changed or not.
  */
-export class ZoomeState {
+export class ZoomState {
 
   zoomValue: number = 100;
   enabled: boolean = true;
@@ -15,6 +15,13 @@ export class ZoomeState {
   constructor(initialValue: number, refservice: RefreshService) {
     this.zoomValue = initialValue;
     this.refservice = refservice;
+  }
+
+  /**
+   * Gets the zoom value
+   */
+  getZoomValue(): number {
+    return this.zoomValue
   }
 
   /**

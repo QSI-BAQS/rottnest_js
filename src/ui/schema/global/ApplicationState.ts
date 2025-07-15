@@ -1,13 +1,20 @@
 import AppServiceModule from "../../../net/AppServiceModule";
+import { ArchPluginService } from "../../../service/ArchPluginService";
 import { HelpService } from "../../../service/HelpService";
 import { InputHookService } from "../../../service/InputHookService";
 import { NetworkService } from "../../../service/NetworkService";
 import { NotifyService } from "../../../service/NotifyService";
+import { ProgramPluginService } from "../../../service/ProgramPluginService";
 import { RefreshService } from "../../../service/RefreshService";
 import { Services, ServicesHolder } from "../../../service/Services";
+import { ValidationService } from "../../../service/ValidatorService";
 import { ArchitectureUIContext } from "../arch/ArchContext";
 import { ArchitectureObject, ArchitectureSchema } from "../arch/ArchSchema";
 import { NoArchSchema } from "../arch/noarch/NoArch";
+import { ArchPluginState } from "./modules/ArchPlugin";
+import { PluginRepresetationState } from "./modules/PluginRepState";
+import { ProgramPluginState } from "./modules/ProgramPlugin";
+import { ZoomState } from "./modules/ZoomState";
 
 /**
  * The properties will be informed via main.tsx
@@ -33,7 +40,7 @@ export type RottnestState = {
  * It will also have access to the globals required as part of construction
  */
 export class RottnestApplicationState {
-	appState: RottnestApplicationModulesState;
+	modstate: RottnestApplicationModulesState;
 	architectureSchema: ArchitectureSchema;
 	architectureObject: ArchitectureObject | null = null;
 
@@ -41,10 +48,10 @@ export class RottnestApplicationState {
 	 * Initialises the architecture state to a default
 	 */
 	constructor(architectureSchema: ArchitectureSchema = new NoArchSchema()) {
-		this.appState = new RottnestApplicationModulesState();
+		this.modstate = new RottnestApplicationModulesState();
 		this.architectureSchema = architectureSchema;
 		this.architectureObject = architectureSchema.createArchitecture(
-			this.appState.getServices()
+			this.modstate.getServices()
 		);
 	}
 
@@ -55,7 +62,7 @@ export class RottnestApplicationState {
 	swapArchitecture(schema: ArchitectureSchema): boolean {
 		this.architectureSchema = schema;
 		this.architectureObject = schema.createArchitecture(this
-			.appState.getServices())
+			.modstate.getServices())
 		return true;
 	}
 }
@@ -67,10 +74,20 @@ export class RottnestApplicationState {
 export class RottnestApplicationModulesState {
 
 	services: RottnestApplicationServices;
-
+	states: RottnestApplicationComponentStates;
+	
   constructor() {
   	this.services = new RottnestApplicationServices();
+  	this.states = new RottnestApplicationComponentStates(this
+  		.services.getServices())
   }
+
+	/**
+	 * Gets the component states
+	 */
+	getStates(): RottnestApplicationComponentStates {
+		return this.states;
+	}
 
 	/**
 	 * Gets the services that are available
@@ -84,9 +101,9 @@ export class RottnestApplicationModulesState {
    * This is used on the 
    */
 	readyAppService() {
-		const selfRef = this;
+		//const selfRef = this;
 		const appReady = AppServiceModule.ConnectionReady();
-		const appService = AppServiceModule.GetAppServiceInstance();
+		//const appService = AppServiceModule.GetAppServiceInstance();
 		
 		if(!appReady) { 
       //TODO: Fix this
@@ -101,6 +118,57 @@ export class RottnestApplicationModulesState {
 	}
 }
 
+/**
+ * RottnestApplicationComponentStates
+ * This will hold some global information/data that is used
+ * by global or other components
+ */
+export class RottnestApplicationComponentStates {
+
+	zoomState: ZoomState;
+	archState: ArchPluginState;
+	programState: ProgramPluginState;
+	pluginsState: PluginRepresetationState;
+
+	constructor(services: Services) {
+		const refresh = services.refresh;
+		this.pluginsState = new PluginRepresetationState();
+		this.zoomState = new ZoomState(100, refresh);
+		this.archState = new ArchPluginState(refresh, this
+			.pluginsState.getCallback())
+		this.programState = new ProgramPluginState(refresh, this
+			.pluginsState.getCallback())
+	}
+
+	/**
+	 * Gets the zoom state
+	 */
+	getZoomState() {
+		return this.zoomState;
+	}
+
+	/**
+	 * Gets the architecture plugin state
+	 */
+	getArchState() {
+		return this.archState
+	}
+
+	/**
+	 * Gets the program plugins state
+	 */
+	getProgramState() {
+		return this.programState;
+	}
+
+	/**
+	 * Gets the UI plugins state
+	 */
+	getPluginsState() {
+		return this.pluginsState
+	}
+	
+}
 
 /**
  * Application Services that will be provided to
@@ -156,20 +224,31 @@ export class RottnestApplicationServices implements ServicesHolder {
   }
 
 	/**
+	 * Gets the arch plugin service
+	 */
+	getArchPluginService(): ArchPluginService {
+		return this.services.archplugins;		
+	}
+
+	/**
+	 * Gets the program plugin service
+	 */
+	getProgramPluginService(): ProgramPluginService {
+			
+		return this.services.programplugins;
+	}
+
+	/**
+	 * Gets the validation service
+	 */
+	getValidationService(): ValidationService {
+		return this.services.valservice;
+	}
+
+	/**
 	 * Returns the whole services group
 	 */
   getServices(): Services {
   	return this.services;
   }
 }
-
-
-
-/**
- * Used to monitor specific components
- * TODO: I think this can be removed
- */
-//type ComponentMonitor = {
-	//designSpace: DesignSpace | null
-	//settingsForm: SettingsForm | null
-//}

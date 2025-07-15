@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { RollbackOutlined, CheckCircleOutlined, DisconnectOutlined } from '@ant-design/icons';
-import styles from '../styles/GlobalBar.module.css';
-import RottnestContainer from '../container/RottnestContainer.tsx';
-// Import the specific functions from AppService
+import RottnestApplication from '../container/RottnestApplication.tsx';
 import { ConnectionReady, GetAppServiceInstance } from '../../net/AppService.ts';
+import { RollbackOutlined, CheckCircleOutlined, DisconnectOutlined }
+  from '@ant-design/icons';
+  
+import styles from '../styles/GlobalBar.module.css';
 
 const MAX_RECONNECTS: number = 10;
 
 type ConnectionStatusProps = {
-  	container: RottnestContainer;
+  	container: RottnestApplication;
   	onClick: () => void;
 };
 

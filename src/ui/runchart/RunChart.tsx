@@ -4,7 +4,7 @@ import {CallGraphStatsSpace} from "./CGChart";
 
 import style from '../styles/CGChart.module.css';
 import {WorkspaceData} from "../workspace/Workspace";
-import {CUVolume} from "../../model/CallGraph";
+import {CUVolume} from "../../obj/chart/Metrics.ts";
 /*const PreMadeData = [
 	genData(20),
 	genData(20),

@@ -1,6 +1,5 @@
 import {WorkspaceData} from "../workspace/Workspace";
-import {CUVolume} from "../../model/CallGraph";
-
+import {CUVolume} from "../../obj/chart/Metrics.ts";
 export type CUDataKey = keyof CUVolume;
 export type CUAggrKey = keyof DataAggrMap;
 

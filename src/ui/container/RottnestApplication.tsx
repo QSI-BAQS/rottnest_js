@@ -8,19 +8,26 @@ import HelpWorker from '../help/HelpWorker.tsx';
 import { HelpContainer } from './HelpContainer.tsx';
 import { NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
 import { UpdateTrigger } from '../../service/RefreshService.ts';
-import { RottnestProperties, RottnestState } from '../schema/global/ApplicationState.ts';
+import { RottnestApplicationState, RottnestProperties, RottnestState }
+	from '../schema/global/ApplicationState.ts
 import styles from '../styles/RottnestContainer.module.css';
+import { ArchitectureUIContext } from '../schema/arch/ArchContext.ts';
 
 
 
 /**
  * This is the rewrite of the rottnest container
+ * It has removed all the significant dependencies it had and will delegate to the
+ * the architecture object it has attached
  */
-export class RottnestApplication extends React.Component<RottnestProperties, RottnestState>
+export default class RottnestApplication extends React.Component<RottnestProperties, RottnestState>
 	implements UpdateTrigger {
 
-	modules: RottnestApplicationModules = new RottnestApplicationModules();
 
+	state: RottnestState = {
+		appState: new RottnestApplicationState(),
+		appContext: new ArchitectureUIContext()
+	}
 	/**
 	 * Requires to be implemented as part of update
 	 * trigger interface
@@ -35,7 +42,7 @@ export class RottnestApplication extends React.Component<RottnestProperties, Rot
 	 * if certain objects are ready.
 	 */
 	componentDidMount() {
-		this.state.appState.readyAppService();
+		//this.state.appState.readyAppService();
 
 		HelpWorker.loadHelpData('en')
 			.then((_data: any) => { })
@@ -47,18 +54,19 @@ export class RottnestApplication extends React.Component<RottnestProperties, Rot
 	 * any side effects don't impact other contexts
 	 */
 	componentWillUnmount() {
-  		if (this.modules.getServices().help.isActive()) {
-  			this.modules.getServices().inputs.removeHook('keydown');
+  		if (this.state.appState.modstate.getServices().help.isActive()) {
+  			this.state.appState.modstate.getServices().inputs.removeHook('keydown');
   		}
 	}
 
 	/**
-	 *
+	 * TODO: Fix this all
 	 */
 	render() {
 		const rottContainer = this;
 		const updateables = new Map();
-		const zoomValue = this.state.appStateData.zoomValue;
+		const zoomState = this.state.appState.modstate.getStates().getZoomState();
+		const zoomValue = zoomState.getZoomValue();
 		const settingsisActive = !this.state.appStateData.settingsActive;
 		const newProjectActive = this.state.appStateData.newProjectActive;
 
