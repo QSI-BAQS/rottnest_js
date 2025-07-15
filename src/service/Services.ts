@@ -6,6 +6,7 @@ import { RefreshService } from "./RefreshService"
 import { ProgramPluginService } from "./ProgramPluginService";
 import { ArchPluginService } from "./ArchPluginService";
 import { UnimplReturn } from "../ui/schema/util/unimpl";
+import { ValidationService } from "./ValidatorService";
 
 /**
  * ServicesHolder is the container that will
@@ -29,6 +30,8 @@ export interface ServicesHolder {
 
   getArchPluginService(): ArchPluginService
 
+  getValidationService(): ValidationService;
+
   getServices(): Services;
 
 }
@@ -45,6 +48,9 @@ export class Services {
   notify: NotifyService = new NotifyService();
   network: NetworkService = new NetworkService();
   inputs: InputHookService = new InputHookService();
+  valservice: ValidationService = new ValidationService();
+  programplugins: ProgramPluginService;
+  archplugins: ArchPluginService;
   help: HelpService;
 
   constructor(container: ServicesHolder) {
@@ -52,6 +58,9 @@ export class Services {
     this.notify = container.getNotifyService();
     this.network = container.getNetworkService();
     this.inputs = container.getInputService();
+    this.valservice = new ValidationService();
+    this.programplugins = new ProgramPluginService(this.refresh, this.network);
+    this.archplugins = new ArchPluginService(this.refresh, this.network);
     this.help = new HelpService(this.refresh, this.inputs);
   }
 }
@@ -122,6 +131,15 @@ export class NoServicesHolder implements ServicesHolder {
   getArchPluginService(): ArchPluginService {
     return UnimplReturn<ArchPluginService>();
   }
+
+  /**
+   * Get new instance of Validation Service
+   * uses default arguments
+   */
+  getValidationService(): ValidationService {
+    return new ValidationService();
+  }
+  
   /**
    * Gets the help server
    */

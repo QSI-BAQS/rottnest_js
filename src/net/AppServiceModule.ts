@@ -3,19 +3,32 @@ import {AppServiceClient, APP_URL} from './AppService'
 
 let appService: AppServiceClient | null = null 
 
-function GetAppServiceInstance() {
+/**
+ * Gets an application service instance
+ * Will attempt to connect once requested
+ */
+export function GetAppServiceInstance() {
 	if(appService === null) {
 		appService = new AppServiceClient(APP_URL);
 	}
 	return appService;
 }
 
-function CloseAppService() {
+/**
+ * Will close the application service for
+ * the network
+ */
+export function CloseAppService() {
 	//appService.shutdown();
 	appService = null;
 }
 
-function ConnectionReady(): boolean {
+/**
+ * Checks to see if the connection is ready
+ * If the connection is not ready, it will return false
+ * otherwise true
+ */
+export function ConnectionReady(): boolean {
 
 	if(appService !== null) {
 		return appService.isConnected();
@@ -24,8 +37,9 @@ function ConnectionReady(): boolean {
 	}
 }
 
-export default { 
-	GetAppServiceInstance, 
-	CloseAppService, 
-	ConnectionReady 
-}
+
+export default {
+	GetAppServiceInstance,
+	CloseAppService,
+	ConnectionReady
+};

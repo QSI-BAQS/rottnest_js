@@ -1,8 +1,12 @@
-import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
-import { ArchitecturePlugin, ArchPluginDefault } from "../obj/plugin/Architecture";
-import { PluginData } from "../ui/global/settings/GeneralSettings";
+
 import { NetworkService } from "./NetworkService";
 import { RefreshService } from "./RefreshService";
+import { PluginData } from "../obj/plugin/Generic";
+import { ArchitecturePlugin, ArchitecturePluginConfig,
+	ArchitecturesToEntry, ArchPluginDefault, ArchSet, ArchSetDefault }
+	from "../obj/plugin/Architecture";
+import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
+import { PluginEntry } from "../ui/global/settings/GeneralSettings";
 
 
 
@@ -13,7 +17,8 @@ import { RefreshService } from "./RefreshService";
  */
 export class ArchPluginService {
 
-  stored: ArchitecturePlugin = ArchPluginDefault();
+  stored: ArchSet = ArchSetDefault();
+  current: ArchitecturePlugin = ArchPluginDefault();
   netservice: NetworkService;
   refservice: RefreshService;
 
@@ -23,45 +28,59 @@ export class ArchPluginService {
   }
 
 
-
-	// TODO: Check this method
+	/**
+	 * Retrieves the architecture that is currently in the list
+	 * using a key and maps it to an existing key
+	 * if not found, it will not save
+	 */
 	saveArchData(data: PluginData) {
-		const arch = this.state.appStateData
-			.archData.architectures.find(
-				(e: ArchitecturePlugin) => e.identifier === data.plgKey);
+		const arch = this.stored.architectures.find((e: ArchitecturePlugin) => e.identifier
+				=== data.plgKey);
 		if(arch) {
-			this.state.appStateData.archData.current = arch;
-			this.refservice.triggerUpdate();
-		} 
+			this.current = arch;
+			this.refservice.triggerRefresh();
+		} else {
+			console.error("Unable to save architecture")
+		}
 			
 	}
 
-	// TODO: Check this method
+	/**
+	 * Updates the current architecture based on
+	 * the JSON configuration file that has been given
+	 */
 	saveArchConfig(data: PluginData) {
 		
-		this.state.appStateData.progData.config.config = data.plgValue;
-		this.refservice.triggerUpdate();
-		this.commData.appService.sendObj(MSG_GLOBAL_MAP['arch_set_config'],
+		this.stored.config.contents = data.plgValue;
+		this.netservice.getNetworkService().sendObj(MSG_GLOBAL_MAP['arch_set_config'],
 			{ config: data.plgValue });
+		this.refservice.triggerRefresh();
 	}
 
 
 
-
-	getArchConfig(): string {
-		return this.state.appStateData.archData.config.config;
+	/**
+	 * Gets the currently saved configuration data
+	 */
+	getArchConfig(): ArchitecturePluginConfig {
+		return this.stored.config;
 	}
 
+	/**
+	 * Gets the currently retrieve set of plugin entries
+	 */
 	getArchItems(): Array<PluginEntry> {
-		return this.state.appStateData.archData.architectures.map((a) => {
+		return this.stored.architectures.map((a) => {
 			return ArchitecturesToEntry(a);
-		})
+		});
 	}
 
 
-
+	/**
+	 * Gets the selected architecture
+	 */
 	getCurrentArch(): ArchitecturePlugin {
-		return this.state.appStateData.archData.current
+		return this.current;
 	}
 	
 

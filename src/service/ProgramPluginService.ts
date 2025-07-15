@@ -1,6 +1,8 @@
 import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
-import { ProgramPlugin, ProgramPluginDefault, ProgramPluginToEntry } from "../obj/plugin/Program";
-import { PluginData, PluginEntry } from "../ui/global/settings/GeneralSettings";
+import { PluginData } from "../obj/plugin/Generic";
+import { ProgramPlugin, ProgramPluginDefault, ProgramPluginSet,
+	ProgramPluginToEntry, ProgramPluginSetDefault } from "../obj/plugin/Program";
+import { PluginEntry,  } from "../ui/global/settings/GeneralSettings";
 import { NetworkService } from "./NetworkService";
 import { RefreshService } from "./RefreshService";
 
@@ -13,7 +15,8 @@ import { RefreshService } from "./RefreshService";
  */
 export class ProgramPluginService {
 
-  stored: ProgramPlugin = ProgramPluginDefault();
+  stored: ProgramPluginSet = ProgramPluginSetDefault();
+  current: ProgramPlugin = ProgramPluginDefault();
   netservice: NetworkService;
   refservice: RefreshService;
 
@@ -26,10 +29,9 @@ export class ProgramPluginService {
    * Saves the program data
    */  
 	saveProgramData(data: PluginData) {
-		const prog = this.state.appStateData
-			.progData.programs.find((e: ProgramPlugin) => e.name === data.plgKey);
+		const prog = this.stored.programs.find((e: ProgramPlugin) => e.name === data.plgKey);
 		if(prog) {
-			this.state.appStateData.progData.current = prog;
+			this.current = prog;
 			this.refservice.triggerRefresh();
 		} 
 	}
@@ -38,7 +40,7 @@ export class ProgramPluginService {
    * Saves the program configuration
    */  
 	saveProgramConfig(data: PluginData) {
-		this.stored.config.config = data.plgValue;
+		this.stored.config.contents = data.plgValue;
 		this.refservice.triggerRefresh();
 		this.netservice.appService.sendObj(MSG_GLOBAL_MAP['program_set_config'],
 			{ config: data.plgValue });
@@ -49,16 +51,16 @@ export class ProgramPluginService {
    * by the user
    */
 	getProgramConfig(): string {
-		return this.state.appStateData.progData.config.config;
+		return this.stored.config.contents;
 	}
 
   /**
    * Retrieves the program list from the backend
    */
 	getProgramList(): Array<PluginEntry> {
-		return this.state.appStateData.progData.programs.map((p) => {
+		return this.stored.programs.map((p) => {
 			return ProgramPluginToEntry(p);
-		})
+		});
 	}
 
 
@@ -67,6 +69,6 @@ export class ProgramPluginService {
    * selected
    */
 	getCurrentExe(): ProgramPlugin {
-		return this.state.appStateData.progData.current
+		return this.current;
 	}
 }

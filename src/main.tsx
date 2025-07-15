@@ -1,10 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { App } from './App.tsx'
 import './index.css'
-import App from './App.tsx'
 
+/**
+ * Initial starting point for the react application
+ * which will then attach the element to the root
+ */
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+  <App />
   </StrictMode>,
 )

@@ -1,4 +1,4 @@
-import { ProjectAssembly } from "../model/Project";
+import { ValidationProject } from "./ValidationProject";
 
 type RuleResultKind = "Ok" | "Warning" | "Error";
 
@@ -54,8 +54,8 @@ export type Rule = {
  * Rule operation, will be used to apply on the assembly
  * and validate if a rule has been applied or not
  */
-export interface RuleOp {
-  apply(assembly: ProjectAssembly): RuleResult
+export interface RuleOp<T=any> {
+  apply(assembly: ValidationProject<T>): RuleResult
 }
 
 
@@ -91,7 +91,7 @@ export class LocalValidator {
    * report that it is okay.
    * Warnings will be listed regardless
    */
-  applyOn(assembly: ProjectAssembly): EnforcementTuple {
+  applyOn(assembly: ValidationProject<any>): EnforcementTuple {
     let results: Array<RuleResult> = [];
     let errCount = 0;
 
@@ -117,7 +117,7 @@ export class LocalValidator {
  */
 export class RemoteValidator {
 
-  applyOn(_assembly: ProjectAssembly): EnforcementTuple {
+  applyOn(_assembly: ValidationProject<any>): EnforcementTuple {
     return [true, []];
   }
   

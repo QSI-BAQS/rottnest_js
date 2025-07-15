@@ -18,7 +18,10 @@ export const MSG_REMAP = {
 	"err": "err",
 }
 
-
+/**
+ * Global Map as we are currently developing
+ * a proper set of message types
+ */
 export const MSG_GLOBAL_MAP = {
 	"arch_list": "arch_meta_arch_list",
 	"arch_get": "arch_meta_arch_get",

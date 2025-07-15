@@ -1,7 +1,9 @@
-import RottnestContainer from './ui/container/RottnestContainer.tsx'
 
 import './App.css'
+import { RottnestApplication } from './ui/container/RottnestApplication';
 
-const App = () => { return (<RottnestContainer />); }
-
-export default App
+/**
+ * Constructs an application instance reference
+ * the main rottnest application component
+ */
+export const App = () => { return (<RottnestApplication />); }

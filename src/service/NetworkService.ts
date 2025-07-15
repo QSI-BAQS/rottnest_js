@@ -1,7 +1,5 @@
 import { AppServiceClient } from "../net/AppService";
-import AppServiceModule from "../net/AppServiceModule";
-
-
+import AppSeriveModule from '../net/AppServiceModule.ts';
 
 /**
  * Network Service, will provide access to necessary
@@ -16,7 +14,7 @@ export class NetworkService {
    * to the client
    */
   constructor() { 
-	  this.appService = AppServiceModule.GetAppServiceInstance();
+	  this.appService = AppSeriveModule.GetAppServiceInstance();
   }
 
   /**

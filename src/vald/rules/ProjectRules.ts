@@ -1,4 +1,4 @@
-import { ProjectAssembly } from "../../model/Project";
+import { ValidationProject } from "../ValidationProject";
 import { ResultOk, ResultWarn, Rule, RuleResult } from "../Validator";
 
 /**
@@ -8,8 +8,8 @@ const RuleProjectCheckName: Rule = {
   name: "ProjectNameCheck",
   code: "PN001",
   check: {
-    apply: (assembly: ProjectAssembly): RuleResult => {
-      return assembly.projectDetails.projectName.length > 0 ?
+    apply: (assembly: ValidationProject<any>): RuleResult => {
+      return assembly.getObject().projectName.length > 0 ?
         ResultOk() : ResultWarn('P001', "Missing project name")
     }
     
