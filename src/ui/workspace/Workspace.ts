@@ -1,11 +1,12 @@
 import React from "react";
-import RottnestContainer from "../container/RottnestContainer"
 import {WorkspaceBufferMap} 
 	from "./WorkspaceBufferMap";
+import { ArchitectureObject } from "../schema/arch/ArchSchema";
+import { ArchWorkspaceData } from "../schema/arch/ArchWorkspace";
 
 
 export interface WorkspaceProps {
-	workspaceData: WorkspaceData
+	workspaceData: ArchWorkspaceData
 	key?: string
 }
 
@@ -19,22 +20,11 @@ export interface WorkspaceGroup {
 }
 
 export type WorkspaceContainerProps = {
-	container: RottnestContainer
+	container: ArchitectureObject
 }
 
 export type WorkspaceData = {
-	container: RottnestContainer
+	container: ArchitectureObject
 	bufferMap: WorkspaceBufferMap
 	key?: string
-	
-/*	toolKind: number
-	zoomValue: number	
-	designSpace: { 
-		width: number 
-		height: number 
-	}
-	selectedTab: number
-	tabTitles: Array<string>
-	subTypes: RottnestKindMap 
-	availableTabs: Array<boolean>*/
 }

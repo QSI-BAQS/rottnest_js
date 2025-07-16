@@ -1,8 +1,10 @@
 import { NoServices, Services } from '../../../../service/Services.ts';
+import { UnimplReturn } from '../../util/unimpl.ts';
 import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
   ArchitectureDesigner,
   ArchitectureExtensions,
+  ArchitectureModulesMeta,
   ArchitectureObject,
   ArchitectureProject,
   ArchitectureSchema,
@@ -51,6 +53,14 @@ export class NoArchObject implements ArchitectureObject<any, any> {
   // Sets the project information
   setProject(_project: ArchitectureProject<any>): boolean {
     return false;    
+  }
+
+
+  
+  // Get avaiable modules
+  // TODO: Finish this method
+  getModulesMeta(): ArchitectureModulesMeta {
+    return UnimplReturn<ArchitectureModulesMeta>()
   }
 
   /**

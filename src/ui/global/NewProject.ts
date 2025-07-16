@@ -1,10 +1,10 @@
-import RottnestContainer from "../container/RottnestContainer"
+import RottnestApplication from "../container/RottnestApplication"
 
 
-const leftClick = (rott: RottnestContainer) => {
+const leftClick = (rott: RottnestApplication) => {
 	rott.showNewProject();
 }
 
-const auxEvent = (_: RottnestContainer) => { }
+const auxEvent = (_: RottnestApplication) => { }
 
 export default { leftClick, auxEvent }

@@ -1,11 +1,14 @@
 import React from "react";
 import { ArchitectureObject } from "./ArchSchema";
+import { ArchitectureUIContext } from "./ArchContext";
 
 /**
  * Container that will refer to the architecture
+ * and the current ui context
  */
 export type ArchContainerProps = {
 	container: ArchitectureObject
+	context: ArchitectureUIContext
 }
 
 /**
@@ -14,7 +17,8 @@ export type ArchContainerProps = {
  * other components and states
  */
 export type ArchWorkspaceData = {
-	arch: ArchitectureObject 
+	architecture: ArchitectureObject 
+	context: ArchitectureUIContext
 	stash: ArchStashMap
 }
 

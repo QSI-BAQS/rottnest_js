@@ -1,11 +1,11 @@
 
 
-import RottnestContainer from "../container/RottnestContainer.tsx"
+import RottnestApplication from "../container/RottnestApplication.tsx"
 
-const leftClick = (_rott: RottnestContainer) => {
+const leftClick = (_rott: RottnestApplication) => {
   //To implement
 }
 
-const auxEvent = (_: RottnestContainer) => {}
+const auxEvent = (_: RottnestApplication) => {}
 
 export default { leftClick, auxEvent };

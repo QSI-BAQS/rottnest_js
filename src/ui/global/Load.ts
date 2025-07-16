@@ -1,14 +1,14 @@
-import RottnestContainer from "../container/RottnestContainer"
+import RottnestApplication from "../container/RottnestApplication"
 
 
-const leftClick = (_: RottnestContainer) => { }
+const leftClick = (_: RottnestApplication) => { }
 
-const auxEvent = (_: RottnestContainer) => { }
+const auxEvent = (_: RottnestApplication) => { }
 
 
 export default { leftClick, auxEvent }
 
-export const hiddenInputProc = (e: any, rott: RottnestContainer) => {
+export const hiddenInputProc = (e: any, rott: RottnestApplication) => {
 	const reader = new FileReader();
 	let toLoad = e.target.files.item(0);
 	

@@ -1,18 +1,21 @@
 import React, {ReactElement} from 'react';
-import RottnestContainer from "../container/RottnestContainer"
+import { Workspace } from './Workspace';
+import { ArchitectureUIContext } from '../schema/arch/ArchContext';
+import { ArchWorkspaceData } from '../schema/arch/ArchWorkspace';
+import { ArchitectureObject } from '../schema/arch/ArchSchema';
 import styles from '../styles/WorkspaceContainer.module.css';
-import {Workspace, WorkspaceData} from './Workspace';
 
 type WorkspaceTabData = {
-	selectedTab: number
+	selectedTab: string
 	tabTitles: Array<string>
 	availableTabs: Array<boolean>
-	container: RottnestContainer
+	context: ArchitectureUIContext
+	container: ArchitectureObject
 }
 
 type WorkspaceZoneData = {
-	workspaceData: WorkspaceData
-	wsComponent: ReactElement 
+	workspaceData: ArchWorkspaceData,
+	wsComponent: ReactElement	
 }
 
 class WorkspaceTabBar extends React
@@ -20,19 +23,18 @@ class WorkspaceTabBar extends React
 	
 	render() {
 		const data = this.props;
-		const container = data.container;
+		const context = data.context;
 		const selTab = data.selectedTab;
 		
 		const avaibilities = data.availableTabs;
 
 		const tabs = data.tabTitles.map((t, idx) => {
 
-			const isSelected = idx == selTab;
+			const isSelected = t == selTab;
 			const available = avaibilities[idx];
 			const updateSelected = () => {
 				if(available) {
-					container
-					.updateSelectedTab(idx);
+					context.updateSelectedTab(idx);
 				}
 			};
 
@@ -66,21 +68,21 @@ export class WorkspaceZone
 
 	render() {
 
-		const component = this.props.wsComponent;	
 		const data = this.props.workspaceData;
-		const selTab = data.container.
-			state.tabData.selectedTabIndex;
-		const tabTitles = data.container.
-			state.tabData.tabNames;
-		const availableTabs = data
-			.container.state
-			.tabData.availableTabs;	
+		const meta = data.context.getTabs();
+		const selKey = data.context.getCurrent();
+		const moduleMeta = data.architecture.getModulesMeta();
+		const component = this.props.wsComponent;
+
+		
+		const availableTabs = moduleMeta.availability;
 		
 		return (<div className={styles.workspaceZone}>
 				<WorkspaceTabBar 
-				tabTitles={tabTitles}
-				container={data.container}
-				selectedTab={selTab} 
+				tabTitles={meta.keys}
+				container={data.architecture}
+				context={data.context}
+				selectedTab={selKey} 
 				availableTabs={availableTabs}
 				/>
 				{component}

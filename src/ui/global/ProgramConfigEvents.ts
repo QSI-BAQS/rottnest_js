@@ -1,12 +1,12 @@
 
 
-import RottnestContainer from "../container/RottnestContainer.tsx"
+import RottnestApplication from "../container/RottnestApplication.tsx"
 
-const leftClick = (rott: RottnestContainer) => {
+const leftClick = (rott: RottnestApplication) => {
   //To implement
   rott.showProgramSettings();
 }
 
-const auxEvent = (_: RottnestContainer) => {}
+const auxEvent = (_: RottnestApplication) => {}
 
 export default { leftClick, auxEvent };

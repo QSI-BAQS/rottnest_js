@@ -41,10 +41,6 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 	 */
 	componentDidMount() {
 		//this.state.appState.readyAppService();
-
-		HelpWorker.loadHelpData('en')
-			.then((_data: any) => { })
-			.catch((err: any) => { console.error("Failed to load help data: ", err)})
 	}
 
 	/**
@@ -104,9 +100,7 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 		
 		const errorComponent = errorState.hasError() ? 
 			<ErrorDisplay errorState={errorState}
-				refreshService={refservice} /> :
-			
-			<></>;
+				refreshService={refservice} /> : <></>;
 
 		// Help Componenet
 		const helpComponent = helpService.isActive() ?

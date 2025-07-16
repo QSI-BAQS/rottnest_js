@@ -1,5 +1,5 @@
 
-import RottnestContainer from "../container/RottnestContainer"
+import RottnestApplication from "../container/RottnestApplication"
 
 import { ProjectDump } 
 	from '../../model/Project';
@@ -10,7 +10,7 @@ import { ProjectDump }
  * 	* ProjectDetails
  * 	* RegionDataList
  */
-const leftClick = (rott: RottnestContainer) => {
+const leftClick = (rott: RottnestApplication) => {
 	
 	let details = rott.getProjectDetails();
 	let regionList = rott.getRegionList();
@@ -31,7 +31,7 @@ const leftClick = (rott: RottnestContainer) => {
 }
 
 
-const auxEvent = (_: RottnestContainer) => { }
+const auxEvent = (_: RottnestApplication) => { }
 
 
 

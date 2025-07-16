@@ -25,6 +25,18 @@ export interface ArchitectureSchema {
 }
 
 /**
+ * Metadata type that contains information
+ * related to the kind of modules and availability
+ * along with the count
+ */
+export type ArchitectureModulesMeta = {
+  modules: Array<string>
+  avaialble: Array<string>
+  availability: Array<boolean>
+  count: number
+}
+
+/**
  * Facade object that represents an architecture project instance
  * This is to make it flexible to design with multiple projects alive
  *
@@ -35,6 +47,9 @@ export interface ArchitectureObject<T=any, E=any> {
 
   // Holds the project information
   getProject(): ArchitectureProject<T>;
+
+  // Get available modules
+  getModulesMeta(): ArchitectureModulesMeta;
 
   // Sets the project information
   setProject(project: ArchitectureProject<T>): boolean
@@ -70,12 +85,19 @@ export interface ArchitectureObject<T=any, E=any> {
  *
  */
 export interface ArchitectureConnectionManager {
+
+  // Gets the communication events relevant to the architecture object
   getCommunicationEvents(): CommEventOps<ArchitectureObject>;
 
+  // Sets the communication events for the architecture object
   setCommunicationEvents(evemts: CommEventOps<ArchitectureObject>): void;
 
+  // Gets the initial operation when loading
   getOnOpenOperations(): CommOpQueue<ArchitectureObject>;
 
+  // Gets the network service
+  // TODO: Remove this as this will be extracted
+  //       from the services
   getNetworkService(): AppServiceClient;
 }
 
@@ -106,8 +128,10 @@ export interface ArchitectureWorkspaceFactory {
  */
 export interface ArchitectureSerializer<T> {
 
+  // Serializes and object to a string
   serialize(obj: ArchitectureProject<T>): string;
 
+  // Deserializes the object back into an architecture project
   deserialize(data: string): ArchitectureProject<T>
   
 }
@@ -128,14 +152,20 @@ export interface ArchitectureDesigner extends ArchitectureWorkspaceFactory {
  * interface that is required to be implemented
  */
 export interface ArchitecturePlayerState {
+
+  // Gets the current frame for the player state
   currentFrame(): number;
 
+  // Sets the frame number
   setFrame(frame: number): void;
 
+  // Gets the last frame number
   lastFrame(): number;
 
+  // Gets the framerate
   getFramerate(): number;
 
+  // Sets the framerate
   setFramerate(hz: number): boolean;
 }
 
@@ -144,18 +174,26 @@ export interface ArchitecturePlayerState {
  * hooks to be implemented
  */
 export interface ArchitectureVisualiserPlayer {
+
+  // Changes the frame index
   changeFrame(frameNo: number, state: ArchitecturePlayerState): void;
 
+  // Toggles the play state
   togglePlay(state: ArchitecturePlayerState): boolean;
 
+  // Next frame from the current one
   nextFrame(state: ArchitecturePlayerState): void;
 
+  // Resets the player state
   resetPlayer(state: ArchitecturePlayerState): void;
 
+  // Prev frame from the current one
   prevFrame(state: ArchitecturePlayerState): void;
 
+  // Set the player state to play
   play(state: ArchitecturePlayerState): void;
-  
+
+  // Sets the player state to stop
   stop(state: ArchitecturePlayerState): void;
 }
 
@@ -165,6 +203,7 @@ export interface ArchitectureVisualiserPlayer {
  */
 export interface ArchitectureVisualiser extends ArchitectureWorkspaceFactory {
 
+  // Constructs a player
   makePlayer(data: Map<string, any>): ArchitectureVisualiserPlayer;
   
 }

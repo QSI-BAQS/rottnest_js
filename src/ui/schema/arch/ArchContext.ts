@@ -1,4 +1,4 @@
-import { ArchitectureCallGraph, ArchitectureDesigner, ArchitectureObject, ArchitectureVisualiser } from "./ArchSchema";
+import { ArchitectureCallGraph, ArchitectureDesigner, ArchitectureModulesMeta, ArchitectureObject, ArchitectureVisualiser } from "./ArchSchema";
 import { NoArchObject } from "./noarch/NoArch";
 
 
@@ -27,7 +27,9 @@ export type ArchUIDefaults = {
 }
 
 /**
- *
+ * Default data that can be used by the context
+ * Is currently selected on NoArch as it will be the first
+ * one typically loaded
  */
 export const ArchUIDefaultData = {
   name: 'NoArch',
@@ -47,6 +49,15 @@ export const ArchUIContextDefaults: ArchUIContextMapping = {
     .getVisualiser(data)),
   "callgraph"  : (obj: ArchitectureObject, data: any) => (obj
     .getCallGraph(data)),
+}
+
+/**
+ * UI Meta that will outline the weak refs (strings)
+ * and a count of the number of keys outside of default
+ */
+export type ArchUIMeta = {
+  keys: Array<string>
+  count: number
 }
 
 /**
@@ -71,13 +82,30 @@ export class ArchitectureUIContext {
     this.defaults = defaults;
     this.archObject = object;
   }
+  
+  /**
+   * Gets the tabs that are accessible to the UI
+   * Gets the count and tabs
+   */
+  getTabs(): ArchUIMeta  {
+    let count = 0;
+    let keys = [];
+    for(const s in this.switches) {
+      if(s !== 'default') {
+        count += 1;
+        keys.push(s);
+      }
+    }
+    return { count, keys };
+  }
 
   /**
    * Used a compatibility method to move
    * between tabs
+   * TODO: Need to fix this method
    */
-	updateSelectedTab(idx: number) {
-
+	updateSelectedTab(_idx: number) {
+    
 		/*
 		const tabs = this.state.tabData.tabNames;
 		this.state.tabData.selectedTabIndex 
