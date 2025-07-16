@@ -10,7 +10,7 @@ import { RottnestApplicationState, RottnestProperties, RottnestState }
 	from '../schema/global/ApplicationState.ts'
 import styles from '../styles/RottnestContainer.module.css';
 import { ArchitectureUIContext } from '../schema/arch/ArchContext.ts';
-
+import { ArchWorkspaceContainer } from './WorkspaceContainer.tsx'
 
 
 /**
@@ -84,15 +84,18 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 		const errorState = this.getModuleStates().getErrorState();
 		const projectRet = this.getModuleStates().getProjectState();
 
+		const archobj = rottContainer.getAppState().getArchitectureObject();
+		
 		const notifyService = this.getServices().notify;
 		const helpService = this.getServices().help;
 		const refservice = this.getServices().refresh;
+		const archcontext = this.state.appContext;
 		
-
 		const isProjVisible = projectRet.isReady;
 		let isNewProject = isProjVisible;
 		let settingsForm = <></>;
 		const projectState = projectRet.obj;
+		
 		if(isProjVisible && projectState) {
 			const settingsisActive = projectState.isProjectSettingsActive();
 			const newProjectActive = projectState.isNewProjectActive();
@@ -103,9 +106,6 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 					projectState={projectState}
 				/>
 		}
-		//const notifyMsg = this.state.notifyQueue.dequeueProxy();
-		//const notifyMsgRender = notifyMsg !== null ? notifyMsg.getElement() : <></>;
-
 		const zoomValue = zoomState.getZoomValue();
 		updateables.set(100, [`${zoomValue}%`, rottContainer]);
 		
@@ -125,7 +125,9 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 			<div className={styles.rottnest}>
 				<NotifyMessageSpace queue={notifyService.getNotifyQueue()} />
 				<GlobalBar componentMap={updateables} container={rottContainer} />
-				<WorkspaceContainer container={rottContainer} />
+				<ArchWorkspaceContainer architecture={archobj}
+					archcontext={archcontext} />
+
 				{settingsForm}
 				{errorComponent}
 				{helpComponent}

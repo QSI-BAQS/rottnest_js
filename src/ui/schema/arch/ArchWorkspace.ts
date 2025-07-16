@@ -7,8 +7,8 @@ import { ArchitectureUIContext } from "./ArchContext";
  * and the current ui context
  */
 export type ArchContainerProps = {
-	container: ArchitectureObject
-	context: ArchitectureUIContext
+	architecture: ArchitectureObject
+	archcontext: ArchitectureUIContext
 }
 
 /**
@@ -18,7 +18,7 @@ export type ArchContainerProps = {
  */
 export type ArchWorkspaceData = {
 	architecture: ArchitectureObject 
-	context: ArchitectureUIContext
+	archcontext: ArchitectureUIContext
 	stash: ArchStashMap
 }
 

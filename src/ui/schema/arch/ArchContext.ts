@@ -73,6 +73,7 @@ export class ArchitectureUIContext {
   switches: ArchUIContextMapping = ArchUIContextDefaults;
   archObject: ArchitectureObject;
   cursor: string = "designer";
+  helddata: any = {};
 
   /**
    * Initialises the architecture object, defaults outlined to
@@ -101,6 +102,23 @@ export class ArchitectureUIContext {
   }
 
   /**
+   * Simple stash where when moving to different
+   * view we can provide an object that can describe what
+   * actions it can do/any
+   */
+  setData(data: any) {
+    this.helddata = data;
+  }
+
+  /**
+   * Gets the data from the context
+   * Typically given as part of a move or set before a move
+   */
+  getData(): any {
+    return this.helddata;
+  }
+
+  /**
    * Used a compatibility method to move
    * between tabs
    * TODO: Need to fix this method
@@ -112,6 +130,13 @@ export class ArchitectureUIContext {
 		this.state.tabData.selectedTabIndex 
 			= idx % tabs.length;
 		this.triggerUpdate();*/
+	}
+
+  /**
+   * Returns the list of the switches
+   */
+	getSwitches() {
+	  return this.switches;
 	}
 
   /**

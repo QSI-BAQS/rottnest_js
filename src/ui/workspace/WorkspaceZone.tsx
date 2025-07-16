@@ -5,6 +5,11 @@ import { ArchWorkspaceData } from '../schema/arch/ArchWorkspace';
 import { ArchitectureObject } from '../schema/arch/ArchSchema';
 import styles from '../styles/WorkspaceContainer.module.css';
 
+
+/**
+ * Tab data, the different tabs
+ * and the context, along with the architecture object
+ */
 type WorkspaceTabData = {
 	selectedTab: string
 	tabTitles: Array<string>
@@ -13,11 +18,20 @@ type WorkspaceTabData = {
 	container: ArchitectureObject
 }
 
+
+/**
+ * WorkspaceZoneData, it will reference the workspace data
+ * and the component that can be rendered
+ */
 type WorkspaceZoneData = {
 	workspaceData: ArchWorkspaceData,
 	wsComponent: ReactElement	
 }
 
+/**
+ * Workspace Tab Bar, it will list the tabs
+ * that it can present
+ */
 class WorkspaceTabBar extends React
 	.Component<WorkspaceTabData, {}> {
 	
@@ -69,8 +83,8 @@ export class WorkspaceZone
 	render() {
 
 		const data = this.props.workspaceData;
-		const meta = data.context.getTabs();
-		const selKey = data.context.getCurrent();
+		const meta = data.archcontext.getTabs();
+		const selKey = data.archcontext.getCurrent();
 		const moduleMeta = data.architecture.getModulesMeta();
 		const component = this.props.wsComponent;
 
@@ -81,7 +95,7 @@ export class WorkspaceZone
 				<WorkspaceTabBar 
 				tabTitles={meta.keys}
 				container={data.architecture}
-				context={data.context}
+				context={data.archcontext}
 				selectedTab={selKey} 
 				availableTabs={availableTabs}
 				/>

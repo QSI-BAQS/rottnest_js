@@ -52,7 +52,7 @@ export type RottnestState = {
 export class RottnestApplicationState {
 	modstate: RottnestApplicationModulesState;
 	architectureSchema: ArchitectureSchema;
-	architectureObject: ArchitectureObject | null = null;
+	architectureObject: ArchitectureObject;
 
 	/**
 	 * Initialises the architecture state to a default
@@ -66,8 +66,8 @@ export class RottnestApplicationState {
 	}
 
 	/**
-	 * Gets the module states so we can
-	 
+	 * Gets the module states so we can retrieve the state information
+	 * and update them
 	 */
 	getModuleStates(): RottnestApplicationModulesState {
 		return this.modstate;
@@ -77,7 +77,7 @@ export class RottnestApplicationState {
 	 * Gets the architecture object that has been
 	 * constructed by the schema
 	 */
-	getArchitectureObject(): ArchitectureObject | null {
+	getArchitectureObject(): ArchitectureObject {
 		return this.architectureObject;
 	}
 
