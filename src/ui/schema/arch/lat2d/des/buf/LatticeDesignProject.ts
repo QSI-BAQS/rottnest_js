@@ -10,7 +10,7 @@ import { RegionDataList } from "../../obj/RegionDataList";
 export class LatticeDesignProject {
 
   regionlist: RegionDataList = new RegionDataList();
-
+	
   /**
    * Gets the region list that is the project itself.
    */
@@ -121,7 +121,7 @@ export class LatticeDesignProject {
    * Given a deserialized file, we need to transform it from
    * a flattened graph to a linked graph within the system
    */
-	parseLoadedFile(content: string | null) {
+	parseData(content: string | null) {
 		if(content) {
 			const jsonRep = JSON.parse(content);
 			if(jsonRep) {

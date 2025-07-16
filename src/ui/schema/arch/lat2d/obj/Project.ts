@@ -1,5 +1,6 @@
-import { RegionDataList, FlatRegions } from './RegionDataList.ts'
-import { RegionData } from './RegionData.ts'
+import { ArchitectureProject } from '../../ArchSchema.ts'
+import { RegionData } from './LatticeRegionData.ts'
+import { FlatRegions, FlatRegionsDefaults } from './RegionDataList.ts'
 
 
 /**
@@ -8,14 +9,53 @@ import { RegionData } from './RegionData.ts'
  * This will be used by the settings form/project setup
  */
 export type ProjectDetails = {
-	name: string
-	architecture: string
-	version: string,
-	author: string
-	width: number
-	height: number
-	description: string	
+	header: {
+		name: string
+		version: string,
+		architecture: string
+		author: string
+		description: string
+	},
+	body: {
+		object: {
+			regions: FlatRegions
+			width: number
+			height: number
+		}
+	},
+	getProject(): ArchitectureProject<any>,
+	makeDefault(): ArchitectureProject<any>
 }
+
+/**
+ * Default function for initialising data for the project
+ */
+export function ProjectDetailsDefaultData(): ProjectDump {
+	return {
+    header: {
+      name: 'Untitled',
+      architecture: 'lat2d',
+      author: 'you',
+      version: '0.1',
+      description: 'Your design'
+    },
+    body: {
+      object: {
+        regions:FlatRegionsDefaults(),
+        width: 20,
+        height: 20,
+      }
+    },
+    getProject(): ArchitectureProject<any> {
+  	  return this;
+  	},
+  	makeDefault(): ArchitectureProject<any> {
+      return ProjectDetailsDefaultData();
+    }
+  }
+}
+
+
 
 /**
  * Aggregate between project details
@@ -39,8 +79,5 @@ export type TaggedRegionData = {
  * Project details with flat regions,
  * currently used for saving to file
  */
-export type ProjectDump = {
-	project: ProjectDetails
-	regions: FlatRegions
-}
+export type ProjectDump = ProjectDetails;
 

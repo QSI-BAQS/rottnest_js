@@ -1,23 +1,81 @@
 import RottnestApplication from "../container/RottnestApplication"
 
 
+/**
+ * No-op
+ */
 const leftClick = (_: RottnestApplication) => { }
 
+/**
+ * No-op
+ */
 const auxEvent = (_: RottnestApplication) => { }
 
+/**
+ * Return type for onload
+ */
+type FileReaderRetType = string | ArrayBuffer | null;
 
-export default { leftClick, auxEvent }
 
+/**
+ * `false` is a failure marker in our check function,
+ * if it is not the type we expect, it will return false and therefore
+ * we will check to see if it is that (which will return false),
+ * otherwise if it is normal, it will be true
+ */
+function DeserialFailMarkerCheck(data: any): boolean {
+	if(data === false && data instanceof Boolean) {
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Checks that the deserialisation can occur.
+ * it will return an empty object
+ */
+function CheckedDeserialize(data: FileReaderRetType): string  {
+	let output = 'false';
+	if(data instanceof String) {
+		output = String(data);
+	}
+	return output;
+}
+
+/**
+ * Quirky version to embed an input procedure on the loader
+ */
 export const hiddenInputProc = (e: any, rott: RottnestApplication) => {
 	const reader = new FileReader();
 	let toLoad = e.target.files.item(0);
+
+
+	const currentArchObj = rott.getAppState().getArchitectureObject();
+	if(currentArchObj) {
+		const serialiser = currentArchObj.getSerializer();
+
 	
-	reader.addEventListener('load', () => 
-		{ rott.parseLoadedFile(reader.result); }, false);
+			if(serialiser) {	
+			reader.addEventListener('load', () => {
+				let result = serialiser.deserialize(CheckedDeserialize(reader.result));
+
+				
+				if(DeserialFailMarkerCheck(result)) {
+					//Attach to the object
+					currentArchObj.setProject(result);
+				} else {
+					console.warn("Fail marker detected, outputting notification to user");
+				}
+			},false);
 	
-	if(toLoad) {
-		reader.readAsText(toLoad);
+			if(toLoad) {
+				reader.readAsText(toLoad);
+			}
+			return true;
+		}
 	}
-
-
+	console.warn("Unable to deserialize project");
+	return false
 }
+
+export default { leftClick, auxEvent }

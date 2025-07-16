@@ -24,7 +24,7 @@ export type ArchWorkspaceData = {
 
 /**
  * WorkspaceProps, used by
- * all teh designers, ensures that all workspaces
+ * all the designers, ensures that all workspaces
  * are able to retrieve data from their ArchitectureObject
  */
 export interface ArchWorkspaceProps {

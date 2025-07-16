@@ -17,5 +17,14 @@ export interface ArchActionTracker<T=any> {
   // When an undo occurs, it needs to remove an action that has
   // happened but preserve it in the redo list
   undo(obj: T): T | null;
+
+  // Performs an undo operation
+  performUndo(): void;
+
+  // Performs a redo operation
+  performRedo(): void;
+
+  // Performs an action
+  performAction(): void;
   
 }

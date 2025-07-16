@@ -1,4 +1,5 @@
-import { ArchitectureCallGraph, ArchitectureDesigner, ArchitectureModulesMeta, ArchitectureObject, ArchitectureVisualiser } from "./ArchSchema";
+import { ArchitectureCallGraph, ArchitectureDesigner,
+  ArchitectureObject, ArchitectureVisualiser } from "./ArchSchema";
 import { NoArchObject } from "./noarch/NoArch";
 
 

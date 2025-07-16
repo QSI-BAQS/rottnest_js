@@ -2,7 +2,8 @@ import RottnestApplication from "../container/RottnestApplication"
 
 
 const leftClick = (rott: RottnestApplication) => {
-	rott.zoomOut(25);
+	const zoomState = rott.getModuleStates().getZoomState();
+	zoomState.zoomOut(25)
 }
 
 const auxEvent = (_: RottnestApplication) => { }

@@ -6,14 +6,29 @@ import { ArchWorkspaceGroup } from "./ArchWorkspace";
 
 
 /**
+ * Strictly the data interface for the ArchitectureProject
+ */
+export interface ArchitectureProjectData<T> {
+  header: {
+    name: string,
+    version: string,
+    architecture: string,
+    author: string
+    description: string
+  },
+  body: {
+    object: T
+  }
+}
+
+/**
  * Architecture Project that is used by
  * the serialiser
  */
-export type ArchitectureProject<T> = {
-  name: string,
-  version: string,
-  arch: string,
-  object: T
+export interface ArchitectureProject<T> extends ArchitectureProjectData<T> {
+
+  //Used when needing to modify the project
+  getProject(): ArchitectureProject<T>;  
 }
 
 /**
@@ -31,7 +46,7 @@ export interface ArchitectureSchema {
  */
 export type ArchitectureModulesMeta = {
   modules: Array<string>
-  avaialble: Array<string>
+  available: Array<string>
   availability: Array<boolean>
   count: number
 }
@@ -48,12 +63,15 @@ export interface ArchitectureObject<T=any, E=any> {
   // Holds the project information
   getProject(): ArchitectureProject<T>;
 
-  // Get available modules
-  getModulesMeta(): ArchitectureModulesMeta;
+  // Creates a default project
+  makeProject(): ArchitectureProject<T>;
 
   // Sets the project information
   setProject(project: ArchitectureProject<T>): boolean
 
+  // Get available modules
+  getModulesMeta(): ArchitectureModulesMeta;
+  
   // Designer module
   getDesigner(data?: any): ArchitectureDesigner;
 
@@ -108,8 +126,10 @@ export interface ArchitectureConnectionManager {
  */
 export interface ArchitectureExtensions<E> {
 
+  // Gets an extension based on its name
   getExtension(name: string): ArchitectureExtObj<E>;
 
+  // Gets all extensions as part of a map
   getAllExtensions(): Map<string, E>;
   
 }

@@ -4,7 +4,8 @@ import RottnestApplication from "../container/RottnestApplication.tsx"
 
 const leftClick = (rott: RottnestApplication) => {
   //To implement
-  rott.showProgramSettings();
+  const plgmod = rott.getModuleStates().getProgramState();
+  plgmod.showProgramSettings();
 }
 
 const auxEvent = (_: RottnestApplication) => {}

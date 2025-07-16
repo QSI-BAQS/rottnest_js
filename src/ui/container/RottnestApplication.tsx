@@ -54,6 +54,13 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 	}
 
 	/**
+	 * Gets the application state and associated operations
+	 */
+	getAppState() {
+		return this.state.appState;
+	}
+
+	/**
 	 * Gets the services from the appstate module
 	 */
 	getServices() {
@@ -75,28 +82,32 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 		const updateables = new Map();
 		const zoomState = this.getModuleStates().getZoomState();
 		const errorState = this.getModuleStates().getErrorState();
+		const projectRet = this.getModuleStates().getProjectState();
+
 		const notifyService = this.getServices().notify;
 		const helpService = this.getServices().help;
 		const refservice = this.getServices().refresh;
-		//const settingsisActive = !this.state.appStateData.settingsActive;
-		//const newProjectActive = this.state.appStateData.newProjectActive;
+		
 
-
+		const isProjVisible = projectRet.isReady;
+		let isNewProject = isProjVisible;
+		let settingsForm = <></>;
+		const projectState = projectRet.obj;
+		if(isProjVisible && projectState) {
+			const settingsisActive = projectState.isProjectSettingsActive();
+			const newProjectActive = projectState.isNewProjectActive();
+			isNewProject = (!settingsisActive && newProjectActive);
+			settingsForm = <SettingsForm
+					isNew={isNewProject}
+					isHidden={isProjVisible}
+					projectState={projectState}
+				/>
+		}
 		//const notifyMsg = this.state.notifyQueue.dequeueProxy();
 		//const notifyMsgRender = notifyMsg !== null ? notifyMsg.getElement() : <></>;
 
 		const zoomValue = zoomState.getZoomValue();
 		updateables.set(100, [`${zoomValue}%`, rottContainer]);
-
-		//updateables.set(400, this.getCurrentArch().identifier);
-		//updateables.set(500, this.getCurrentExe().name);
-
-		//TODO: New Project Element is to be active
-		/*
-		const newProjectElement = newProjectActive ? 
-			<NewProjectForm rootContainer={rottContainer}/> :
-		<></>;
-		*/
 		
 		const errorComponent = errorState.hasError() ? 
 			<ErrorDisplay errorState={errorState}
@@ -112,19 +123,12 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 
 		return (
 			<div className={styles.rottnest}>
-				<SettingsForm rootContainer={rottContainer}
-						isHidden={settingsisActive} 
-						projectDetails={this.state.projectDetails}
-				/>
-
-				{newProjectElement}
-				{errorComponent}
-				{helpComponent}
-				
 				<NotifyMessageSpace queue={notifyService.getNotifyQueue()} />
 				<GlobalBar componentMap={updateables} container={rottContainer} />
-		
 				<WorkspaceContainer container={rottContainer} />
+				{settingsForm}
+				{errorComponent}
+				{helpComponent}
 			</div>
 		)
 	}

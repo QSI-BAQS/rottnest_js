@@ -3,6 +3,7 @@ import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
   ArchitectureDesigner,
   ArchitectureExtensions,
+  ArchitectureModulesMeta,
   ArchitectureObject,
   ArchitectureProject,
   ArchitectureSchema,
@@ -17,6 +18,7 @@ import { LatticeNetManager } from './LatticeNetManager.ts';
 import { LatticeSerializer } from './io/LatticeSerializer.ts';
 import { Services } from '../../../../service/Services.ts';
 import { RegionDataList } from './obj/RegionDataList.ts';
+import { ProjectDetailsDefaultData, ProjectDump } from './obj/Project.ts';
 
 /**
  * Schema object, typically only one instance which is used to
@@ -51,11 +53,14 @@ export class Lattice2DArchitecture implements ArchitectureObject<RegionDataList,
   }
 
   // Project Defaults
-  project = {
-    name: 'untitled',
-    version: '0.1',
-    arch: '1',
-    object: {}
+  project: ProjectDump = ProjectDetailsDefaultData()
+
+  // Meta data, keeps track of what is active
+  meta: ArchitectureModulesMeta = {
+        modules: ["Designer", "Visualiser", "CallGraph"],
+        available: ["Disigner"],
+        availability: [true, false, false],
+        count: 3
   }
 
   /**
@@ -64,18 +69,39 @@ export class Lattice2DArchitecture implements ArchitectureObject<RegionDataList,
    */
   constructor(services: Services, _args: Map<string, string | number>) {
     this.services = services;
-     //TODO: Finish this constructor for lattice2d 
   }
 
-  // Holds the project information
+  /**
+   * Gets the module metadata
+   */
+  getModulesMeta(): ArchitectureModulesMeta {
+      return this.meta;
+  }
+
+  /**
+   * Creates a project with default data
+   */
+  makeProject(): ArchitectureProject<any> {
+    return ProjectDetailsDefaultData();
+  }
+
+  /**
+   * Gets the project
+   */
   getProject(): ArchitectureProject<any> {
     return this.project;
   }
 
-  // Sets the project information
-  // TODO: Still need to finish this
-  setProject(_project: ArchitectureProject<any>): boolean {
-
+  /**
+   * Sets the project based on the interface details
+   * separation between required information and additional
+   * information is enforced via the type
+   */
+  setProject(project: ArchitectureProject<any>): boolean {
+    this.project.header.name = project.header.name;
+    this.project.header.architecture = project.header.architecture;
+    this.project.header.version = project.header.version;
+    this.project.body.object = project.body.object;
     return false;    
   }
 

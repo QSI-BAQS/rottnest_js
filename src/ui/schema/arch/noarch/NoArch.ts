@@ -43,10 +43,17 @@ export class NoArchObject implements ArchitectureObject<any, any> {
   // Holds the project information
   getProject(): ArchitectureProject<any> {
     return {
-      name: 'NoArch',
-      version: 'Invalid',
-      arch: 'NoArch',
-      object: {}
+      header: {
+        name: 'NoArch',
+        version: 'Invalid',
+        author: 'You',
+        architecture: 'NoArch',
+        description: 'Absolutely no architecture'
+      },
+      body: {
+        object: {}
+      },
+      getProject: function() { return {...this}; }
     }
   }
 
@@ -55,7 +62,12 @@ export class NoArchObject implements ArchitectureObject<any, any> {
     return false;    
   }
 
-
+  /**
+   * Makes the project based on defaults in getProject()
+   */
+  makeProject(): ArchitectureProject<any> {
+    return {...this.getProject()}
+  }
   
   // Get avaiable modules
   // TODO: Finish this method

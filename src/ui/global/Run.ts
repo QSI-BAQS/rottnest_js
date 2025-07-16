@@ -1,15 +1,14 @@
 import ArchConverter from "../../util/ArchConverter";
-import RottnestContainer from "../container/RottnestContainer"
-import { RottArchMSG } from "../../net/Messages";
+import RottnestApplication from "../container/RottnestApplication";
+import { RottArchMSG } from "../schema/arch/lat2d/net/NetMessages";
 
-
-const leftClick = (container: RottnestContainer) => {
+//TODO: Delegate this to the architecture
+const leftClick = (container: RottnestApplication) => {
 	const rottContainer = container;
 	const rrBuf = rottContainer.getRRBuffer();
 	const appService = rottContainer.commData.appService;
 	const projAssembly = rottContainer.getProjectAssembly();
-	const tschedProject 
-		= ArchConverter.ToTSched(projAssembly);
+	const tschedProject = ArchConverter.ToTSched(projAssembly);
 	
 	if(tschedProject) {
 		rrBuf.reset();
@@ -18,6 +17,6 @@ const leftClick = (container: RottnestContainer) => {
 	}
 }
 
-const auxEvent = (_: RottnestContainer) => { }
+const auxEvent = (_: RottnestApplication) => { }
 
 export default { leftClick, auxEvent }

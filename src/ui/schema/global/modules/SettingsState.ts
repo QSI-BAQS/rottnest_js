@@ -1,26 +1,64 @@
-import { UpdateTrigger } from "../../../../service/RefreshService";
+import { RefreshService } from "../../../../service/RefreshService";
+import { ArchitectureObject, ArchitectureProject } from "../../arch/ArchSchema";
 
 
+/**
+ * Set of callbacks that we can use for forms
+ */
+export type ProjectSettingsCallbacks = {
+	applySettings: () => void;
+	cancelSettings: () => void;
+	projectFill: () => ArchitectureProject<any>
+	newProject: () => ArchitectureProject<any>
+}
 
-export class SettingsState {
+/**
+ * ProjectState, it is used to modify and synchronise with
+ * the current architecture object
+ */
+export class ProjectSettingsState<T=any> {
 
-  trigger: UpdateTrigger;
-  settingsActive: boolean = false;
-  newProjectActive: boolean = false;
+	refservice: RefreshService;
+	archobject: ArchitectureObject;
+	project: ArchitectureProject<T>
+  showProjectNew: boolean = false;
+  showProjectSettings: boolean = false;
   
-  
-  constructor(trigger: UpdateTrigger) {
-    this.trigger = trigger;
+  /**
+   * Constructs a settings state, if a project is omitted as part of
+   * its construction, it will use the default
+   */
+  constructor(archobject: ArchitectureObject,
+  	trigger: RefreshService,
+  	project: ArchitectureProject<T> = archobject.makeProject()) {
+    this.refservice = trigger;
+    this.archobject = archobject;
+    this.project = project;
   }
+
+	/**
+	 * Returns true if the new project flag is active
+	 */
+	isNewProjectActive(): boolean {
+		return this.showProjectNew;
+	}
+	
+	/**
+	 * Returns true if the project settings flag is active
+	 */
+	isProjectSettingsActive(): boolean {
+		return this.showProjectSettings;
+	}
+
   /**
 	 * Creates a settings form component that
 	 * will allow the user to update project details
-	 *
 	 */
 	showSettings() {
 
-		this.settingsActive = true;
-		this.trigger.triggerUpdate();
+		this.showProjectSettings = true;
+		this.showProjectNew = false;
+		this.refservice.triggerRefresh();
 	}
 
 	/**
@@ -28,17 +66,28 @@ export class SettingsState {
 	 */
 	showNewProject() {
 
-		this.newProjectActive = true;
-		this.trigger.triggerUpdate();
+		this.showProjectNew = true
+		this.showProjectSettings = false;
+		this.resetData();
+		this.refservice.triggerRefresh();
 	}
 
   resetData() {
-    
+    const newProject = this.archobject.makeProject();
+    this.project = newProject;
+		this.refservice.triggerRefresh();
   }
 
-  applySettings()
-    
-  }
+	/**
+	 * Applies the project with what was stored
+	 * to the current designer
+	 */
+	applySettings() {
+		this.showProjectNew = false;
+		this.showProjectSettings = false;
+		this.archobject.setProject(this.project);
+		this.refservice.triggerRefresh();
+	}
 	
 	/**
 	 * Creates a settings form component that
@@ -46,23 +95,46 @@ export class SettingsState {
 	 *
 	 */
 	cancelSettings() {
-		this.settingsActive = false;
-		this.trigger.triggerUpdate();
+		this.showProjectSettings = false;
+		this.refservice.triggerRefresh();
 	}
 
-  /**
-   *
-   */
-  applyNewProject() {
-    
-  }
 	
   /**
-   *
+   * Operation for when the user cancels a new project
    */
 	cancelNewProject() {
-		this.newProjectActive = false;
+		this.showProjectNew = false;
+		this.showProjectSettings = false;
 		this.resetData();
-		this.trigger.triggerUpdate();
+		this.refservice.triggerRefresh();
 	}
+
+	/**
+	 * Retrieves the callbacks for the current/existing project
+	 */
+	callbacksForCurrent(): ProjectSettingsCallbacks {
+		const ref = this;
+		return {
+			applySettings: () => ref.applySettings(),
+			cancelSettings: () => ref.cancelSettings(),
+			projectFill: () => ref.project,
+			newProject: () => ref.archobject.makeProject(),
+		}
+	}
+
+	/**
+	 * Retrieves the callbacks for a new project
+	 */
+	callbacksForNew(): ProjectSettingsCallbacks {
+		const ref = this;
+		return {
+			applySettings: () => ref.applySettings(),
+			cancelSettings: () => ref.cancelNewProject(),
+			projectFill: () => ref.archobject.makeProject(),
+			newProject: () => ref.archobject.makeProject(),
+		}
+	}
+
+	
 }

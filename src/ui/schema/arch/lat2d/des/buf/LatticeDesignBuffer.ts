@@ -9,7 +9,7 @@ import { RegionsSnapshotStack } from "../../obj/RegionSnapshotStack";
  */
 export class LatticeDesignBuffer {
 
-	snapshots: RegionsSnapshotStack = new RegionsSnapshotStack();
+	snapshots: RegionsSnapshotStack = new RegionsSnapshotStack(this);
 	buffer: RegionData = new RegionData();
 
 	/**

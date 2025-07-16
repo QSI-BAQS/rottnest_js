@@ -20,6 +20,19 @@ export type FlatRegions = {
 	buffers: Array<FlatRegionData>
 }
 
+/**
+ * Initialises the flat regions to a default/empty state
+ */
+export function FlatRegionsDefaults() {
+	return {
+		bus: [],
+		registers: [],
+		bellstates: [],
+		factories: [],
+		buffers: []
+	}
+};
+
 export class RegionDataList {
 	regions: Regions = {
 		bus: [],

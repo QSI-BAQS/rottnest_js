@@ -1,6 +1,5 @@
 import React from "react";
-import {WorkspaceBufferMap} 
-	from "./WorkspaceBufferMap";
+import {WorkspaceBufferMap} from "./WorkspaceBufferMap";
 import { ArchitectureObject } from "../schema/arch/ArchSchema";
 import { ArchWorkspaceData } from "../schema/arch/ArchWorkspace";
 

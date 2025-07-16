@@ -3,10 +3,8 @@ import { ArchActionTracker } from '../ArchActionTracker.ts';
 import { ArchitectureDesigner } from '../ArchSchema.ts';
 import { ArchWorkspaceGroup, ArchWorkspaceProps } from '../ArchWorkspace.ts';
 import { LatticeDesignBuffer } from './des/buf/LatticeDesignBuffer.ts';
+import { LatticeDesignProject } from './des/buf/LatticeDesignProject.ts';
 import { RegionData } from './obj/LatticeRegionData.ts';
-import { RegionDataList } from './obj/RegionDataList.ts';
-import { LatticeRegionKindMap } from './obj/RegionKindMap.ts';
-import { RegionsSnapshotStack } from './obj/RegionSnapshotStack.ts';
 
 /**
  * State object of things which are currently being operated on.
@@ -15,7 +13,6 @@ export class LatticeWorkingState {
 
   selectedRegion: number = -1;
   selectedRegionType: string = 'N/A';
-  
   
 	getSelectedRegionData(): RegionData | null {
 		const getSelectedIdx = this.selectedRegion;
@@ -41,21 +38,6 @@ export class LatticeWorkingState {
 	}
 }
 
-/**
- * LatticeDesign which reflects the design object
- * within the designer and operations related to it.
- */
-export class LatticeDesign {
-
-  state: LatticeWorkingState;
-
-  constructor() {
-    this.state = new LatticeWorkingState();
-     
-  }
-
-}
-
 
 /**
  * Constructs the workspace group that will be used by the workspace component
@@ -67,16 +49,14 @@ export class LatticeDesignerUIGroup implements ArchWorkspaceGroup {
   }
 }
 	
-
-
 /**
  * LatticeDesigner type, used to represent an instance of making a design
  * for the lat2d architecture
  */
 export class LatticeDesigner implements ArchitectureDesigner {
 
-	target: LatticeDesign = new LatticeDesign();
 	designBuffer = new LatticeDesignBuffer();
+  workingState: LatticeWorkingState = new LatticeWorkingState();
 
 	/**
 	 * Gets the snapshot tracker for undo and redo functionality

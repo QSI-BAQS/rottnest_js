@@ -1,15 +1,21 @@
 
 import { ArchActionTracker } from '../../ArchActionTracker';
+import { LatticeDesignBuffer } from '../des/buf/LatticeDesignBuffer';
 import {RegionDataList}  from './RegionDataList';
 /**
  * This allows for undo and redo functionality
  * within the container system
  */
 export class RegionsSnapshotStack implements ArchActionTracker<RegionDataList> {
-	
+
+	bufferComponent: LatticeDesignBuffer;
 	redoListStack: Array<RegionDataList> = [];
 	regionListStack: Array<RegionDataList> = [];
 	capacity: number = 128;
+
+	constructor(bufcomp: LatticeDesignBuffer) {
+		this.bufferComponent = bufcomp;
+	}
 
 	/**
 	 * New regionList object will be pushed onto
@@ -87,5 +93,21 @@ export class RegionsSnapshotStack implements ArchActionTracker<RegionDataList> {
 		this.push(current);
 		this.redoListStack = [];
 	}
+
+	
+  // Performs an undo operation
+  performUndo(): void {
+  	
+  }
+
+  // Performs a redo operation
+  performRedo(): void {
+  	
+  }
+
+  // Performs an action
+  performAction(): void {
+  	
+  }
 
 }

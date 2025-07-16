@@ -2,7 +2,10 @@ import RottnestApplication from "../container/RottnestApplication"
 
 
 const leftClick = (rott: RottnestApplication) => {
-	rott.redoRegion();
+	const aobj = rott.getAppState().getArchitectureObject();
+	if(aobj) {
+		aobj.getDesigner().getActionTracker().performRedo();
+	}
 }
 
 const auxEvent = (_: RottnestApplication) => {}
