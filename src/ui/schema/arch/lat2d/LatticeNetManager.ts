@@ -13,9 +13,9 @@ import { RTCCommActions, RTCCommEvents, RTCOpenOperations } from "./net/NetOpera
 export class LatticeNetManager implements ArchitectureConnectionManager {
 
   object: ArchitectureObject
-  events: CommEventOps<ArchitectureObject>
-  actions: CommsActions<ArchitectureObject>
-  opqueue: CommOpQueue<ArchitectureObject>
+  events: CommEventOps<any>
+  actions: CommsActions<any>
+  opqueue: CommOpQueue<any>
   
   constructor(object: ArchitectureObject) {
     this.events = RTCCommEvents;
@@ -53,7 +53,8 @@ export class LatticeNetManager implements ArchitectureConnectionManager {
    * send messages
    */
   getNetworkService(): AppServiceClient {
-    return this.object.getServices().getNetworkService();
+    return this.object.getServices().getNetworkService()
+      .getNetworkService();
   }
 
   

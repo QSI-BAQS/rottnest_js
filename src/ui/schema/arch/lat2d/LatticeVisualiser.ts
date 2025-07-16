@@ -1,15 +1,7 @@
 import { ArchitecturePlayerState, ArchitectureVisualiser, ArchitectureVisualiserPlayer } from "../ArchSchema";
-import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../ArchWorkspace.ts";
+import { ArchWorkspaceGroup } from "../ArchWorkspace.ts";
+import { VisualiserGroup } from "./groups/VisualiserGroup.tsx";
 
-/**
- * Constructs the workspace group that will be used by the workspace component
- * within rottnest
- */
-export class LatticeVisualiserUIGroup implements ArchWorkspaceGroup {
-  makeGroup(_data: ArchWorkspaceProps): Array<React.ReactElement> {
-      return [];
-  }
-}
 
 
 export class LatticeVisualiserContainer {
@@ -112,7 +104,7 @@ export class LatticeVisualiser implements ArchitectureVisualiser {
    * the content appropriately
    */
   makeWorkspaceGroup(): ArchWorkspaceGroup {
-    return new LatticeVisualiserUIGroup();
+    return new VisualiserGroup();
   }
 
   /**

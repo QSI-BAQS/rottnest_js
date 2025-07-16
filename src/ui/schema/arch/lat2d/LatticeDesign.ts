@@ -3,7 +3,7 @@ import { ArchActionTracker } from '../ArchActionTracker.ts';
 import { ArchitectureDesigner } from '../ArchSchema.ts';
 import { ArchWorkspaceGroup, ArchWorkspaceProps } from '../ArchWorkspace.ts';
 import { LatticeDesignBuffer } from './des/buf/LatticeDesignBuffer.ts';
-import { LatticeDesignProject } from './des/buf/LatticeDesignProject.ts';
+import { LatticeDesignUIGroup } from './groups/DesignGroup.tsx';
 import { RegionData } from './obj/LatticeRegionData.ts';
 
 /**
@@ -40,16 +40,6 @@ export class LatticeWorkingState {
 
 
 /**
- * Constructs the workspace group that will be used by the workspace component
- * within rottnest
- */
-export class LatticeDesignerUIGroup implements ArchWorkspaceGroup {
-  makeGroup(_data: ArchWorkspaceProps): Array<React.ReactElement> {
-      return [];
-  }
-}
-	
-/**
  * LatticeDesigner type, used to represent an instance of making a design
  * for the lat2d architecture
  */
@@ -70,7 +60,7 @@ export class LatticeDesigner implements ArchitectureDesigner {
 	 * in the workspace zone within the application itself
 	 */
   makeWorkspaceGroup(): ArchWorkspaceGroup {
-    return new LatticeDesignerUIGroup();
+    return new LatticeDesignUIGroup();
   }
 	
 }

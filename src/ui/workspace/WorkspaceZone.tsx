@@ -23,7 +23,7 @@ type WorkspaceTabData = {
  * WorkspaceZoneData, it will reference the workspace data
  * and the component that can be rendered
  */
-type WorkspaceZoneData = {
+export type ArchWorkspaceZoneData = {
 	workspaceData: ArchWorkspaceData,
 	wsComponent: ReactElement	
 }
@@ -76,8 +76,8 @@ class WorkspaceTabBar extends React
 }
 
 
-export class WorkspaceZone 
-	extends React.Component<WorkspaceZoneData, {}> 
+export class ArchWorkspaceZone 
+	extends React.Component<ArchWorkspaceZoneData, {}> 
 	implements Workspace {
 
 	render() {
