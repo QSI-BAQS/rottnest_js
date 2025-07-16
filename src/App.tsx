@@ -1,6 +1,6 @@
 
 import './App.css'
-import { RottnestApplication } from './ui/container/RottnestApplication';
+import RottnestApplication from './ui/container/RottnestApplication';
 
 /**
  * Constructs an application instance reference

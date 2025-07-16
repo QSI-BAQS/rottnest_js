@@ -23,7 +23,7 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 
 
 	state: RottnestState = {
-		appState: new RottnestApplicationState(),
+		appState: new RottnestApplicationState(this),
 		appContext: new ArchitectureUIContext()
 	}
 	/**

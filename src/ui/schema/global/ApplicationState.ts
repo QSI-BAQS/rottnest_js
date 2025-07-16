@@ -1,4 +1,3 @@
-import AppServiceModule from "../../../net/AppServiceModule";
 import { ArchPluginService } from "../../../service/ArchPluginService";
 import { HelpService } from "../../../service/HelpService";
 import { InputHookService } from "../../../service/InputHookService";
@@ -17,6 +16,8 @@ import { PluginRepresetationState } from "./modules/PluginRepState";
 import { ProgramPluginState } from "./modules/ProgramPlugin";
 import { ProjectSettingsState } from "./modules/SettingsState";
 import { ZoomState } from "./modules/ZoomState";
+import AppServiceModule from "../../../net/AppServiceModule";
+import RottnestApplication from "../../container/RottnestApplication";
 
 /**
  * Return Object for project state
@@ -57,12 +58,13 @@ export class RottnestApplicationState {
 	/**
 	 * Initialises the architecture state to a default
 	 */
-	constructor(architectureSchema: ArchitectureSchema = new NoArchSchema()) {
-		this.modstate = new RottnestApplicationModulesState(this);
+	constructor(app: RottnestApplication, architectureSchema: ArchitectureSchema = new NoArchSchema()) {
+
+		const services = new RottnestApplicationServices(app);
 		this.architectureSchema = architectureSchema;
-		this.architectureObject = architectureSchema.createArchitecture(
-			this.modstate.getServices()
-		);
+		this.architectureObject = architectureSchema.createArchitecture(services
+			.getServices());
+		this.modstate = new RottnestApplicationModulesState(services, this);
 	}
 
 	/**
@@ -109,10 +111,13 @@ export class RottnestApplicationModulesState {
 	services: RottnestApplicationServices;
 	states: RottnestApplicationComponentStates;
 	
-  constructor(appState: RottnestApplicationState) {
-  	this.services = new RottnestApplicationServices();
+  constructor(services: RottnestApplicationServices,
+  	appState: RottnestApplicationState) {
+  	
+  	
+  	this.services = services;
   	this.states = new RottnestApplicationComponentStates(
-  		appState.getArchitectureObject(),
+  		appState,
   		this.services.getServices())
   }
 
@@ -166,7 +171,8 @@ export class RottnestApplicationComponentStates {
 	errorState: ErrorState;
 	projectState: ProjectSettingsState | null = null;
 
-	constructor(archobj: ArchitectureObject | null, services: Services) {
+	constructor(appState: RottnestApplicationState, services: Services) {
+		
 		const refresh = services.refresh;
 		this.pluginsState = new PluginRepresetationState();
 		this.zoomState = new ZoomState(100, refresh);
@@ -175,9 +181,7 @@ export class RottnestApplicationComponentStates {
 		this.programState = new ProgramPluginState(refresh, this
 			.pluginsState.getCallback());
 		this.errorState = new ErrorState();
-		if(archobj !== null) {
-			this.projectState = new ProjectSettingsState(archobj, refresh);
-		}
+		this.projectState = new ProjectSettingsState(appState, refresh);
 	}
 
 	/**
@@ -232,8 +236,8 @@ export class RottnestApplicationServices implements ServicesHolder {
 
 	services: Services;
 
-	constructor() {
-		this.services = new Services(this);
+	constructor(reftarget: RottnestApplication) {
+		this.services = new Services(reftarget, this);
 	}
 	
 	/**

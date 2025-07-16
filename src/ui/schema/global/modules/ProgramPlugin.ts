@@ -21,6 +21,14 @@ export class ProgramPluginState {
     this.swapFn = swapFn;
   }
 
+	/**
+	 * Returns true if the settings are active
+	 * and be displayed
+	 */
+	areSettingsActive(): boolean {
+		return this.settingsActive;
+	}
+
   /**
    * Shows the program settings when clicked
    */

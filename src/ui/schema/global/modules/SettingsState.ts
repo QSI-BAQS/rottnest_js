@@ -1,5 +1,6 @@
 import { RefreshService } from "../../../../service/RefreshService";
 import { ArchitectureObject, ArchitectureProject } from "../../arch/ArchSchema";
+import { RottnestApplicationState } from "../ApplicationState";
 
 
 /**
@@ -28,12 +29,11 @@ export class ProjectSettingsState<T=any> {
    * Constructs a settings state, if a project is omitted as part of
    * its construction, it will use the default
    */
-  constructor(archobject: ArchitectureObject,
-  	trigger: RefreshService,
-  	project: ArchitectureProject<T> = archobject.makeProject()) {
+  constructor(appState: RottnestApplicationState,
+  	trigger: RefreshService) {
     this.refservice = trigger;
-    this.archobject = archobject;
-    this.project = project;
+    this.archobject = appState.getArchitectureObject();
+    this.project = appState.getArchitectureObject().getProject();
   }
 
 	/**

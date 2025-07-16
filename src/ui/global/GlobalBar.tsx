@@ -30,17 +30,14 @@ import {
 } from '@ant-design/icons';
 
 
+import { ArchitectureProject } from '../schema/arch/ArchSchema.ts';
 import { ArchitecturePluginGetName } from '../../obj/plugin/Architecture.ts';
 import { ProgramPluginGetName } from '../../obj/plugin/Program.ts';
 import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings }
 	from './settings/GeneralSettings.tsx';
 
-//TODO: Fix this
-import {ProjectDetails} from '../model/Project.ts';
-
 import RottnestApplication from '../container/RottnestApplication.tsx';
-
-import styles from './styles/GlobalBar.module.css';
+import styles from '../styles/GlobalBar.module.css';
 /**
  * GlobalBarProps, has a reference to
  * its container and a component map of values
@@ -48,7 +45,7 @@ import styles from './styles/GlobalBar.module.css';
  */
 type GlobalBarProps = {
 	container: RottnestApplication
-	componentMap: Map<number, [string, ProjectDetails]>
+	componentMap: Map<number, [string, ArchitectureProject<any>]>
 }
 
 /**
@@ -82,7 +79,7 @@ type BarItemDescription = {
 type BarItemData = {
 	containerRef: RottnestApplication
 	description: BarItemDescription
-	updatable?: [string, ProjectDetails]
+	updatable?: [string, ArchitectureProject<any>]
 }
 
 
@@ -131,68 +128,79 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 		archData: {
 			title: 'Arch',
 			issueFn: (rott: RottnestApplication) => {
-				return ArchitecturePluginGetName(rott.getCurrentArch()); },
+				const currentArch = rott.getServices().archplugins.getCurrentArch();
+				return ArchitecturePluginGetName(currentArch);
+			},
 			styleName: 'pluginArch',
 			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => {
-				rott.showArchitectureSettings();
+				const archState = rott.getModuleStates().getArchState();
+				archState.showArchSettings();
 			},
 			container: this.props.container,
 			settings: {
 				plgname: 'Architecture',
 				index: 0,
 				selected: '',
-				getConfig: (rott: RottnestApplication) => rott.getArchConfig(),
-				plgItemsGetter: (rott: RottnestApplication) => rott.getArchItems(),
+				getConfig: (rott: RottnestApplication) => {
+					return rott.getServices().archplugins.getArchConfig().contents;
+				},
+				
+				plgItemsGetter: (rott: RottnestApplication) => {
+					return rott.getServices().archplugins.getArchItems();
+				},
 				container: this.props.container,
 				saveDataFn: (data: PluginPackage) => {
 					const rott = data.container;
-					rott.saveArchData(data.pluginData);
-					rott.closeArchitectureSettings();
+					rott.getServices().archplugins.saveArchData(data.pluginData);
+					rott.getModuleStates().getArchState().closeArchSettings();
 				},
 				saveConfigFn: (data: PluginPackage) => {
 					const rott = data.container;
-					rott.saveArchConfig(data.pluginData);
-					rott.closeArchitectureSettings();
+					rott.getServices().archplugins.saveArchConfig(data.pluginData);
+					rott.getModuleStates().getArchState().closeArchSettings();
 					
 				},
 				cancelFn: (data: PluginPackage) => {
 					const rott = data.container;
-					rott.closeArchitectureSettings();
-					
+					rott.getModuleStates().getArchState().closeArchSettings();	
 				}
 			}
 		},
 		progData: {
 			title: 'Program',
 			issueFn: (rott:RottnestApplication) => {
-				return ProgramPluginGetName(rott.getCurrentExe()); },
+				const exe = rott.getServices().programplugins.getCurrentExe();
+				return ProgramPluginGetName(exe); },
 			styleName: 'pluginProgram',
 			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => {
-				rott.showProgramSettings();
+				const progState = rott.getModuleStates().getProgramState();
+				progState.showProgramSettings();
 			},
 			container: this.props.container,
 			settings: {
 				plgname: 'Program',
 				index: 0,
 				selected: '',
-				getConfig: (rott: RottnestApplication) => rott.getProgramConfig(),
-				plgItemsGetter: (rott: RottnestApplication) => rott.getProgramList(),
+				getConfig: (rott: RottnestApplication) => {
+					return rott.getServices().programplugins.getProgramConfig();
+				},
+				plgItemsGetter: (rott: RottnestApplication) => {
+					return rott.getServices().programplugins.getProgramList();
+				},
 				container: this.props.container,
 				saveDataFn: (data: PluginPackage) => {
 					const rott = data.container;
-					rott.saveProgramConfig(data.pluginData);
-					rott.closeProgramSettings();
-					
+					rott.getServices().programplugins.saveProgramData(data.pluginData);
+					rott.getModuleStates().getProgramState().closeProgramSettings();
 				},
 				saveConfigFn: (data: PluginPackage) => {
 					const rott = data.container;
-					rott.saveProgramConfig(data.pluginData);
-					rott.closeProgramSettings();
-					
+					rott.getServices().programplugins.saveProgramConfig(data.pluginData);
+					rott.getModuleStates().getProgramState().closeProgramSettings();					
 				},
 				cancelFn: (data: PluginPackage) => {
 					const rott = data.container;
-					rott.closeProgramSettings();
+					rott.getModuleStates().getProgramState().closeProgramSettings();					
 					
 				}
 				
@@ -407,10 +415,16 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				}
 		});
 
-		const archPluginActive = container.state.appStateData.archSettingsActive;
-		const programPluginActive = container.state.appStateData.progSettingsActive;
+		const appState = container.state.appState;
+		const appModules = appState.getModuleStates();
+
+		const archPluginState = appModules.getStates().getArchState();
+		const programPluginState = appModules.getStates().getProgramState();
+		const archPluginActive = archPluginState.areSettingsActive();
 		const archSettings = this.state.archData.settings;
+		
 		const programSettings = this.state.progData.settings;
+		const programPluginActive = programPluginState.areSettingsActive();
 
 		const archPluginMenu = (archPluginActive ?
 			<PluginSettings {...archSettings} /> : <></>);
@@ -425,8 +439,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				data-help-id="toolbox"
 				onMouseMove={
 					(_) => {
-						container
-						.resetDSMove();
+						container.resetDSMove();
 					}
 				}>
 				<ul className={styles.barItemList}>

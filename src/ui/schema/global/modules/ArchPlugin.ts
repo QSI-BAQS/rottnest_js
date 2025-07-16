@@ -20,6 +20,14 @@ export class ArchPluginState{
     this.updateTrigger = trigger;
   }
 
+	/**
+	 * Returns true if the settings are active
+	 * and be displayed
+	 */
+	areSettingsActive(): boolean {
+		return this.settingsActive;
+	}
+
   /**
    * Shows the arch settings when clicked
    */

@@ -2,7 +2,7 @@ import { HelpService } from "./HelpService";
 import { InputHookService } from "./InputHookService";
 import { NetworkService } from "./NetworkService";
 import { NotifyService } from "./NotifyService"
-import { RefreshService } from "./RefreshService"
+import { RefreshService, UpdateTrigger } from "./RefreshService"
 import { ProgramPluginService } from "./ProgramPluginService";
 import { ArchPluginService } from "./ArchPluginService";
 import { UnimplReturn } from "../ui/schema/util/unimpl";
@@ -53,16 +53,80 @@ export class Services {
   archplugins: ArchPluginService;
   help: HelpService;
 
-  constructor(container: ServicesHolder) {
-    this.refresh = container.getRefreshService();
-    this.notify = container.getNotifyService();
-    this.network = container.getNetworkService();
-    this.inputs = container.getInputService();
+  constructor(refreshTarget: UpdateTrigger, container: ServicesHolder) {
+    this.refresh = new RefreshService(refreshTarget);
+    this.notify = new NotifyService();
+    this.network = new NetworkService();
+    this.inputs = new InputHookService();
     this.valservice = new ValidationService();
     this.programplugins = new ProgramPluginService(this.refresh, this.network);
     this.archplugins = new ArchPluginService(this.refresh, this.network);
     this.help = new HelpService(this.refresh, this.inputs);
   }
+
+  
+	/**
+	 * Allows the architecture object to retrieve a service
+	 * that allows refreshing of the render upon a change of
+	 * state within their own architecture
+	 */
+  getRefreshService(): RefreshService {
+  	return this.refresh;
+  }
+
+	/**
+	 * Allows the architecture to generate notifications
+	 * to allow for arch designer and other components to
+	 * notify the user
+	 */
+  getNotifyService(): NotifyService {
+  	return this.notify;
+  }
+
+	/**
+	 * Gets the network services, this allows
+	 * the architecture to interact with the application
+	 * client and network
+	 */
+  getNetworkService(): NetworkService {
+  	return this.network;
+  }
+
+  /**
+   * Gets the input service
+   */
+  getInputService(): InputHookService {
+  	return this.inputs;
+  }
+
+  /**
+   * Gets the help server
+   */
+  getHelpService(): HelpService {
+  	return this.help;
+  }
+
+	/**
+	 * Gets the arch plugin service
+	 */
+	getArchPluginService(): ArchPluginService {
+		return this.archplugins;		
+	}
+
+	/**
+	 * Gets the program plugin service
+	 */
+	getProgramPluginService(): ProgramPluginService {
+			
+		return this.programplugins;
+	}
+
+	/**
+	 * Gets the validation service
+	 */
+	getValidationService(): ValidationService {
+		return this.valservice;
+	}
 }
 
 /**
@@ -71,7 +135,7 @@ export class Services {
  */
 export class NoServices extends Services {
   constructor() {
-    super(new NoServicesHolder());
+    super({ triggerUpdate: () => {} }, new NoServicesHolder());
   }
 }
 
