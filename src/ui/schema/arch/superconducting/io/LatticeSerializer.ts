@@ -1,16 +1,30 @@
+import { ArchCapabilityQuery, ArchCapabilityResult } from "../../ArchContext";
 import { ArchitectureProject, ArchitectureSerializer } from "../../ArchSchema";
 import { ProjectDetailsDefaultData } from "../obj/Project";
 
 
 /**
- * LatticeSerializer, will serialise the project
+ * SuperconductingSerializer, will serialise the project
  * and deserialize it from a string.
  */
-export class LatticeSerializer implements ArchitectureSerializer<any> {
+export class SuperconductingSerializer implements ArchitectureSerializer<any> {
   serialize(obj: ArchitectureProject<any>): string {
       return JSON.stringify(obj);
   }
 
+   /**
+   * Queries the capabiliteies of the designer
+   */
+  queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
+    if(query.capability === 'CanSave') {
+      return ArchCapabilityResult.Confirm();
+    }
+    if(query.capability === 'CanLoad') {
+      return ArchCapabilityResult.Confirm();
+    }
+    return ArchCapabilityResult.Deny();
+  }
+  
   /**
    * Deserialises the object into a 
    */

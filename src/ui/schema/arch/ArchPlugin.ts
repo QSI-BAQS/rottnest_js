@@ -2,8 +2,7 @@ import { ArchitectureSchema } from "./ArchSchema";
 
 
 /**
- * ArchPlugin object, will represent
- * the 
+ * ArchPlugin object, it is a proxy object for the plugin itself
  */
 export class ArchPlugin {
 

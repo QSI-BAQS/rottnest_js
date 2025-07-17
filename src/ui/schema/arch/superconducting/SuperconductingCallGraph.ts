@@ -3,6 +3,7 @@ import { ArchitectureCallGraph } from "../ArchSchema";
 import { LatticeCallGraph, LatticeCallGraphDefault } from "./obj/LatticeCallGraph";
 import { ArchWorkspaceGroup } from "../ArchWorkspace.ts";
 import { CallGraphGroup } from "./groups/CallGraphGroup.tsx";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext.ts";
 
 
 /**
@@ -17,7 +18,15 @@ export class LatticeCallGraphState implements ArchitectureCallGraph {
   makeWorkspaceGroup(): ArchWorkspaceGroup {
     return new CallGraphGroup();
   }
-
+  /**
+   * Queries the capabiliteies of the designer
+   */
+  queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
+    if(query.capability === 'CanZoom') {
+      return ArchCapabilityResult.Confirm();
+    }
+    return ArchCapabilityResult.Deny();
+  }
   /**
    * Run Result Buffer, this is a stack of objects that
    * are held here

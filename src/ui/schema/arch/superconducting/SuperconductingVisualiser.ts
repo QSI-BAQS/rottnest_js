@@ -1,3 +1,4 @@
+import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext.ts";
 import { ArchitecturePlayerState, ArchitectureVisualiser, ArchitectureVisualiserPlayer } from "../ArchSchema";
 import { ArchWorkspaceGroup } from "../ArchWorkspace.ts";
 import { VisualiserGroup } from "./groups/VisualiserGroup.tsx";
@@ -98,6 +99,23 @@ export class LatticeVisualiser implements ArchitectureVisualiser {
   visualiser: LatticeVisualiserContainer = new LatticeVisualiserContainer();
   visData: any = {};
 
+
+   /**
+   * Queries the capabiliteies of the designer
+   */
+  queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
+    if(query.capability === 'CanZoom') {
+      return ArchCapabilityResult.Confirm();
+    }
+    if(query.capability === 'CanSave') {
+      return ArchCapabilityResult.Deny();
+    }
+    if(query.capability === 'CanLoad') {
+      return ArchCapabilityResult.Deny();
+    }
+    return ArchCapabilityResult.Deny();
+  }
+  
   /**
    * Constructs an architecture workspace group that will
    * be used by the front end in order to display

@@ -41,6 +41,18 @@ export interface ArchitectureSchema {
 }
 
 /**
+ * Constructs a component module, requires props and state
+ * types to be defined here
+ * 
+ */
+export interface ArchitectureComponentModule<P, S> {
+
+  // Return 
+  makeComponent(component: React.Component<P, S>): React.ReactElement;
+  
+}
+
+/**
  * Metadata type that contains information
  * related to the kind of modules and availability
  * along with the count
@@ -237,6 +249,8 @@ export interface ArchitectureVisualiser extends ArchitectureWorkspaceFactory,
  */
 export interface ArchitectureCallGraph extends ArchitectureWorkspaceFactory,
   ArchCapabilitiesObject {
+
+  
   
 }
 

@@ -1,5 +1,6 @@
 
 import { ArchActionTracker } from '../ArchActionTracker.ts';
+import { ArchCapabilityQuery, ArchCapabilityResult } from '../ArchContext.ts';
 import { ArchitectureDesigner } from '../ArchSchema.ts';
 import { ArchWorkspaceGroup, ArchWorkspaceProps } from '../ArchWorkspace.ts';
 import { LatticeDesignBuffer } from './des/buf/LatticeDesignBuffer.ts';
@@ -47,6 +48,25 @@ export class LatticeDesigner implements ArchitectureDesigner {
 
 	designBuffer = new LatticeDesignBuffer();
   workingState: LatticeWorkingState = new LatticeWorkingState();
+
+	 /**
+   * Queries the capabiliteies of the designer
+   */
+  queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
+    if(query.capability === 'CanZoom') {
+      return ArchCapabilityResult.Deny();
+    }
+    if(query.capability === 'CanUndo') {
+      return ArchCapabilityResult.Deny();
+    }
+    if(query.capability === 'CanSave') {
+      return ArchCapabilityResult.Deny();
+    }
+    if(query.capability === 'CanLoad') {
+      return ArchCapabilityResult.Confirm();
+    }
+    return ArchCapabilityResult.NotKnown();
+  }
 
 	/**
 	 * Gets the snapshot tracker for undo and redo functionality
