@@ -58,7 +58,7 @@ export class Lattice2DArchitecture implements ArchitectureObject<RegionDataList,
   // Meta data, keeps track of what is active
   meta: ArchitectureModulesMeta = {
         modules: ["Designer", "Visualiser", "CallGraph"],
-        available: ["Disigner"],
+        available: ["Designer"],
         availability: [true, false, false],
         count: 3
   }

@@ -1,3 +1,4 @@
+import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
 import { ArchitecturePlayerState, ArchitectureVisualiser, ArchitectureVisualiserPlayer } from "../ArchSchema";
 import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../ArchWorkspace";
 
@@ -24,6 +25,20 @@ export class NoArchVisualiser implements ArchitectureVisualiser {
 
   makePlayer(): ArchitectureVisualiserPlayer {
       return new NoArchVisualiserPlayer();
+  }
+
+  
+  /**
+   * Queries the capabiliteies of the designer
+   */
+  queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
+    if(query.capability === 'CanZoom') {
+      return ArchCapabilityResult.Confirm();
+    }
+    if(query.capability === 'CanLoad') {
+      return ArchCapabilityResult.Confirm();
+    }
+    return ArchCapabilityResult.Deny();
   }
 }
 

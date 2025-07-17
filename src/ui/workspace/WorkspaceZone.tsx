@@ -41,7 +41,7 @@ class WorkspaceTabBar extends React
 		const selTab = data.selectedTab;
 		
 		const avaibilities = data.availableTabs;
-
+		console.log(data);
 		const tabs = data.tabTitles.map((t, idx) => {
 
 			const isSelected = t == selTab;
@@ -83,7 +83,6 @@ export class ArchWorkspaceZone
 	render() {
 
 		const data = this.props.workspaceData;
-		const meta = data.archcontext.getTabs();
 		const selKey = data.archcontext.getCurrent();
 		const moduleMeta = data.architecture.getModulesMeta();
 		const component = this.props.wsComponent;
@@ -93,7 +92,7 @@ export class ArchWorkspaceZone
 		
 		return (<div className={styles.workspaceZone}>
 				<WorkspaceTabBar 
-				tabTitles={meta.keys}
+				tabTitles={moduleMeta.modules}
 				container={data.architecture}
 				context={data.archcontext}
 				selectedTab={selKey} 

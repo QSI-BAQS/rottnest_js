@@ -1,3 +1,4 @@
+import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
 import { ArchitectureCallGraph } from "../ArchSchema";
 import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../ArchWorkspace";
 
@@ -22,4 +23,22 @@ export class NoArchCallGraph implements ArchitectureCallGraph {
       return new NoArchWorkspaceGroup();
   }
 
+  /**
+   * Queries the capabiliteies of the designer
+   */
+  queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
+    if(query.capability === 'CanZoom') {
+      return ArchCapabilityResult.Deny();
+    }
+    if(query.capability === 'CanUndo') {
+      return ArchCapabilityResult.Deny();
+    }
+    if(query.capability === 'CanSave') {
+      return ArchCapabilityResult.Deny();
+    }
+    if(query.capability === 'CanLoad') {
+      return ArchCapabilityResult.Confirm();
+    }
+    return ArchCapabilityResult.NotKnown();
+  }
 }

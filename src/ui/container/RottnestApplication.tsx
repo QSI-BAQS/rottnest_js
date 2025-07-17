@@ -54,6 +54,13 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 	}
 
 	/**
+	 * Gets the UI context of the application
+	 */
+	getUIContext() {
+		return this.state.appContext;
+	}
+
+	/**
 	 * Gets the application state and associated operations
 	 */
 	getAppState() {

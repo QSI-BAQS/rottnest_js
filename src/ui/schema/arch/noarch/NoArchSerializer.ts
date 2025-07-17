@@ -1,3 +1,4 @@
+import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
 import { ArchitectureSerializer } from "../ArchSchema";
 
 
@@ -15,4 +16,10 @@ export class NoArchSerializer implements ArchitectureSerializer<any> {
     return {};
   }
 
+  /**
+   * Queries the capabiliteies of the designer
+   */
+  queryCapability(_query: ArchCapabilityQuery): ArchCapabilityResult {
+    return ArchCapabilityResult.Deny();
+  }
 }

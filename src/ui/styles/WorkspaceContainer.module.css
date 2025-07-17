@@ -8,7 +8,6 @@
 .workspaceTabBar {
 	min-height: 1.5em;
 	flex-flow: column;
-	width: 100%;
 	border-bottom: 1px #35332f solid;
 	border-left: 1px #35332f solid;
 	border-right: 1px #35332f solid;

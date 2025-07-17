@@ -1,4 +1,5 @@
 import RottnestApplication from "../container/RottnestApplication"
+import { LoadComponent } from "./LoadExtra";
 
 
 /**
@@ -75,7 +76,10 @@ export const hiddenInputProc = (e: any, rott: RottnestApplication) => {
 		}
 	}
 	console.warn("Unable to deserialize project");
+	const notify = rott.getServices().getNotifyService();
+	notify.makeMessage("Did Not Load", "The file did not deserialize correctly");
 	return false
 }
 
-export default { leftClick, auxEvent }
+
+export default { leftClick, auxEvent, extra: LoadComponent }

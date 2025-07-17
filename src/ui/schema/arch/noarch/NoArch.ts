@@ -1,5 +1,4 @@
 import { NoServices, Services } from '../../../../service/Services.ts';
-import { UnimplReturn } from '../../util/unimpl.ts';
 import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
   ArchitectureDesigner,
@@ -39,6 +38,14 @@ export class NoArchSchema implements ArchitectureSchema {
  * to be used, this would be when the user is still selecting
  */
 export class NoArchObject implements ArchitectureObject<any, any> {
+
+
+  meta: ArchitectureModulesMeta = {
+    modules: ["Designer"],
+    available: ["Designer"],
+    availability: [true],
+    count: 1
+  }
   
   // Holds the project information
   getProject(): ArchitectureProject<any> {
@@ -72,7 +79,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
   // Get avaiable modules
   // TODO: Finish this method
   getModulesMeta(): ArchitectureModulesMeta {
-    return UnimplReturn<ArchitectureModulesMeta>()
+    return this.meta;
   }
 
   /**

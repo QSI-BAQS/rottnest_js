@@ -2,6 +2,7 @@ import { AppServiceClient } from "../../../net/AppService";
 import { Services } from "../../../service/Services";
 import { CommEventOps, CommOpQueue } from "../global/ops/CommsOps";
 import { ArchActionTracker } from "./ArchActionTracker";
+import { ArchCapabilitiesObject } from "./ArchContext";
 import { ArchWorkspaceGroup } from "./ArchWorkspace";
 
 
@@ -102,7 +103,7 @@ export interface ArchitectureObject<T=any, E=any> {
  * grant the architecture the ability to send messages
  *
  */
-export interface ArchitectureConnectionManager {
+export interface ArchitectureConnectionManager extends ArchCapabilitiesObject {
 
   // Gets the communication events relevant to the architecture object
   getCommunicationEvents(): CommEventOps<ArchitectureObject>;
@@ -110,8 +111,8 @@ export interface ArchitectureConnectionManager {
   // Sets the communication events for the architecture object
   setCommunicationEvents(evemts: CommEventOps<ArchitectureObject>): void;
 
-  // Gets the initial operation when loading
-  getOnOpenOperations(): CommOpQueue<ArchitectureObject>;
+  // Gets the initial operations when loading
+  onLoadEvents(): CommOpQueue<ArchitectureObject>;
 
   // Gets the network service
   // TODO: Remove this as this will be extracted
@@ -146,7 +147,7 @@ export interface ArchitectureWorkspaceFactory {
  * ArchitectureSerializer allows the developer to implement saving
  * and loading operations within this object
  */
-export interface ArchitectureSerializer<T> {
+export interface ArchitectureSerializer<T> extends ArchCapabilitiesObject {
 
   // Serializes and object to a string
   serialize(obj: ArchitectureProject<T>): string;
@@ -160,7 +161,8 @@ export interface ArchitectureSerializer<T> {
  * Architecture designer will represent operations that the designer
  * will need to do and update related state operations
  */
-export interface ArchitectureDesigner extends ArchitectureWorkspaceFactory {
+export interface ArchitectureDesigner extends ArchitectureWorkspaceFactory,
+  ArchCapabilitiesObject {
 
   // Returns the action tracker for the designer
   getActionTracker<T=any>(): ArchActionTracker<T>;
@@ -221,7 +223,8 @@ export interface ArchitectureVisualiserPlayer {
  * ArchitectureVisualiser will implement relevant operations
  * that are needed for the visualiser playback and management
  */
-export interface ArchitectureVisualiser extends ArchitectureWorkspaceFactory {
+export interface ArchitectureVisualiser extends ArchitectureWorkspaceFactory,
+  ArchCapabilitiesObject {
 
   // Constructs a player
   makePlayer(data: Map<string, any>): ArchitectureVisualiserPlayer;
@@ -232,7 +235,8 @@ export interface ArchitectureVisualiser extends ArchitectureWorkspaceFactory {
  * ArchitectureCallGraph class that will allow the developer
  * to output a callgraph variation for their architecture
  */
-export interface ArchitectureCallGraph extends ArchitectureWorkspaceFactory {
+export interface ArchitectureCallGraph extends ArchitectureWorkspaceFactory,
+  ArchCapabilitiesObject {
   
 }
 

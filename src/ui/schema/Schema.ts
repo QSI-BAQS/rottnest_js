@@ -1,5 +1,7 @@
 
 /**
+ * Deprecated: Moved to a different schema system
+ *
  * Interface for ui data schemas to keep track
  * and form a pattern on the kind of data and structure required.
  *

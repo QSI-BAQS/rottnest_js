@@ -8,19 +8,29 @@ import styles from '../styles/GlobalBar.module.css';
 
 const MAX_RECONNECTS: number = 10;
 
+/**
+ * Connection Status properties
+ */
 type ConnectionStatusProps = {
   	container: RottnestApplication;
   	onClick: () => void;
 };
 
+/**
+ * The variations of the connection state
+ */
 enum ConnectionStateKind {
   	CONNECTED = 'connected',
   	DISCONNECTED = 'disconnected',
   	CONNECTING = 'connecting'
 }
 
+/**
+ * THe connection state data
+ */
 type ConnectionState = {
   state: ConnectionStateKind,
+  prev: ConnectionStateKind,
   reconnectAttempts: number
 }
 
@@ -28,12 +38,15 @@ type ConnectionState = {
  * A button that shows the current connection status
  * and allows reconnecting to the backend
  */
-const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ onClick }) => {
+const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ container, onClick }) => {
 
 	const [connectionState, setConnectionState] = useState<ConnectionState>(
   		ConnectionReady() 
-    			? { state: ConnectionStateKind.CONNECTED, reconnectAttempts: 0 }
-    			: { state: ConnectionStateKind.DISCONNECTED, reconnectAttempts: 0 }
+    			? { prev: ConnectionStateKind.DISCONNECTED, 
+    			  state: ConnectionStateKind.CONNECTED, reconnectAttempts: 0 }
+    			: {
+    			  prev: ConnectionStateKind.CONNECTED, 
+    			  state: ConnectionStateKind.DISCONNECTED, reconnectAttempts: 0 }
 	);
 
 	// Handler for the click event
@@ -46,6 +59,9 @@ const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ onClick }) =>
     			const nstate = {...connectionState};
     			nstate.reconnectAttempts += 1;
     			nstate.state = ConnectionStateKind.CONNECTING;
+    			container.getServices().getNotifyService()
+    			  .makeMessage("Connection Status", "Attempting to connect to backend");
+    			container.getServices().getRefreshService().triggerRefresh();
     			setConnectionState(nstate);
   		}
   
@@ -86,21 +102,29 @@ const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ onClick }) =>
 		};
 
 		checkConnection();
-  
   	const interval = setInterval(checkConnection, 2000);
-  
   	const appService = GetAppServiceInstance();
-  
+  	
   	const handleOpen = () => {
-
 			const nstate = {...connectionState};
 			nstate.state = ConnectionStateKind.CONNECTED;
+      const notify = container.getServices().getNotifyService();
+      const refresh = container.getServices().getRefreshService();
+      notify.makeMessageWithId('connection-success', "Network",
+        "Connected to workpool");
+      
+      refresh.triggerRefresh();
   		setConnectionState(nstate);
   	};
 
   	const handleDisconnect = () => {
 			const nstate = {...connectionState};
 			nstate.state = ConnectionStateKind.DISCONNECTED;
+      const notify = container.getServices().getNotifyService();
+      const refresh = container.getServices().getRefreshService();
+      notify.makeMessageWithId('connection-failed', "Network",
+        "You have been disconnected");
+      refresh.triggerRefresh();
   		setConnectionState(nstate);
   	};
 
@@ -133,6 +157,7 @@ const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ onClick }) =>
       			return "Connected to API";
     			case ConnectionStateKind.DISCONNECTED:
       			return "Disconnected from API - Click to reconnect";
+
     			case ConnectionStateKind.CONNECTING:
       			return "Connecting to API...";
     			default:

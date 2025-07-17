@@ -1,5 +1,5 @@
 import { AppServiceClient } from "../net/AppService";
-import AppSeriveModule from '../net/AppServiceModule.ts';
+import AppServiceModule from '../net/AppServiceModule.ts';
 
 /**
  * Network Service, will provide access to necessary
@@ -14,7 +14,35 @@ export class NetworkService {
    * to the client
    */
   constructor() { 
-	  this.appService = AppSeriveModule.GetAppServiceInstance();
+	  this.appService = AppServiceModule.GetAppServiceInstance();
+  }
+
+  /**
+   * Starts the network service
+   */
+  startService() {
+		/*const appReady = AppServiceModule
+			.ConnectionReady();
+		const appService = AppServiceModule
+			.GetAppServiceInstance();
+		const selfRef = this;
+		
+		if(appReady) { return; }
+
+		selfRef.rtcCommsActions.ApplyInternal(
+			selfRef.commData.appService, selfRef);
+
+		appService.registerOpenFn(() => { selfRef
+			.rtcCommsDispatch.applyAll(appService, selfRef); });
+		
+		this.commData.appService.connect();*/
+  }
+
+  /**
+   * Stops the service from continuing, will ignore instructions (not implemented)
+   */
+  stopService() {
+    
   }
 
   /**

@@ -1,7 +1,7 @@
 import React, {MouseEvent, ReactElement} from 'react';
 
 import HelpEvent from './Help.ts';
-import LoadEvent, { hiddenInputProc } from './Load.ts';
+import LoadEvent from './Load.ts';
 import SaveEvent from './Save.ts';
 import UndoEvent from './Undo.ts';
 import RedoEvent from './Redo.ts';
@@ -38,6 +38,7 @@ import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings }
 
 import RottnestApplication from '../container/RottnestApplication.tsx';
 import styles from '../styles/GlobalBar.module.css';
+import { LoadComponent } from './LoadExtra.tsx';
 /**
  * GlobalBarProps, has a reference to
  * its container and a component map of values
@@ -68,6 +69,7 @@ type BarItemDescription = {
 	image: string
 	style?: string
 	events: BarItemEvents
+	extra?: React.FC<{}>
 	iconComponent: ReactElement
 	helpId?: string
 }
@@ -95,6 +97,10 @@ const BarItem: React.FC<BarItemData> = (props) => {
 	const name = description.name;
 	const ident = description.id;
 	const tooltip = description.toolTip;
+	const extra = props.description.extra;
+	
+	const extraComponent = extra ? extra({}) : <></>;
+	
 	
 	return (
 		<li 
@@ -103,11 +109,13 @@ const BarItem: React.FC<BarItemData> = (props) => {
 			className={`${styles.barItem} ${description.style || ''}`}
 			title={tooltip}
 		>
-			<div className={styles.barItemContent}>
+			<div className={styles.barItemContent}
+				onClick={() => events.leftClick(containerRef)}>
 				<span className={styles.barItemIcon}>{ico}</span>
 				{(val || name) && (
 					<span className={styles.barItemText}>{val || name}</span>
 				)}
+				{extraComponent}
 			</div>
 		</li>
 	);
@@ -216,7 +224,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			image: "",
 			events: LogoEvents,
 			style: styles.containerLogo,
-			iconComponent: <div>Test Build</div>
+			iconComponent: <div>RNST</div>
 		},
 		{ 
 			id: 0,
@@ -333,16 +341,12 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			toolTip: "Load", 
 			image: "LoadImage",
 			events: LoadEvent,
+			extra: LoadComponent,
 			style: styles.load,
 			helpId: "load",
 			iconComponent: 
 				<>
 				<UploadOutlined />
-				<input className={styles.hiddenFile} 
-					type="file" 
-					onChange={(e) => {
-						hiddenInputProc(e, this.props.container);
-					}} />
 				</>
 		},
 		{ 
@@ -388,10 +392,10 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 		this.barItems.forEach((item, idx) => {
 			// Check if this is the reconnect button
 			if (item.name === "ProgramOption") {
-				renderItems.push(<PluginObject {...this.state.progData} />);
+				renderItems.push(<PluginObject key={'plugin_prog_1'} {...this.state.progData} />);
 				 				
 			} else if (item.name === "ArchOption") {
-				renderItems.push(<PluginObject {...this.state.archData} />);
+				renderItems.push(<PluginObject key={'plugin_arch_1'} {...this.state.archData} />);
 
 			} else if (item.name === "Reconnect" && item.events === ReconnectEvent) {
 				// Use our ConnectionStatusButton instead
@@ -405,7 +409,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			} else {
 				// Use the standard BarItem component
 				renderItems.push(
-					<BarItem 
+					<BarItem
 						key={`bar_it_${idx}`}
 						containerRef={container}
 						description={item}
@@ -439,7 +443,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				data-help-id="toolbox"
 				onMouseMove={
 					(_) => {
-						container.resetDSMove();
+						//container.resetDSMove();
 					}
 				}>
 				<ul className={styles.barItemList}>

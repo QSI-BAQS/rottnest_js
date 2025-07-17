@@ -53,6 +53,113 @@ export const ArchUIContextDefaults: ArchUIContextMapping = {
 }
 
 /**
+ * Standard set of capabilities as outlined
+ * by the application
+ */
+export type ArchStandardCapabilities = "CanZoom"
+  | "CanNetwork" | "CanJSON"
+
+/**
+ * Concrete answer from the capability query
+ */
+export enum ArchCapabilityAnswer {
+  Yes,
+  No,
+  Unknown
+}
+
+/**
+ * Query object that is sent to the capabilities object
+ */
+export class ArchCapabilityQuery {
+  capability: string = '';
+  extra?: any = {};
+
+  constructor(capability: string, extra?: any) {
+    this.capability = capability;
+    this.extra = extra;
+  }
+
+  /**
+   * Static method for the sake of readability
+   */
+  static MakeQuery(capability: string, extra?: any) {
+    return new ArchCapabilityQuery(capability, extra);
+  }
+}
+
+/**
+ * Result from querying the capability of
+ * a capabilities object
+ */
+export class ArchCapabilityResult {
+  result: ArchCapabilityAnswer = ArchCapabilityAnswer.Unknown;
+  extra?: any = {};
+
+  constructor(result: ArchCapabilityAnswer, extra?: any) {
+    this.result = result;
+    this.extra = extra;
+  }
+
+  /**
+   * Confirms and allows the usage
+   */
+  static Confirm(extra?: any): ArchCapabilityResult {
+    return new ArchCapabilityResult(ArchCapabilityAnswer.Yes, extra);
+  }
+
+  /**
+   * Denies the usage of it
+   */
+  static Deny(extra?: any): ArchCapabilityResult {
+
+    return new ArchCapabilityResult(ArchCapabilityAnswer.No, extra);
+  }
+
+  /**
+   * Unknown status
+   */
+  static NotKnown(extra?: any): ArchCapabilityResult {
+    return new ArchCapabilityResult(ArchCapabilityAnswer.Unknown, extra);
+  }
+  
+
+  /**
+   * Used in if statements and loops to check for confirmation
+   */  
+  Yes(): boolean {
+    return this.result === ArchCapabilityAnswer.Yes;
+  }
+
+
+  /**
+   * Used in if statements and loops to check for confirmation
+   */  
+  No(): boolean {
+    return this.result === ArchCapabilityAnswer.No;
+  }
+
+  /**
+   * Used in if statements and loops to check for confirmation
+   */  
+  Unknown(): boolean {
+    return this.result === ArchCapabilityAnswer.Unknown;
+  }
+}
+
+
+/**
+ * Object that contains capabilities and may
+ * require the frontend (or other components)
+ * to negotiate with it
+ */
+export interface ArchCapabilitiesObject {
+
+  // Capabilitie object will
+  queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult;
+}
+
+/**
  * UI Meta that will outline the weak refs (strings)
  * and a count of the number of keys outside of default
  */
@@ -145,6 +252,14 @@ export class ArchitectureUIContext {
   getDefault(): ArchContextReturnObj {
     this.cursor = "default";
     return this.switches['default'](this.archObject, {});
+  }
+
+  /**
+   * Gets the current context that is being access
+   */
+  getCurrentContext(): ArchContextReturnObj {
+    return this.getSwitches()[this.getCurrent()](this.archObject,
+      this.helddata);
   }
 
   /**

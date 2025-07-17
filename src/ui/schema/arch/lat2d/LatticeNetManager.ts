@@ -41,10 +41,10 @@ export class LatticeNetManager implements ArchitectureConnectionManager {
   }
 
   /**
-   * Gets OnOpenOperations, as these events will be used as part of
+   * Gets onLoadEvents, as these events will be used as part of
    * construction and opening of the websocket
    */
-  getOnOpenOperations(): CommOpQueue<ArchitectureObject> {
+  onLoadEvents(): CommOpQueue<ArchitectureObject> {
     return this.opqueue;
   }
 

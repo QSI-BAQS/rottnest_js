@@ -1,6 +1,7 @@
 import { AppServiceClient } from "../../../../net/AppService";
 import { CommEventOps, CommOpQueue } from "../../global/ops/CommsOps";
 import { UnimplReturn } from "../../util/unimpl";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
 import { ArchitectureConnectionManager, ArchitectureObject } from "../ArchSchema";
 
 /**
@@ -27,10 +28,10 @@ export class NoArchNetManager implements ArchitectureConnectionManager {
   }
 
   /**
-   * Gets OnOpenOperations, as these events will be used as part of
+   * Gets onLoadEvents, as these events will be used as part of
    * construction and opening of the websocket
    */
-  getOnOpenOperations(): CommOpQueue<ArchitectureObject> {
+  onLoadEvents(): CommOpQueue<ArchitectureObject> {
     return UnimplReturn<CommOpQueue<ArchitectureObject>>();
   }
 
@@ -43,4 +44,13 @@ export class NoArchNetManager implements ArchitectureConnectionManager {
   }
 
   
+  /**
+   * Queries the capabiliteies of the designer
+   */
+  queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
+    if(query.capability === 'CanNetwork') {
+      return ArchCapabilityResult.Confirm();
+    }
+    return ArchCapabilityResult.Deny();
+  }
 }
