@@ -2,11 +2,11 @@ import { ArchitectureExtensions, ArchitectureExtObj } from "../ArchSchema";
 
 
 /**
- * Lattice Extension map that will
+ * Superconducting Extension map that will
  * allow the lattice architecture to exten beyond what has been
  * rigidly defined by the interface
  */
-export class LatticeExtensionMap implements ArchitectureExtensions<any> {
+export class SuperconductingExtensionMap implements ArchitectureExtensions<any> {
 
   extensions: Map<string, any> = new Map(); 
   

@@ -5,16 +5,16 @@ import { VisualiserGroup } from "./groups/VisualiserGroup.tsx";
 
 
 
-export class LatticeVisualiserContainer {
+export class SuperconductingVisualiserContainer {
   
 }
 
 /**
- * Lattice Player state,
+ * Superconducting Player state,
  * Will keep track of the current player for Lat2D when the visualiser is
  * engaged
  */
-export class LatticePlayerState implements ArchitecturePlayerState {
+export class SuperconductingPlayerState implements ArchitecturePlayerState {
 
   frameNo: number = 0;
   maxFrame: number = 0;
@@ -48,11 +48,11 @@ export class LatticePlayerState implements ArchitecturePlayerState {
 }
 
 /**
- * LatticeVisualiserPlayer,
+ * SuperconductingVisualiserPlayer,
  * Used to by the application to play and control the player state of
  * the visualiser
  */
-export class LatticeVisualiserPlayer implements ArchitectureVisualiserPlayer {
+export class SuperconductingVisualiserPlayer implements ArchitectureVisualiserPlayer {
   
   changeFrame(frameNo: number, state: ArchitecturePlayerState): void {
     state.setFrame(frameNo);
@@ -90,13 +90,13 @@ export class LatticeVisualiserPlayer implements ArchitectureVisualiserPlayer {
 }
 
 /**
- * Lattice Visualiser that will hold the visualisation related
+ * Superconducting Visualiser that will hold the visualisation related
  * operations
  */
-export class LatticeVisualiser implements ArchitectureVisualiser {
+export class SuperconductingVisualiser implements ArchitectureVisualiser {
 
   
-  visualiser: LatticeVisualiserContainer = new LatticeVisualiserContainer();
+  visualiser: SuperconductingVisualiserContainer = new SuperconductingVisualiserContainer();
   visData: any = {};
 
 
@@ -130,7 +130,7 @@ export class LatticeVisualiser implements ArchitectureVisualiser {
    * allow the data to be attached to the visualiser
    */
   makePlayer(): ArchitectureVisualiserPlayer {
-    return new LatticeVisualiserPlayer()
+    return new SuperconductingVisualiserPlayer()
   }
 
   /**

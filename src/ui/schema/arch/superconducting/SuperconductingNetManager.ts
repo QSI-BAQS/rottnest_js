@@ -1,16 +1,17 @@
 import { AppServiceClient } from "../../../../net/AppService";
 import { CommEventOps, CommOpQueue, CommsActions } from "../../global/ops/CommsOps";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
 import { ArchitectureConnectionManager, ArchitectureObject } from "../ArchSchema";
 import { RTCCommActions, RTCCommEvents, RTCOpenOperations } from "./net/NetOperations";
 
 
 
 /**
- * LatticeNetworkManager, it will manage the connection it receives
+ * SuperconductingNetworkManager, it will manage the connection it receives
  * from the application
  * It will also have an initial set of callbacks it uses
  */
-export class LatticeNetManager implements ArchitectureConnectionManager {
+export class SuperconductingNetManager implements ArchitectureConnectionManager {
 
   object: ArchitectureObject
   events: CommEventOps<any>
@@ -21,8 +22,14 @@ export class LatticeNetManager implements ArchitectureConnectionManager {
     this.events = RTCCommEvents;
     this.actions = RTCCommActions;
     this.opqueue = RTCOpenOperations;
-    this.object = object;
-    
+    this.object = object; 
+  }
+
+	 /**
+   * Queries the capabiliteies of the designer
+   */
+  queryCapability(_query: ArchCapabilityQuery): ArchCapabilityResult {
+    return ArchCapabilityResult.Deny();
   }
 
   /**

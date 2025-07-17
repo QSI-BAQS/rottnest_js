@@ -1,18 +1,18 @@
 
 import { ArchitectureCallGraph } from "../ArchSchema";
-import { LatticeCallGraph, LatticeCallGraphDefault } from "./obj/LatticeCallGraph";
+import { SuperconductingCallGraph, SuperconductingCallGraphDefault } from "./obj/SuperconductingCallGraph";
 import { ArchWorkspaceGroup } from "../ArchWorkspace.ts";
 import { CallGraphGroup } from "./groups/CallGraphGroup.tsx";
 import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext.ts";
 
 
 /**
- * LatticeCallGraphState, usually was just the graph view within
+ * SuperconductingCallGraphState, usually was just the graph view within
  * the rottnest container
  */
-export class LatticeCallGraphState implements ArchitectureCallGraph {
+export class SuperconductingCallGraphState implements ArchitectureCallGraph {
 
-  callgraph: LatticeCallGraph = LatticeCallGraphDefault();
+  callgraph: SuperconductingCallGraph = SuperconductingCallGraphDefault();
   graphViewData: any = {};
 
   makeWorkspaceGroup(): ArchWorkspaceGroup {

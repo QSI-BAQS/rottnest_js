@@ -10,12 +10,12 @@ import { ArchitectureCallGraph,
   ArchitectureSerializer,
   ArchitectureVisualiser } from '../ArchSchema.ts';
 
-import { LatticeCallGraphState } from './LatticeCallGraph.ts';
-import { LatticeDesigner } from './LatticeDesign.ts';
-import { LatticeExtensionMap } from './LatticeExtension.ts';
-import { LatticeVisualiser } from './LatticeVisualiser.ts';
-import { LatticeNetManager } from './LatticeNetManager.ts';
-import { LatticeSerializer } from './io/LatticeSerializer.ts';
+import { SuperconductingCallGraphState } from './SuperconductingCallGraph.ts';
+import { SuperconductingDesigner } from './SuperconductingDesign.ts';
+import { SuperconductingExtensionMap } from './SuperconductingExtension.ts';
+import { SuperconductingVisualiser } from './SuperconductingVisualiser.ts';
+import { SuperconductingNetManager } from './SuperconductingNetManager.ts';
+import { SuperconductingSerializer } from './io/Serializer.ts';
 import { Services } from '../../../../service/Services.ts';
 import { RegionDataList } from './obj/RegionDataList.ts';
 import { ProjectDetailsDefaultData, ProjectDump } from './obj/Project.ts';
@@ -24,32 +24,32 @@ import { ProjectDetailsDefaultData, ProjectDump } from './obj/Project.ts';
  * Schema object, typically only one instance which is used to
  * construct architectures (template class)
  */
-export class Lattice2DSchema implements ArchitectureSchema {
+export class Superconducting2DSchema implements ArchitectureSchema {
 
   /**
    * Creates an architecture object that can be used by
    * application
    */
   createArchitecture(services: Services, args: Map<string, string | number>): ArchitectureObject {
-    return new Lattice2DArchitecture(services, args);
+    return new Superconducting2DArchitecture(services, args);
   }
   
 }
 
 /**
- * The Lattice2DArchitecture object that will be a facade object
+ * The Superconducting2DArchitecture object that will be a facade object
  * that RottnestContainer will use.
  */
-export class Lattice2DArchitecture implements ArchitectureObject<RegionDataList, any> {
+export class Superconducting2DArchitecture implements ArchitectureObject<RegionDataList, any> {
 
   services: Services;
   components = {
-    designer: new LatticeDesigner(),
-    serializer: new LatticeSerializer(),
-    visualiser: new LatticeVisualiser(),
-    callgraph: new LatticeCallGraphState(),
-    extension: new LatticeExtensionMap(),
-    netmanager: new LatticeNetManager(this),
+    designer: new SuperconductingDesigner(),
+    serializer: new SuperconductingSerializer(),
+    visualiser: new SuperconductingVisualiser(),
+    callgraph: new SuperconductingCallGraphState(),
+    extension: new SuperconductingExtensionMap(),
+    netmanager: new SuperconductingNetManager(this),
   }
 
   // Project Defaults
@@ -64,7 +64,7 @@ export class Lattice2DArchitecture implements ArchitectureObject<RegionDataList,
   }
 
   /**
-   * Constructor for the Lattice2DArchitecture with its abstraction
+   * Constructor for the Superconducting2DArchitecture with its abstraction
    * Will leverage an argument map
    */
   constructor(services: Services, _args: Map<string, string | number>) {

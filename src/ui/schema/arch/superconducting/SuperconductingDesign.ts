@@ -3,14 +3,14 @@ import { ArchActionTracker } from '../ArchActionTracker.ts';
 import { ArchCapabilityQuery, ArchCapabilityResult } from '../ArchContext.ts';
 import { ArchitectureDesigner } from '../ArchSchema.ts';
 import { ArchWorkspaceGroup, ArchWorkspaceProps } from '../ArchWorkspace.ts';
-import { LatticeDesignBuffer } from './des/buf/LatticeDesignBuffer.ts';
-import { LatticeDesignUIGroup } from './groups/DesignGroup.tsx';
-import { RegionData } from './obj/LatticeRegionData.ts';
+import { SuperconductingDesignBuffer } from './des/buf/SuperconductingDesignBuffer.ts';
+import { SuperconductingDesignUIGroup } from './groups/DesignGroup.tsx';
+import { RegionData } from './obj/SuperconductingRegionData.ts';
 
 /**
  * State object of things which are currently being operated on.
  */
-export class LatticeWorkingState {
+export class SuperconductingWorkingState {
 
   selectedRegion: number = -1;
   selectedRegionType: string = 'N/A';
@@ -41,13 +41,13 @@ export class LatticeWorkingState {
 
 
 /**
- * LatticeDesigner type, used to represent an instance of making a design
+ * SuperconductingDesigner type, used to represent an instance of making a design
  * for the lat2d architecture
  */
-export class LatticeDesigner implements ArchitectureDesigner {
+export class SuperconductingDesigner implements ArchitectureDesigner {
 
-	designBuffer = new LatticeDesignBuffer();
-  workingState: LatticeWorkingState = new LatticeWorkingState();
+	designBuffer = new SuperconductingDesignBuffer();
+  workingState: SuperconductingWorkingState = new SuperconductingWorkingState();
 
 	 /**
    * Queries the capabiliteies of the designer
@@ -80,7 +80,7 @@ export class LatticeDesigner implements ArchitectureDesigner {
 	 * in the workspace zone within the application itself
 	 */
   makeWorkspaceGroup(): ArchWorkspaceGroup {
-    return new LatticeDesignUIGroup();
+    return new SuperconductingDesignUIGroup();
   }
 	
 }
