@@ -60,7 +60,13 @@ export class NoArchObject implements ArchitectureObject<any, any> {
       body: {
         object: {}
       },
-      getProject: function() { return {...this}; }
+      getProject: function() { return {...this}; },
+      forFile: function() {
+        return {...this};
+      },
+      forNetwork: function() {
+        return {...this};
+      }
     }
   }
 

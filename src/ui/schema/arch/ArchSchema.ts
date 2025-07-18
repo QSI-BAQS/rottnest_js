@@ -22,6 +22,21 @@ export interface ArchitectureProjectData<T> {
   }
 }
 
+
+/**
+ * When moving the architecture to a saved file or
+ * over a network, the formatter will provide the required operations
+ * needed
+ */
+export interface ArchitectureFormatter {
+
+  // Will translate the project for network usage
+  toNetwork(project: ArchitectureProject<any>): any;
+
+  // Will translate the project for file usage
+  toFile(project: ArchitectureProject<any>): any; 
+}
+
 /**
  * Architecture Project that is used by
  * the serialiser
@@ -29,7 +44,13 @@ export interface ArchitectureProjectData<T> {
 export interface ArchitectureProject<T> extends ArchitectureProjectData<T> {
 
   //Used when needing to modify the project
-  getProject(): ArchitectureProject<T>;  
+  getProject(): ArchitectureProject<T>;
+
+  // Converts the project to be usuable when sent to the backend
+  forNetwork(fmt?: ArchitectureFormatter): any;
+
+  // Converts the project to be usuable when saved
+  forFile(fmt?: ArchitectureFormatter): any
 }
 
 /**
@@ -97,6 +118,9 @@ export interface ArchitectureObject<T=any, E=any> {
   // Serializer module
   getSerializer(): ArchitectureSerializer<T>;
 
+  // Formatter module
+  getFormatter(): ArchitectureFormatter;
+
   // ConnectionManager
   getConnectionManager(): ArchitectureConnectionManager;
 
@@ -106,6 +130,8 @@ export interface ArchitectureObject<T=any, E=any> {
   // Services
   getServices(): Services;
 }
+
+
 
 /**
  * Connection Manager will have some ability to manage the websocket
@@ -250,8 +276,6 @@ export interface ArchitectureVisualiser extends ArchitectureWorkspaceFactory,
 export interface ArchitectureCallGraph extends ArchitectureWorkspaceFactory,
   ArchCapabilitiesObject {
 
-  
-  
 }
 
 /**

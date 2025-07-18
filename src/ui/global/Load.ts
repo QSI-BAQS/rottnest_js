@@ -49,8 +49,9 @@ function CheckedDeserialize(data: FileReaderRetType): string  {
 export const hiddenInputProc = (e: any, rott: RottnestApplication) => {
 	const reader = new FileReader();
 	let toLoad = e.target.files.item(0);
-
-
+	
+	const notify = rott.getServices().getNotifyService();
+	const refserv = rott.getServices().getRefreshService();
 	const currentArchObj = rott.getAppState().getArchitectureObject();
 	if(currentArchObj) {
 		const serialiser = currentArchObj.getSerializer();
@@ -72,12 +73,17 @@ export const hiddenInputProc = (e: any, rott: RottnestApplication) => {
 			if(toLoad) {
 				reader.readAsText(toLoad);
 			}
+			notify.makeMessageWithId("load-good", "Load Operation",
+			"The file has been loaded");
+			refserv.triggerRefresh();
 			return true;
 		}
 	}
 	console.warn("Unable to deserialize project");
-	const notify = rott.getServices().getNotifyService();
-	notify.makeMessage("Did Not Load", "The file did not deserialize correctly");
+	notify.makeMessageWithId("load-err", "Load Operation",
+		"The file did not deserialize correctly");
+	
+	refserv.triggerRefresh();
 	return false
 }
 

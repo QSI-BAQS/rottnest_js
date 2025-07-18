@@ -1,16 +1,16 @@
 import React from 'react';
 import GlobalBar from '../global/GlobalBar.tsx';
-
 import SettingsForm from './SettingsForm';
 import ErrorDisplay from './ErrorDisplay.tsx';
 import { HelpContainer } from './HelpContainer.tsx';
 import { NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
 import { UpdateTrigger } from '../../service/RefreshService.ts';
-import { RottnestApplicationState, RottnestProperties, RottnestState }
-	from '../schema/global/ApplicationState.ts'
-import styles from '../styles/RottnestContainer.module.css';
 import { ArchitectureUIContext } from '../schema/arch/ArchContext.ts';
 import { ArchWorkspaceContainer } from './WorkspaceContainer.tsx'
+import { RottnestApplicationState, RottnestProperties, RottnestState }
+	from '../schema/global/ApplicationState.ts'
+
+import styles from '../styles/RottnestContainer.module.css';
 
 
 /**
@@ -18,14 +18,16 @@ import { ArchWorkspaceContainer } from './WorkspaceContainer.tsx'
  * It has removed all the significant dependencies it had and will delegate to the
  * the architecture object it has attached
  */
-export default class RottnestApplication extends React.Component<RottnestProperties, RottnestState>
+export default class RottnestApplication
+	extends React.Component<RottnestProperties, RottnestState>
 	implements UpdateTrigger {
 
-
+	// State object for rottnest
 	state: RottnestState = {
 		appState: new RottnestApplicationState(this),
 		appContext: new ArchitectureUIContext()
 	}
+
 	/**
 	 * Requires to be implemented as part of update
 	 * trigger interface
@@ -98,18 +100,19 @@ export default class RottnestApplication extends React.Component<RottnestPropert
 		const refservice = this.getServices().refresh;
 		const archcontext = this.state.appContext;
 		
-		const isProjVisible = projectRet.isReady;
+		const isProjectUsable = projectRet.isReady;
+		const isProjVisible = projectRet.visible;
 		let isNewProject = isProjVisible;
-		let settingsForm = <></>;
 		const projectState = projectRet.obj;
 		
-		if(isProjVisible && projectState) {
+		let settingsForm = <></>;
+		if(isProjectUsable && isProjVisible && projectState) {
 			const settingsisActive = projectState.isProjectSettingsActive();
 			const newProjectActive = projectState.isNewProjectActive();
 			isNewProject = (!settingsisActive && newProjectActive);
 			settingsForm = <SettingsForm
 					isNew={isNewProject}
-					isHidden={isProjVisible}
+					isHidden={!isProjVisible}
 					projectState={projectState}
 				/>
 		}
@@ -127,6 +130,8 @@ export default class RottnestApplication extends React.Component<RottnestPropert
     				helpData={helpService.getHelpData()}
   			/> :
   		<></>;
+
+		console.log(helpService.isActive());
 
 		return (
 			<div className={styles.rottnest}>

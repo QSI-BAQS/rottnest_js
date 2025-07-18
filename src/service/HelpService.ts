@@ -49,13 +49,24 @@ export class HelpService {
     return this.active;
   }
 
+  makeActive(): void {
+    
+		this.active = true;
+	  let regArgs: InputHookParams = ['keydown', this.handleEscKey];  
+		if (this.active) {
+    	this.inpService.registerHook(regArgs);
+    }
+    this.update.triggerRefresh();
+  }
+
   /**
    * Will toggle the help display when initiated
    */
 	toggleHelp() {
-		const helpActive = !this.active;
+		this.active = !this.active;
+		console.log(this.active)
 	  let regArgs: InputHookParams = ['keydown', this.handleEscKey];  
-		if (helpActive) {
+		if (this.active) {
     	this.inpService.registerHook(regArgs);
 		} else {
   		this.inpService.removeHook('keydown');

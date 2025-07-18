@@ -86,6 +86,7 @@ export class ArchCapabilityQuery {
   static MakeQuery(capability: string, extra?: any) {
     return new ArchCapabilityQuery(capability, extra);
   }
+
 }
 
 /**

@@ -84,7 +84,6 @@ class SettingsForm extends React.Component<SettingsProps,
 	render() {
 		const sref = this;
 		const hidden = this.props.isHidden;
-
 		// Changes for the header
 		const inputChangeHeaderFn = (
 			e: React.FormEvent<HTMLInputElement>,
@@ -120,7 +119,7 @@ class SettingsForm extends React.Component<SettingsProps,
 
 		return (
 			<div className={styles.parentContainer} 
-				style={{position:'relative',
+				style={{
 				visibility: hidden ?
 					"hidden" : "visible"
 				}}>

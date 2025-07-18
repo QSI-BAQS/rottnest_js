@@ -24,7 +24,8 @@ import RottnestApplication from "../../container/RottnestApplication";
  */
 type ProjectRetObj = {
 	obj: ProjectSettingsState | null,
-	isReady: boolean
+	isReady: boolean,
+	visible: boolean
 }
 
 /**
@@ -186,7 +187,17 @@ export class RottnestApplicationComponentStates {
 	 * Gets the project state
 	 */
 	getProjectState(): ProjectRetObj {
-		return { obj: this.projectState, isReady: this.projectState !== null };
+		const pstate = this.projectState;
+		let visible = false;
+		if(pstate) {
+			visible = pstate.isVisible();
+		}
+		return {
+			obj: this.projectState,
+			isReady: this.projectState !== null,
+			visible
+		};
+		
 	}
 
 	/**

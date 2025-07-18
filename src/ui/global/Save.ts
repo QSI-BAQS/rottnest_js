@@ -1,8 +1,7 @@
 
 import RottnestApplication from "../container/RottnestApplication"
-
-import { ProjectDump } 
-	from '../../model/Project';
+import { ArchCapabilityQuery } from "../schema/arch/ArchContext";
+import { SaveProject } from "../../util/FileDownload";
 
 
 /**
@@ -12,22 +11,39 @@ import { ProjectDump }
  */
 const leftClick = (rott: RottnestApplication) => {
 	
-	let details = rott.getProjectDetails();
-	let regionList = rott.getRegionList();
-	const project: ProjectDump = {
-		project: details,
-		regions: regionList.flatten()
-	};
+	const ctx = rott.getUIContext().getCurrentContext()
+	const notify = rott.getServices().getNotifyService();
+	const refserv = rott.getServices().getRefreshService();
 
-	const blob = new Blob([JSON.stringify(project)], 
-			      { type: 'application/json' });
-	let uobj = URL.createObjectURL(blob);
-	
-	let adown = document.createElement("a");
-	adown.href = uobj;
-	adown.download = 'project.json';
-	adown.click();
-	
+	if(ctx.queryCapability(ArchCapabilityQuery.MakeQuery("CanSend")).Yes()) {
+
+		const proj = rott.getAppState()
+			.getArchitectureObject()
+			.getProject();
+
+		const serialiser = rott.getAppState()
+			.getArchitectureObject()
+			.getSerializer();
+
+		const fmt = rott.getAppState()
+			.getArchitectureObject()
+			.getFormatter();
+
+		const projserialized = serialiser.serialize(proj.forFile(fmt));
+		const projname = proj.header.name;
+
+		//TODO: some of the functions should subsystems
+		SaveProject(projname, projserialized);
+
+		notify.makeMessageWithId('save-arch-good', "File Operations",
+			"File has been saved");
+		refserv.triggerRefresh();
+	} else {
+		
+		notify.makeMessageWithId('save-arch-err', "File Operations",
+			"Unable to convert/save the file, this isn't supported");
+		refserv.triggerRefresh();
+	}
 }
 
 

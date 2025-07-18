@@ -1,5 +1,5 @@
-import { ArchitectureProject } from '../../ArchSchema.ts'
-import { RegionData } from './SuperconductingRegionData.ts'
+import { ArchitectureProject, ArchitectureFormatter } from '../../ArchSchema.ts'
+import { RegionData } from './RegionData.ts'
 import { FlatRegions, FlatRegionsDefaults } from './RegionDataList.ts'
 
 
@@ -24,7 +24,9 @@ export type ProjectDetails = {
 		}
 	},
 	getProject(): ArchitectureProject<any>,
-	makeDefault(): ArchitectureProject<any>
+	makeDefault(): ArchitectureProject<any>,
+	forNetwork(): any,
+	forFile(): any,
 }
 
 /**
@@ -51,6 +53,31 @@ export function ProjectDetailsDefaultData(): ProjectDump {
   	},
   	makeDefault(): ArchitectureProject<any> {
       return ProjectDetailsDefaultData();
+    },
+    forNetwork(formatter?: ArchitectureFormatter): any {
+    	//ArchConverter.ToTSched()
+    	//TODO: We need to ensure when transforming it,
+    	// the developer can input something to do that
+
+
+			/*const rottContainer = container;
+			const rrBuf = rottContainer.getRRBuffer();
+			const appService = rottContainer.commData.appService;
+			const projAssembly = rottContainer.getProjectAssembly();
+			const tschedProject = ArchConverter.ToTSched(projAssembly);
+	
+			if(tschedProject) {
+				rrBuf.reset(); ?
+				appService.submitArch(
+					new RottArchMSG(tschedProject))
+			}*/
+
+    	
+    	return formatter?.toNetwork(this) 
+    },
+    forFile(formatter?: ArchitectureFormatter): any {
+    	
+    	return formatter?.toFile(this) 
     }
   }
 }

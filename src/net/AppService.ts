@@ -120,7 +120,9 @@ export class AppServiceClient {
 	}
 
 	
-
+	/**
+	 * Sends a message but no payload attached
+	 */
 	sendMessage(message: string) {
 		
 		if(this.socket) {
@@ -133,6 +135,9 @@ export class AppServiceClient {
 		}
 	}
 
+	/**
+	 * Sends an object as part of the payload
+	 */
 	sendObj(message: string, payload: any) {
 			
 		if(this.socket) {
@@ -145,15 +150,11 @@ export class AppServiceClient {
 		}
 	}
 
-	
-	sendMsg(msg: string) {
-		if(this.socket) {
-			this.socket.send(
-				msg
-			);
-		}
+	sendObject(message: string, payload: any) {
+		this.sendObj(message, payload);
 	}
 
+	
 	// Method to register a disconnect callback
 	registerDisconnectFn(disconnectFn: ASDisconnectCallback) {
   		this.onDisconnectTrigger = disconnectFn;

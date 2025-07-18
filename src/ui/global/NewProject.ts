@@ -8,7 +8,7 @@ const leftClick = (rott: RottnestApplication) => {
 	if(projectRet.isReady) {
 		const projectState = projectRet.obj;
 		if(projectState) {
-			projectState.showNewProject();
+			projectState.showNewProject(); //TODO: Not making a difference
 		}
 	}
 }

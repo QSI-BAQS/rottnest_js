@@ -55,7 +55,6 @@ export class ProjectSettingsState<T=any> {
 	 * will allow the user to update project details
 	 */
 	showSettings() {
-
 		this.showProjectSettings = true;
 		this.showProjectNew = false;
 		this.refservice.triggerRefresh();
@@ -65,13 +64,15 @@ export class ProjectSettingsState<T=any> {
 	 * Shows a new project
 	 */
 	showNewProject() {
-
 		this.showProjectNew = true
 		this.showProjectSettings = false;
 		this.resetData();
 		this.refservice.triggerRefresh();
 	}
 
+	/**
+	 * Cleans up the current project and refreshes the state
+	 */
   resetData() {
     const newProject = this.archobject.makeProject();
     this.project = newProject;
@@ -92,13 +93,18 @@ export class ProjectSettingsState<T=any> {
 	/**
 	 * Creates a settings form component that
 	 * will allow the user to update project details
-	 *
 	 */
 	cancelSettings() {
 		this.showProjectSettings = false;
 		this.refservice.triggerRefresh();
 	}
 
+	/**
+	 * Just detects if the module should be visible
+	 */
+	isVisible() {
+		return this.showProjectNew || this.showProjectSettings;
+	}
 	
   /**
    * Operation for when the user cancels a new project

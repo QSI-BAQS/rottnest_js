@@ -176,7 +176,7 @@ export const HelpContainer: React.FC<HelpContainerProps> = ({ toggleOff, helpDat
       		if (currentHighlightedElement) {
         		currentHighlightedElement.classList.remove(styles.helpHighlighted);
       		}
-      
+          //TODO: I am not sure i like this?
       		document.querySelectorAll('input[type="file"]').forEach(input => {
         		if (input instanceof HTMLElement) {
           			input.style.display = '';
