@@ -41,7 +41,6 @@ class WorkspaceTabBar extends React
 		const selTab = data.selectedTab;
 		
 		const avaibilities = data.availableTabs;
-		console.log(data);
 		const tabs = data.tabTitles.map((t, idx) => {
 
 			const isSelected = t == selTab;

@@ -1,4 +1,5 @@
 import { RefreshService } from "../../../../service/RefreshService";
+import { PluginRepresetationState } from "./PluginRepState";
 
 
 
@@ -11,14 +12,16 @@ export class ProgramPluginState {
   updateTrigger: RefreshService;
   settingsActive: boolean = false;
   swapFn: (arch: boolean, prog: boolean) => void;
-
+	plgstates: PluginRepresetationState
+  	
   /**
    * Constructs the program plugin state
    * Will have an event trigger to refresh the main container
    */
-  constructor(trigger: RefreshService, swapFn: (arch: boolean, prog: boolean) => void) {
+  constructor(trigger: RefreshService, plgstates: PluginRepresetationState) {
     this.updateTrigger = trigger;
-    this.swapFn = swapFn;
+    this.plgstates = plgstates;
+    this.swapFn = plgstates.getCallback();
   }
 
 	/**
@@ -26,7 +29,7 @@ export class ProgramPluginState {
 	 * and be displayed
 	 */
 	areSettingsActive(): boolean {
-		return this.settingsActive;
+		return this.plgstates.getStates()[1];
 	}
 
   /**

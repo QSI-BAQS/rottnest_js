@@ -2,10 +2,10 @@
  * The meta object here is for holding information that will be
  * used by UI components
  */
-export class LatticeDesignerMeta {
+export class SuperconductingDesignerMeta {
 	
 	regionList: RegionDataList;
-	subTypes: LatticeRegionKindMap;
+	subTypes: SuperconductingRegionKindMap;
 	routerList: Map<string, RouterAggr> //Designer
 	routerListRcvd: boolean = false;
 	

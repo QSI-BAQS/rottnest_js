@@ -1,5 +1,5 @@
 import { ArchitectureProject } from '../../ArchSchema.ts'
-import { RegionData } from './LatticeRegionData.ts'
+import { RegionData } from './SuperconductingRegionData.ts'
 import { FlatRegions, FlatRegionsDefaults } from './RegionDataList.ts'
 
 

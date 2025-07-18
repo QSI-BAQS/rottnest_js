@@ -69,7 +69,7 @@ type BarItemDescription = {
 	image: string
 	style?: string
 	events: BarItemEvents
-	extra?: React.FC<{}>
+	extra?: React.FC<{ rott: RottnestApplication}>
 	iconComponent: ReactElement
 	helpId?: string
 }
@@ -98,8 +98,8 @@ const BarItem: React.FC<BarItemData> = (props) => {
 	const ident = description.id;
 	const tooltip = description.toolTip;
 	const extra = props.description.extra;
-	
-	const extraComponent = extra ? extra({}) : <></>;
+	const extraProps = { rott: props.containerRef };
+	const extraComponent = extra ? extra(extraProps) : <></>;
 	
 	
 	return (
@@ -277,7 +277,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			helpId: "undo_redo"
 		},
 		{ 
-			id: 10, 
+			id: 10, //TODO: Remove the separator
 			name: "", 
 			toolTip: "", 
 			image: "missing",
@@ -436,6 +436,8 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 		const programPluginMenu = (programPluginActive ?
 			<PluginSettings {...programSettings} /> : <></>);
 
+		// For some reason they are not change...
+		//console.log(archPluginActive, programPluginActive);
 		return (
 			<div 
 				className={styles.globalBar}

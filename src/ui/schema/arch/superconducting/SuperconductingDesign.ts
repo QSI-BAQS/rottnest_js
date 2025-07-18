@@ -2,10 +2,10 @@
 import { ArchActionTracker } from '../ArchActionTracker.ts';
 import { ArchCapabilityQuery, ArchCapabilityResult } from '../ArchContext.ts';
 import { ArchitectureDesigner } from '../ArchSchema.ts';
-import { ArchWorkspaceGroup, ArchWorkspaceProps } from '../ArchWorkspace.ts';
-import { SuperconductingDesignBuffer } from './des/buf/SuperconductingDesignBuffer.ts';
+import { ArchWorkspaceGroup } from '../ArchWorkspace.ts';
+import { SuperconductingDesignBuffer } from './des/buf/DesignBuffer.ts';
 import { SuperconductingDesignUIGroup } from './groups/DesignGroup.tsx';
-import { RegionData } from './obj/SuperconductingRegionData.ts';
+import { RegionData } from './obj/RegionData.ts';
 
 /**
  * State object of things which are currently being operated on.

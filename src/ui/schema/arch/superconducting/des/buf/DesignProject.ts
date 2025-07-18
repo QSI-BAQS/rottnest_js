@@ -1,4 +1,4 @@
-import { RegionData } from "../../obj/LatticeRegionData";
+import { RegionData } from "../../obj/SuperconductingRegionData";
 import { ProjectDump } from "../../obj/Project";
 import { RegionDataList } from "../../obj/RegionDataList";
 
@@ -7,7 +7,7 @@ import { RegionDataList } from "../../obj/RegionDataList";
  * The project class manages the current project and the information
  * that can recorded and gained from this
  */
-export class LatticeDesignProject {
+export class SuperconductingDesignProject {
 
   regionlist: RegionDataList = new RegionDataList();
 	

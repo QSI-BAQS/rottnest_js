@@ -1,6 +1,6 @@
 
 import { ArchitectureCallGraph } from "../ArchSchema";
-import { SuperconductingCallGraph, SuperconductingCallGraphDefault } from "./obj/SuperconductingCallGraph";
+import { SuperconductingCallGraph, SuperconductingCallGraphDefault } from "./obj/CallGraph";
 import { ArchWorkspaceGroup } from "../ArchWorkspace.ts";
 import { CallGraphGroup } from "./groups/CallGraphGroup.tsx";
 import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext.ts";

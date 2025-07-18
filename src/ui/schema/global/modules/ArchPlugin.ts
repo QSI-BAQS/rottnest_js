@@ -1,5 +1,6 @@
 
 import { RefreshService } from "../../../../service/RefreshService";
+import { PluginRepresetationState } from "./PluginRepState";
 
 /**
  * Used to maintain information regarding the arch plugins
@@ -8,16 +9,17 @@ import { RefreshService } from "../../../../service/RefreshService";
 export class ArchPluginState{
 
   updateTrigger: RefreshService;
+  plgstates: PluginRepresetationState;
   swapFn: (arch: boolean, prog: boolean) => void;
-  settingsActive: boolean = false;
-
+  
 	/**
 	 * Constructor, requires knowing the current refresh service
 	 * and a callback on what to switch the settings to
 	 */
-  constructor(trigger: RefreshService, swapFn: (arch: boolean, prog: boolean) => void) {
-    this.swapFn = swapFn;
+  constructor(trigger: RefreshService, plgstates: PluginRepresetationState) {
     this.updateTrigger = trigger;
+    this.plgstates = plgstates;
+    this.swapFn = plgstates.getCallback();
   }
 
 	/**
@@ -25,13 +27,14 @@ export class ArchPluginState{
 	 * and be displayed
 	 */
 	areSettingsActive(): boolean {
-		return this.settingsActive;
+		return this.plgstates.getStates()[0];
 	}
 
   /**
    * Shows the arch settings when clicked
    */
 	showArchSettings() {
+		console.log("Here!");
 	  this.swapFn(true, false);
 		this.updateTrigger.triggerRefresh();
 	}

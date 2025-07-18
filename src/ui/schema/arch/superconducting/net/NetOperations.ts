@@ -2,21 +2,21 @@
 
 import { AppServiceClient } from "../../../../../net/AppService";
 import { RottRunResultMSG } from "../../../../../net/Messages";
-import { Lattice2DArchitecture } from "../Lattice2D.ts";
+import { Superconducting2DArchitecture } from "../Superconducting2D.ts";
 import { CommEventOps, CommOpQueue, CommsActions } from '../../../global/ops/CommsOps.ts';
 
 import { MSG_REMAP } from "../../../../../net/MessageRemap";
 
 /**
  *
- * RTCCommEvents is a collection of events that is relevant for the Lattice2DArchitecture
+ * RTCCommEvents is a collection of events that is relevant for the Superconducting2DArchitecture
  * Separate events can be separated into another container or context type
  * That will be the focus.
  */
-export const RTCCommEvents: CommEventOps<Lattice2DArchitecture> = {
+export const RTCCommEvents: CommEventOps<Superconducting2DArchitecture> = {
   recvSubType: {
     evkey: MSG_REMAP['subtype'],
-    evtrigger: (appService: AppServiceClient, obj: Lattice2DArchitecture, m: any) => {
+    evtrigger: (appService: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
       let kinds = appService
 				.retrieveSubTypes(m);
 			appService.consumeFromQueue();
@@ -28,7 +28,7 @@ export const RTCCommEvents: CommEventOps<Lattice2DArchitecture> = {
   },
   recvGetRouter: {
     evkey: MSG_REMAP['get_router'],
-    evtrigger: (appService: AppServiceClient, obj: Lattice2DArchitecture, m: any) => {
+    evtrigger: (appService: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
       let kinds = appService
 					.retrieveRouters(
 						obj.state.subTypes,m);
@@ -40,7 +40,7 @@ export const RTCCommEvents: CommEventOps<Lattice2DArchitecture> = {
   },
   recvUseArch: {
     evkey: MSG_REMAP['use_arch'],
-    evtrigger: (appService: AppServiceClient, _: Lattice2DArchitecture, m: any) => {
+    evtrigger: (appService: AppServiceClient, _: Superconducting2DArchitecture, m: any) => {
       let someMsg = m 
 				if(someMsg) {
 					let arch_id = someMsg.getJSON().payload.arch_id;
@@ -51,7 +51,7 @@ export const RTCCommEvents: CommEventOps<Lattice2DArchitecture> = {
   },
   recvErr: {
     evkey: MSG_REMAP['err'],
-    evtrigger: (_: AppServiceClient, obj: Lattice2DArchitecture, m: any) => {
+    evtrigger: (_: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
     
       let someMsg = JSON.stringify(m); 
 			obj.state.errorMessage = someMsg;
@@ -63,7 +63,7 @@ export const RTCCommEvents: CommEventOps<Lattice2DArchitecture> = {
 
   recvRunResult: {
     evkey: MSG_REMAP['run_result'],
-    evtrigger: (_: AppServiceClient, obj: Lattice2DArchitecture, m: any) => {
+    evtrigger: (_: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
     
       //TODO Set the graph id for
 			//the msg to be sent for
@@ -109,7 +109,7 @@ export const RTCCommEvents: CommEventOps<Lattice2DArchitecture> = {
 
   recvGetRootGraph: {
     evkey: MSG_REMAP['get_root_graph'],
-    evtrigger: (appService: AppServiceClient, obj: Lattice2DArchitecture, m: any) => {
+    evtrigger: (appService: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
       let graph = appService
 				.decodeGraph(m);
 			if(graph) {
@@ -121,7 +121,7 @@ export const RTCCommEvents: CommEventOps<Lattice2DArchitecture> = {
 
 	recvGetArgs: {
     evkey: MSG_REMAP['get_args'],
-    evtrigger: (appService: AppServiceClient, _r: Lattice2DArchitecture, _m: any) => {
+    evtrigger: (appService: AppServiceClient, _r: Superconducting2DArchitecture, _m: any) => {
       /*let kinds = appService
 					.retrieveArgs(m);
 				if(kinds) {
@@ -142,7 +142,7 @@ export const RTCCommEvents: CommEventOps<Lattice2DArchitecture> = {
 const RTCDispatchOperations = [
 	{
 		opkey: "initial",
-		operation: (appService: AppServiceClient, _obj: Lattice2DArchitecture) => {
+		operation: (appService: AppServiceClient, _obj: Superconducting2DArchitecture) => {
 			if(appService.isConnected()) {	
 				appService.enqueueMessage(MSG_REMAP['subtype']);
 				appService.enqueueMessage(MSG_REMAP['get_router']);
@@ -155,15 +155,15 @@ const RTCDispatchOperations = [
 ]
 
 /**
- * CommunicationActions for Lattice2DArchitecture, allows one
+ * CommunicationActions for Superconducting2DArchitecture, allows one
  * to define it in a file and pass it to where it is needed
  */
 export const RTCCommActions
-  = CommsActions.MakeCommsWith<Lattice2DArchitecture>(RTCCommEvents);
+  = CommsActions.MakeCommsWith<Superconducting2DArchitecture>(RTCCommEvents);
 
 
 /**
  * Open operations that will be triggered, it is just a list of 1
  */
 export const RTCOpenOperations
-	= CommOpQueue.MakeDispatchWith<Lattice2DArchitecture>(RTCDispatchOperations)
+	= CommOpQueue.MakeDispatchWith<Superconducting2DArchitecture>(RTCDispatchOperations)

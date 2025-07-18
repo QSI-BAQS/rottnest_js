@@ -2,7 +2,7 @@ import {ReactElement} from "react";
 import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../../ArchWorkspace";
 import { ArchWorkspaceZone } from "../../../../workspace/WorkspaceZone.tsx";
 import { CGGraphColumn, CGNodeColumn } from "../ui/callgraph/CallGraphColumn.tsx";
-import { LatticeVisualiserView } from "../vis/VisWorkspace.tsx";
+import { SuperconductingVisualiserView } from "../vis/VisWorkspace.tsx";
 
 
 /**
@@ -12,7 +12,7 @@ export class VisualiserGroup implements ArchWorkspaceGroup {
 	
 	makeGroup(data: ArchWorkspaceProps): Array<ReactElement> {
 
-		const wspace = <LatticeVisualiserView
+		const wspace = <SuperconductingVisualiserView
 			workspaceData={data.workspaceData} />;	
 		const group = [
 			<CGGraphColumn 

@@ -1,4 +1,4 @@
-import { RegionCell, RegionData } from "../../obj/LatticeRegionData";
+import { RegionCell, RegionData } from "../../obj/SuperconductingRegionData";
 import { RegionsSnapshotStack } from "../../obj/RegionSnapshotStack";
 
 /**
@@ -7,7 +7,7 @@ import { RegionsSnapshotStack } from "../../obj/RegionSnapshotStack";
  *
  * This will also hold the snapshot stack
  */
-export class LatticeDesignBuffer {
+export class SuperconductingDesignBuffer {
 
 	snapshots: RegionsSnapshotStack = new RegionsSnapshotStack(this);
 	buffer: RegionData = new RegionData();

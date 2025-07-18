@@ -1,7 +1,7 @@
 import { RottRouterTypesMSG } from "../../../../../net/Messages";
 
 
-export class LatticeParserOperations {
+export class SuperconductingParserOperations {
   
 	retrieveRouters(subTypes: RottnestKindMap, data: any) {
 		const msgContainer =

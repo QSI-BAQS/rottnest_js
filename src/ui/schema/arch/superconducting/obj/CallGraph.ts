@@ -5,7 +5,7 @@
  * I have opened it up to have fieldData that will
  * allow mapping for it
  */
-export type LatticeCallGraphEntry = {
+export type SuperconductingCallGraphEntry = {
 	// cu_id: string
 	id: string
 	name: string
@@ -76,11 +76,11 @@ export type CUHashHex = {
 	hashhex: string
 }
 
-export type LatticeCallGraph = {
-	graph: Map<string, LatticeCallGraphEntry>
+export type SuperconductingCallGraph = {
+	graph: Map<string, SuperconductingCallGraphEntry>
 }
 
-export function LatticeCallGraphDefault(): LatticeCallGraph {
+export function SuperconductingCallGraphDefault(): SuperconductingCallGraph {
 	return { graph: new Map() }
 } 
 

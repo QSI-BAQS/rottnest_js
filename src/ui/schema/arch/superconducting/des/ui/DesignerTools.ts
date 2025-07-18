@@ -4,7 +4,7 @@
  * Contains a list of tools that the user can select from
  * as well as monitoring the 
  */
-export class LatticeDesignerTools {
+export class SuperconductingDesignerTools {
 
   /**
    * 

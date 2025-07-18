@@ -9,7 +9,7 @@ import { DesignSpace } from "../ui/DesignSpace";
  * Constructs the workspace group that will be used by the workspace component
  * within rottnest
  */
-export class LatticeDesignUIGroup implements ArchWorkspaceGroup {
+export class SuperconductingDesignUIGroup implements ArchWorkspaceGroup {
 
 	/**
 	 * Constructs an architecture design group

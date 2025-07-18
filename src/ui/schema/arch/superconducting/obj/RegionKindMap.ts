@@ -26,7 +26,7 @@ export type RottnestRouterKindMap = {
  * that is given to the front end
  * by the backend
  */
-export type LatticeRegionKindMap = {
+export type SuperconductingRegionKindMap = {
 	bus: Array<SubKind>
 	register: Array<SubKind>
 	bellstate: Array<SubKind>

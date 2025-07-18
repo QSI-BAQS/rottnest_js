@@ -176,10 +176,8 @@ export class RottnestApplicationComponentStates {
 		const refresh = services.refresh;
 		this.pluginsState = new PluginRepresetationState();
 		this.zoomState = new ZoomState(100, refresh);
-		this.archState = new ArchPluginState(refresh, this
-			.pluginsState.getCallback());
-		this.programState = new ProgramPluginState(refresh, this
-			.pluginsState.getCallback());
+		this.archState = new ArchPluginState(refresh, this.pluginsState);
+		this.programState = new ProgramPluginState(refresh, this.pluginsState);
 		this.errorState = new ErrorState();
 		this.projectState = new ProjectSettingsState(appState, refresh);
 	}

@@ -6,7 +6,7 @@
  * It allows querying of the tracker to understand
  * what has been selected
  */
-export class LatticeDesignerWorkTracker {
+export class SuperconductingDesignerWorkTracker {
 
   
 	getRegionSelectionData(): [number, string | null] {

@@ -253,7 +253,9 @@ export type PluginObjectProps = {
 }
 
 /**
- * Plugin Objec in the global bar
+ * Plugin Object in the global bar
+ * This will be associated with the global bar and allow the user to
+ * modify the current arch and/or program
  */
 export function PluginObject(props: PluginObjectProps) {
 

@@ -1,4 +1,4 @@
-import { SchedulerVisualiser } from "./LatticePlayer.tsx";
+import { SchedulerVisualiser } from "./SuperconductingPlayer.tsx";
 
 
 export function OnRangeChange(visualiser: SchedulerVisualiser, value: number) {
