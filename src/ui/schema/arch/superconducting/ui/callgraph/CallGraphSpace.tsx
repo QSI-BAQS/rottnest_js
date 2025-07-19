@@ -1,15 +1,15 @@
 import React, {CSSProperties} from "react";
-import {WorkspaceData} from "../workspace/Workspace";
-import styles from '../styles/CGSpace.module.css'
-import {WorkspaceBufferMap} from "../workspace/WorkspaceBufferMap";
 import {CUReqResult,
-	RottCallGraph,
 	RottCallGraphEntryDefault,
-	RottGraphEntry} from "../../model/CallGraph";
-import {ASContextHook} from "../../net/AppService";
-import {AppServiceMessage} from "../../net/AppServiceMessage";
-import {RottStatusResponseMSG} from "../../net/Messages";
+    SuperconductingCallGraph,
+    SuperconductingCallGraphEntry,
+	} from "../../obj/CallGraph";
 
+
+import {AppServiceMessage} from "../../net/AppServiceMessage";
+import styles from '../styles/CGSpace.module.css'
+import { ArchStashMap, ArchWorkspaceData } from "../../../ArchWorkspace";
+import { Superconducting2DArchitecture } from "../../Superconducting";
 
 
 interface CGUpdateableContext {	
@@ -21,6 +21,11 @@ interface CGUpdatable {
 	pushPositionUpdate(pdata: CGLinePositionData): void
 	registerContext(ctx: CGUpdateableContext): void
 	getCoords(): CGObjectLineUpdatable	
+}
+
+
+export interface ASContextHook {
+	serviceHook(asm: AppServiceMessage): void
 }
 
 //TODO: We need to re-evaluate the usage of the call graph here
@@ -104,8 +109,8 @@ type CGTreeDisplayData = {
  *
  */
 type CGAggr = {
-	graph: RottCallGraph 
-	workspaceData: WorkspaceData
+	graph: SuperconductingCallGraph
+	workspaceData: ArchWorkspaceData
 }
 
 type CGDispData = {
@@ -139,8 +144,8 @@ class CGObject extends React.Component<CGDispData,
 	cuId = this.props.cuId
 	//TODO: Don't look, it is awful
 	apservice = this.props.wdaggr
-		.workspaceData.container
-		.commData.appService;
+		.workspaceData.architecture.getConnectionManager()
+		.getNetworkService()
 
 	updateFn = this.props.updateTrigger;
 	
@@ -154,13 +159,13 @@ class CGObject extends React.Component<CGDispData,
 	}
 
 	data: {
-		bufferMap: WorkspaceBufferMap
+		bufferMap: ArchStashMap
 		idx: string 
 		selectedIdx: string 
 	} = {
 		bufferMap: this.props.wdaggr
 			.workspaceData
-			.bufferMap,
+			.stash,
 		idx: this.props.index,
 		selectedIdx: this.props
 			.selectedIdx
@@ -233,7 +238,7 @@ class CGObject extends React.Component<CGDispData,
 
 	onNodeMouseUp(e: React.MouseEvent<HTMLDivElement>) {
 
-		const bmap = this.props.wdaggr.workspaceData.bufferMap;
+		const bmap = this.props.wdaggr.workspaceData.stash;
 		const btn = e.button;
 		if(btn === 1) {
 
@@ -249,7 +254,7 @@ class CGObject extends React.Component<CGDispData,
 	onNodeMouseDown(e: React.MouseEvent<HTMLDivElement>) {
 		const btn = e.button;
 			
-		const bmap = this.props.wdaggr.workspaceData.bufferMap;
+		const bmap = this.props.wdaggr.workspaceData.stash;
 		if(btn === 1) {
 			bmap.insert('inner_mouse_event', JSON.stringify({
 				innerMove: true
@@ -301,7 +306,7 @@ class CGObject extends React.Component<CGDispData,
 				this.data.bufferMap.commit();
 			} else {
 				const container = this.props.wdaggr
-					.workspaceData.container;
+					.workspaceData.architecture;
 				
 				const gidx = this.props.index;
 				const ifReqd = container.getRRBuffer()
@@ -324,8 +329,9 @@ class CGObject extends React.Component<CGDispData,
 
 
 	render() {
-		const rottContainer = this.props.wdaggr.workspaceData.container;
-		const zoomValue = rottContainer.state.appStateData.zoomValue;
+		//TODO: Update this with a zoom service
+		//const rottContainer = this.props.wdaggr.workspaceData.architecture;
+		const zoomValue = 100;
 		let widgetObj = this.props.wdaggr
 			.graph.graph.get(
 			this.props.index);
@@ -494,10 +500,11 @@ export class CGObjectLine extends React.Component<CGObjectLineData, CGObjectLine
 
 
 export class CallGraphSpace extends 
-	React.Component<WorkspaceData, CGViewState> 
+	React.Component<ArchWorkspaceData, CGViewState> 
 	implements ASContextHook {
 	
-	appService = this.props.container.commData.appService;	
+	appService = this.props.architecture.getConnectionManager()
+		.getNetworkService();	
 	state: CGViewState = {
 		cunitMap: new Map(),
 		dispPositions: new Map(),
@@ -520,8 +527,8 @@ export class CallGraphSpace extends
 
 	constructor(props: any) {
 		super(props);
-		const container = this.props.container;
-		const aService = container.commData.appService;
+		const container = this.props.architecture;
+		const aService = container.getConnectionManager().getNetworkService();
 		aService.hookContext(this,'cg_lat2d_status_response');
 		aService.hookContext(this,'cg_lat2d_get_graph');
 		aService.hookContext(this,'cg_lat2d_get_root_graph');
@@ -531,8 +538,8 @@ export class CallGraphSpace extends
 	
 	serviceHook(asm: AppServiceMessage): void {
 		const cgspace = this;	
-		const container = this.props.container;
-		const appService = container.commData.appService;
+		const container = this.props.architecture as Superconducting2DArchitecture;
+		const appService = container.getConnectionManager().getNetworkService();
 
 		const jsonObj = asm.getJSON()
 		if(jsonObj) {
@@ -547,7 +554,7 @@ export class CallGraphSpace extends
 					this.state.cunitMap	
 						.set(cuData.cu_id,
 						     cuData);
-					this.props.bufferMap
+					this.props.stash
 					.insert('node_column',
 						JSON
 						.stringify(cuData));
@@ -557,14 +564,12 @@ export class CallGraphSpace extends
 				}
 			} else if(jsonObj.message === 'cg_lat2d_get_graph') {
 				//let gid = jsonObj.gid;
-				let graph = appService
-					.decodeGraph(asm);
+				let graph = appService.decodeGraph(asm); //TODO
 				let expands = true;
 				let expGid = 'invalid';
 
 				if(graph) {
-					container.state.graphViewData
-					= graph;
+					container.getStateData().getCallGraphState().setGraphViewData(graph);
 					if(graph.graph) {
 						let sz = graph.graph.size;
 						if(sz) {	
@@ -581,11 +586,11 @@ export class CallGraphSpace extends
 
 					}
 				}
-				this.props.bufferMap
+				this.props.stash
 					.insert('node_column',
 						JSON
 						.stringify(0));
-				this.props.bufferMap
+				this.props.stash
 					.insert('cgviz_chart_gid_data',
 						JSON
 						.stringify({
@@ -605,23 +610,22 @@ export class CallGraphSpace extends
 				cgspace.setState(nState);
 
 			} else if(jsonObj.message === 'cg_lat2d_get_root_graph') {
-				let graph = appService
-					.decodeGraph(asm);
+				let graph = appService.decodeGraph(asm);
 				let expands = true;
-				this.props.bufferMap
+				this.props.stash
 					.insert('cgviz_chart_gid_data',
 						JSON
 						.stringify({
 							expands,
 						}));
-				this.props.bufferMap
+				this.props.stash
 					.insert('node_column',
 						JSON
 						.stringify(0));
 				if(graph) {
-					container.state
-					.graphViewData
-					= graph;
+					container.getStateData().getCallGraphState()
+					.setGraphViewData(graph);
+					
 				}
 				cgspace.resetState();
 				const nState = {...cgspace.state}
@@ -648,6 +652,9 @@ export class CallGraphSpace extends
 				const [rkind, mdat] = rrBuf.decodeAndSort(jsonObj
 									  .payload);
 				let shouldUpdate = false;
+				//TODO: This is bloody nasty!
+				// WARNING: You are dealing with something quite gross here!
+				// 
 				if(rkind === "CUIDObj" || rkind === "CUIDTotal") {
 					container.state.tabData
 					.availableTabs[3]
@@ -662,11 +669,11 @@ export class CallGraphSpace extends
 				if(rkind === "VisualResult") {
 					console.log("Got viz-result");
 					console.log(mdat, rkind); 	
-					container.state.visData = mdat;
+					container.getStateData().getVisState().setVizData(mdat);
 					container.state.tabData
 					.availableTabs[2]
 						= true;
-					this.props.bufferMap
+					this.props.stash
 					.insert('viz_sim_data',
 						JSON.stringify({
 							simready: true 
@@ -745,10 +752,10 @@ export class CallGraphSpace extends
 		}
 	}
 	
-	identifyRoots(graph: RottCallGraph): Array<[string, 
-			      RottGraphEntry]> {
+	identifyRoots(graph: SuperconductingCallGraph): Array<[string, 
+			      SuperconductingCallGraphEntry]> {
 		
-		let rootList: Array<[string, RottGraphEntry]> = [];
+		let rootList: Array<[string, SuperconductingCallGraphEntry]> = [];
 		let seenSet: Set<string> = new Set();
 		for(const [_, cgobj] of graph.graph.entries()) {
 			for(const ck of cgobj.children) {
@@ -835,13 +842,15 @@ export class CallGraphSpace extends
 
 	render() {
 		let calcdHeight = 0;
-		const zoomValue = this.props.container.state.appStateData.zoomValue;
+		//const zoomValue = this.props.container.state.appStateData.zoomValue;
+		const zoomValue = 100;
 		const cgref = this;
-		const bmap = this.props.bufferMap;
+		const bmap = this.props.stash;
 		//TODO: We need to retrieve the graph information
 		//	and update the details
-		const graphFromContainer = this.props.container
-			.getCGGraph();
+		const container = this.props.architecture as Superconducting2DArchitecture;
+		const graphFromContainer = container.getStateData()
+			.getCallGraphState().getGraphViewData();
 		bmap.stash('graph_ref', graphFromContainer);
 		const waggr: CGAggr = {
 			graph: graphFromContainer,
@@ -871,8 +880,7 @@ export class CallGraphSpace extends
 			const renderedCGs = 
 				rootList.map((e) => {
 
-					return this.traverseGraph(
-					graphFromContainer, e[0]) })
+					return this.traverseGraph(graphFromContainer, e[0]) })
 				.map((ldw: CGTreeDisplayData) => { 
 						
 					return ldw.layerData

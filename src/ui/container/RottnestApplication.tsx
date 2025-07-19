@@ -135,7 +135,8 @@ export default class RottnestApplication
 			<div className={styles.rottnest}>
 				<NotifyMessageSpace queue={notifyService.getNotifyQueue()} />
 				<GlobalBar componentMap={updateables} container={rottContainer} />
-				<ArchWorkspaceContainer architecture={archobj}
+				<ArchWorkspaceContainer
+					architecture={archobj}
 					archcontext={archcontext} />
 
 				{settingsForm}

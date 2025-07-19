@@ -21,6 +21,7 @@ import { SuperconductingFormatter } from './fmt/SuperconductingFormatter.ts';
 import { Services } from '../../../../service/Services.ts';
 import { RegionDataList } from './obj/RegionDataList.ts';
 import { ProjectDetailsDefaultData, ProjectDump } from './obj/Project.ts';
+import { SuperconductingState } from './state/ArchState.ts';
 
 /**
  * Schema object, typically only one instance which is used to
@@ -53,6 +54,7 @@ export class Superconducting2DArchitecture implements ArchitectureObject<RegionD
     extension: new SuperconductingExtensionMap(),
     netmanager: new SuperconductingNetManager(this),
     formatter: new SuperconductingFormatter(this),
+    statedata: new SuperconductingState(),
   }
 
   // Project Defaults
@@ -72,6 +74,13 @@ export class Superconducting2DArchitecture implements ArchitectureObject<RegionD
    */
   constructor(services: Services, _args: Map<string, string | number>) {
     this.services = services;
+  }
+
+  /**
+   * Gets the state data for other components
+   */
+  getStateData() {
+    return this.components.statedata;
   }
 
   /**

@@ -1,20 +1,17 @@
 import React from "react";
 import styles from '../styles/CGSpace.module.css'
-import {Workspace, WorkspaceData} 
-	from "../workspace/Workspace";
 
 import {
 	RollbackOutlined,
 	ArrowLeftOutlined
 	} from '@ant-design/icons'
 
-import {WorkspaceBufferMap} 
-	from "../workspace/WorkspaceBufferMap";
 
 import {CGResult, CGResultDummy, CUReqResult, CUReqResultDummy} 
-	from "../../model/CallGraph";
-import RottnestContainer from "../container/RottnestContainer";
-
+	from "../../obj/CallGraph";
+import { ArchStashMap, ArchWorkspace, ArchWorkspaceData } from "../../../ArchWorkspace";
+import { Superconducting2DArchitecture } from "../../Superconducting";
+import { ArchitectureObject } from "../../../ArchSchema";
 
 type NodeData = {
 	idx: string 
@@ -22,25 +19,24 @@ type NodeData = {
 }
 
 type CGNodeColumnData = {
-	workspaceData: WorkspaceData 
+	workspaceData: ArchWorkspaceData 
 }
 
 
 type CGRootListContainer = {
 	selectedIdx: string
-	bufferMap: WorkspaceBufferMap
+	bufferMap: ArchStashMap
 	rootList: Set<string>
 }
 
 
 type CGNodeData = {
 	cuReqData: CUReqResult
-	workspaceData: WorkspaceData 
+	workspaceData: ArchWorkspaceData 
 	nodeData: NodeData | null
 }
 
-class CGSelectedNodeBox extends React.Component<CGNodeData, 
-	{}>  {
+class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 
 	cuId: string = 'test';
 
@@ -54,17 +50,22 @@ class CGSelectedNodeBox extends React.Component<CGNodeData,
 	}
 
 	runGraphNode(data: any) {
-		const container = this.props.workspaceData.container;
+		const container = this.props.workspaceData
+			.architecture as Superconducting2DArchitecture;
 		
-		const appService = container.commData.appService;
+		const appService = container.getConnectionManager().getNetworkService();
 		appService.sendObj('cg_lat2d_run_graph_node', {
 				gid: data.idx
 			})
 	}
 
 	gotoVisualiserWithData(data: any) {
-		console.log("Going to visualiser");
-		const bmap = this.props.workspaceData.bufferMap;
+
+		
+		const container = this.props.workspaceData
+			.architecture as Superconducting2DArchitecture;
+
+		const bmap = this.props.workspaceData.stash;
 		const bmapViz = JSON.parse(bmap.get('viz_sim_data'));
 		let simReady = false;
 		if(bmapViz) {
@@ -73,15 +74,19 @@ class CGSelectedNodeBox extends React.Component<CGNodeData,
 
 		if(simReady) {
 			//Grab data here?
-			const vizData = this.props.workspaceData.container.state.visData;
+			const vizData = container.getStateData().getVisState().getVizData();
+			
 			bmap.insert('current_viz_data', JSON.stringify(vizData)); 
-			this.props.workspaceData.container
-			.gotoVizWithData(data);
+			//TODO: You got to fix this
+			//this.props.workspaceData.container.gotoVizWithData(data);
 		}
 	}
 
 	getGlobalVolumes(): CGResult {
-		const rrbuf = this.props.workspaceData.container.getRRBuffer();
+
+		const container = this.props.workspaceData
+			.architecture as Superconducting2DArchitecture;
+		const rrbuf = container.getRRBuffer();
 
 		const gvolumes = rrbuf.getTotalArray();
 		if(gvolumes.length > 0) {
@@ -107,7 +112,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData,
 	render() {
 		const ndata = this.props;	
 		//const cuObj = this.props.cuReqData;
-		const bmap = this.props.workspaceData.bufferMap;	
+		const bmap = this.props.workspaceData.stash;	
 		/*let tsourceInfo = { 
 			contents: false,
 			info: 'No Info',
@@ -291,12 +296,12 @@ class CGSelectedNodeBox extends React.Component<CGNodeData,
 }
 
 export class CGNodeColumn 
-	extends React.Component<CGNodeColumnData, 
-	{}> implements Workspace {
+	extends React.Component<CGNodeColumnData, {}> implements ArchWorkspace {
+		
 	render() {
 
 		const wsData = this.props.workspaceData;
-		const bmap = wsData.bufferMap;
+		const bmap = wsData.stash;
 		const graphRef = bmap.getStash().get('graph_ref');
 
 		let sData = bmap.get('current_node');
@@ -338,7 +343,7 @@ export class CGNodeColumn
 }
 
 type CGGraphData = {
-	workspaceData: WorkspaceData
+	workspaceData: ArchWorkspaceData
 }
 
 type CGGraphInfo = {
@@ -368,8 +373,8 @@ class CGGraphBox extends React.Component<CGGraphInfo,{}> {
 type CGRootData = {
 	rootList: Set<string>
 	selectedIdx: string
-	bufferMap: WorkspaceBufferMap
-	container: RottnestContainer
+	bufferMap: ArchStashMap
+	container: ArchitectureObject
 }
 
 type RootListItemTup = { 
@@ -379,11 +384,11 @@ type RootListItemTup = {
 
 type RootListItemData = {
 	idxTup: RootListItemTup
-	container: RottnestContainer
+	container: ArchitectureObject
 	rootList: Set<string>
 	selected: boolean
 	isFirst: boolean
-	bufferMap: WorkspaceBufferMap
+	bufferMap: ArchStashMap
 	refreshCol: (set: Set<string>) => void
 	
 }
@@ -400,7 +405,7 @@ class RootListItem
 	refresh = this.props.refreshCol;
 
 	updateRootNode() {
-		const aps = this.container.commData.appService;
+		const aps = this.container.getConnectionManager().getNetworkService();
 		if(this.rootIdx === 'root') {
 			this.rlist = new Set(['root']);	
 			aps.sendObj('cg_lat2d_get_root_graph', {});
@@ -532,14 +537,14 @@ export class CGGraphColumn
 	state: CGRootListContainer = {
 		selectedIdx: '',
 		bufferMap: this.props
-			.workspaceData.bufferMap,
+			.workspaceData.stash,
 		rootList: new Set(['root'])
 	}
 
 	render() {
 		
 		const bufferMap = this.props
-			.workspaceData.bufferMap
+			.workspaceData.stash
 		//const graphRef = bufferMap.getStash()
 		//	.get('graph_ref');
 		
@@ -550,7 +555,7 @@ export class CGGraphColumn
 		const nextData = JSON.parse(bufferMap
 					    .get('next_node'));
 		const container = this.props
-			.workspaceData.container;
+			.workspaceData.architecture;
 
 		let idx = this.state.selectedIdx;
 

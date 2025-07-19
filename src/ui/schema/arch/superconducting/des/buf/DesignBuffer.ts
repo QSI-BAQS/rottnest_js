@@ -1,5 +1,6 @@
-import { RegionCell, RegionData } from "../../obj/SuperconductingRegionData";
+import { RegionCell, RegionData } from "../../obj/RegionData";
 import { RegionsSnapshotStack } from "../../obj/RegionSnapshotStack";
+import { SuperconductingWorkingState } from "../../SuperconductingDesign";
 
 /**
  * The current target for the designer
@@ -9,8 +10,16 @@ import { RegionsSnapshotStack } from "../../obj/RegionSnapshotStack";
  */
 export class SuperconductingDesignBuffer {
 
+	workingstate: SuperconductingWorkingState;
 	snapshots: RegionsSnapshotStack = new RegionsSnapshotStack(this);
 	buffer: RegionData = new RegionData();
+
+	/**
+	 * Initialises provides a buffer interaction with the working state
+	 */
+	constructor(workingstate: SuperconductingWorkingState) {
+		this.workingstate = workingstate;
+	}
 
 	/**
 	 * Retturns the current snapshot stack

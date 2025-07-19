@@ -9,7 +9,7 @@ import { Services, ServicesHolder } from "../../../service/Services";
 import { ValidationService } from "../../../service/ValidatorService";
 import { ArchitectureUIContext } from "../arch/ArchContext";
 import { ArchitectureObject, ArchitectureSchema } from "../arch/ArchSchema";
-import { NoArchSchema } from "../arch/noarch/NoArch";
+//import { NoArchSchema } from "../arch/noarch/NoArch";
 import { ArchPluginState } from "./modules/ArchPlugin";
 import { ErrorState } from "./modules/ErrorState";
 import { PluginRepresetationState } from "./modules/PluginRepState";
@@ -18,6 +18,7 @@ import { ProjectSettingsState } from "./modules/SettingsState";
 import { ZoomState } from "./modules/ZoomState";
 import AppServiceModule from "../../../net/AppServiceModule";
 import RottnestApplication from "../../container/RottnestApplication";
+import { Superconducting2DSchema } from "../arch/superconducting/Superconducting";
 
 /**
  * Return Object for project state
@@ -59,7 +60,7 @@ export class RottnestApplicationState {
 	/**
 	 * Initialises the architecture state to a default
 	 */
-	constructor(app: RottnestApplication, architectureSchema: ArchitectureSchema = new NoArchSchema()) {
+	constructor(app: RottnestApplication, architectureSchema: ArchitectureSchema = new Superconducting2DSchema()) {
 
 		const services = new RottnestApplicationServices(app);
 		this.architectureSchema = architectureSchema;

@@ -1,7 +1,8 @@
 import React from 'react';
 import styles from './styles/ToolboxOptions.module.css';
-import RottnestContainer from './container/RottnestContainer';
-import {SubKind} from '../model/RegionKindMap';
+import {SubKind} from '../obj/RegionKindMap';
+import { ArchitectureObject } from '../../ArchSchema';
+import { Superconducting2DArchitecture } from '../Superconducting';
 
 
 
@@ -13,7 +14,7 @@ import {SubKind} from '../model/RegionKindMap';
  *
  */
 type ToolboxOptionsProps = {
-	container: RottnestContainer
+	container: ArchitectureObject
 	headerName: string
 	'data-component'?: string,
 	'data-help-id'?: string
@@ -172,31 +173,38 @@ class ToolSubTypeList extends React.Component
 class ToolboxOptions extends React.Component<ToolboxOptionsProps, 
 	ToolboxOptionsState> {
 
-	rottContainer: RottnestContainer = this.props.container;
+	rottContainer = this.props.container as Superconducting2DArchitecture;
 	state: ToolboxOptionsState = {
 		paintMode: false,
 	}
 	
 	getSubToolIndex(): number {
 		return this
-			.rottContainer.getToolIndex();
+			.rottContainer.getStateData().getUIState().getToolIndex();
 	}
 
 	updateSubType(subTypeIndex: number) {
-		this.rottContainer
-		.updateSelectedSubType(subTypeIndex);;
+		this.rottContainer.getStateData().getUIState()
+		.updateSelectedSubType(subTypeIndex);
 	}
 
 	render() {
 	
 		const headerName = 'Tool Options';
 		const optionsContainer = this;
-		const container = this.props.container;
-		const toolIndex = container.getToolIndex();
+		console.log(this.props);
+		const container = this.props.container as Superconducting2DArchitecture;
+		const toolIndex = container
+			.getStateData()
+			.getUIState()
+			.getToolIndex();
 
 		const { subTypes, 
 			selectedSubTypeTool } 
-			= container.getSubTypesAndSelected();
+			= container
+				.getStateData()
+				.getUIState()
+				.getSubTypesAndSelected();
 
 		const updatePaintFn = (updat: boolean) => {
 

@@ -1,8 +1,8 @@
 import React from "react";
 import styles from './styles/RegionSettings.module.css';
-import RottnestContainer from "./container/RottnestContainer";
-import {RegionData} from "../model/RegionData";
-import {SubKind} from "../model/RegionKindMap";
+import { RegionData } from "../obj/RegionData";
+import { SubKind } from "../obj/RegionKindMap";
+import { Superconducting2DArchitecture } from "../Superconducting";
 
 
 type RegionConnection = {
@@ -220,10 +220,10 @@ class RegionSubTypeList extends React.Component
 	render() {
 		const props = this.props;
 		const settings = props.container;
-		const subtypes = props.dataList.subtypes;
+		// const subtypes = props.dataList.subtypes;
+		const subtypes: any[] = []; //TODO: Fix!
 		const selectedSubKind = props.selectedSubKind 
-			!== null ? 
-			props.selectedSubKind : '';
+			!== null ? props.selectedSubKind : '';
 	
 
 		const renderedOptions = subtypes.length 
@@ -319,7 +319,7 @@ type RegionFactoryKindState = {
 type RegionSettingsData = {
 	subTypes: RegionSubTypeDataList
 	connections: RegionConnectionList
-	container: RottnestContainer
+	container: Superconducting2DArchitecture
 }
 
 
@@ -332,11 +332,11 @@ type RegionSettingsData = {
 class RegionSettings extends React
 	.Component<RegionSettingsData, {}> {
 
-	rottContainer: RottnestContainer = this.props
+	rottContainer: Superconducting2DArchitecture = this.props
 		.container;
 	
 	updateRouterOfSelectedChkNull(subTypeKey: string) {
-		const currentObj = this.rottContainer
+		const currentObj = this.rottContainer.getStateData().getUIState()
 			.getSelectedRegionData();
 		if(currentObj !== null && currentObj !== undefined 
 		   && currentObj.routerKind === null) {
@@ -346,7 +346,7 @@ class RegionSettings extends React
 				.shallowDuplicate();
 			regData.setRouterKind(subTypeKey);
 		
-			this.rottContainer
+			this.rottContainer.getStateData().getWorkState()
 			.updateSelectedRegionDataNoUpdate(regData);
 		}
 
@@ -355,6 +355,7 @@ class RegionSettings extends React
 	updateRouterOfSelected(subTypeKey: string) {
 
 		const currentObj = this.rottContainer
+			.getStateData().getUIState()
 			.getSelectedRegionData();
 		if(currentObj !== null 
 		   && currentObj !== undefined) {
@@ -366,7 +367,7 @@ class RegionSettings extends React
 			console.log(subTypeKey);
 			regData.setRouterKind(subTypeKey);
 		
-			this.rottContainer
+			this.rottContainer.getStateData().getWorkState()
 			.updateSelectedRegionData(regData);
 		}
 		
@@ -374,6 +375,7 @@ class RegionSettings extends React
 
 	updateSubTypeOfSelected(subTypeKey: string) {
 		const currentObj = this.rottContainer
+			.getStateData().getUIState()
 			.getSelectedRegionData();
 
 		if(currentObj) {
@@ -381,7 +383,7 @@ class RegionSettings extends React
 				.shallowDuplicate();
 			regData.subTypeKind = subTypeKey;
 		
-			this.rottContainer
+			this.rottContainer.getStateData().getWorkState()
 			.updateSelectedRegionData(regData);
 		}
 		
@@ -393,8 +395,11 @@ class RegionSettings extends React
 			    dir: number) {
 
 		const currentObj = this.rottContainer
+			.getStateData().getUIState()
 			.getSelectedRegionData();
 		const regList = this.rottContainer
+			.getStateData()
+			.getWorkState()
 			.getRegionList();
 		if(currentObj) {
 			let regData: RegionData = currentObj
@@ -419,6 +424,8 @@ class RegionSettings extends React
 				.setDirectionOnCells(dir,
 						encKind);
 				this.rottContainer
+				.getStateData()
+				.getWorkState()
 				.updateSelectedRegionData(
 					regData);
 			}
@@ -434,10 +441,13 @@ class RegionSettings extends React
 		const headerName = 'Region Settings';
 		const parentContainer = this;
 		const selectedRegion = this.rottContainer
+			.getStateData()
+			.getUIState()
 			.getSelectedRegionData();
 		const subList = this.props.subTypes;
 		const connectionsList = this.props.connections;
 		const routerMap = this.props.container
+			.getStateData().getUIState()
 			.getRouterList();
 		let routerList: Array<[number, string]> = [];
 		if(selectedRegion) {
@@ -469,6 +479,8 @@ class RegionSettings extends React
 		const isVisible = selectedRegion 
 			!== null;
 		const currentRouter = this.props.container
+			.getStateData()
+			.getUIState()
 			.getSelectedRouterIndex();
 		
 

@@ -1,8 +1,10 @@
 import { NoServices, Services } from '../../../../service/Services.ts';
+import { UnimplReturn } from '../../util/unimpl.ts';
 import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
   ArchitectureDesigner,
   ArchitectureExtensions,
+  ArchitectureFormatter,
   ArchitectureModulesMeta,
   ArchitectureObject,
   ArchitectureProject,
@@ -45,6 +47,13 @@ export class NoArchObject implements ArchitectureObject<any, any> {
     available: ["Designer"],
     availability: [true],
     count: 1
+  }
+
+  /**
+   * Will return an error
+   */
+  getFormatter(): ArchitectureFormatter {
+    return UnimplReturn<ArchitectureFormatter>();
   }
   
   // Holds the project information

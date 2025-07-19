@@ -1,18 +1,18 @@
 import React from 'react';
 import styles from './styles/RegionList.module.css';
-import {RegionDataList} from '../model/RegionDataList';
-import {RegionData } from '../model/RegionData';
-import RottnestContainer from './container/RottnestContainer';
 
 import {
 	CloseOutlined,
 	EyeOutlined,
 	EyeInvisibleOutlined
 } from '@ant-design/icons'
+import { RegionDataList } from '../obj/RegionDataList';
+import { Superconducting2DArchitecture } from '../Superconducting';
+import { RegionData } from '../obj/RegionData';
 
 type RegionListProps = {
 	regions: RegionDataList
-	container: RottnestContainer
+	container: Superconducting2DArchitecture
 }
 
 type RegionItemData = {
@@ -23,7 +23,7 @@ type RegionItemData = {
 	isVisible: boolean
 	isSelected: boolean
 	setVisibility:() => void
-	container: RottnestContainer
+	container: Superconducting2DArchitecture
 }
 
 /**
@@ -55,7 +55,8 @@ class RegionItemRender extends React.Component<RegionItemData, {}> {
 		const onSelect = 
 			(_: React.MouseEvent<HTMLSpanElement>) => {
 			const pluKind = RegionData.PluraliseKind(kind);
-			rottContainer.selectCurrentRegion(pluKind, idx);
+			rottContainer.getStateData().getUIState()
+				.selectCurrentRegion(pluKind, idx);
 		}
 		
 		const regDelete = 
@@ -63,7 +64,8 @@ class RegionItemRender extends React.Component<RegionItemData, {}> {
 
 			const pluKind = RegionData.PluraliseKind(
 				kind);
-			rottContainer.deleteSelectedRegion(pluKind, 
+			rottContainer.getStateData().getWorkState()
+				.deleteSelectedRegion(pluKind, 
 							   idx);
 		}
 
@@ -121,9 +123,10 @@ class RegionList extends React.Component<RegionListProps,
 		const regions = this.props.regions;
 		const container = this.props.container;
 		const [selIdx, selKind] = container
-			.getRegionSelectionData();
+			.getStateData().getUIState().getRegionSelectionData();
+			
 		const updateVisibility = (regionData: RegionData) => {
-			container.updateVisibility(regionData,
+			container.getStateData().getWorkState().updateVisibility(regionData,
 				!regionData.isVisible());
 		}
 		

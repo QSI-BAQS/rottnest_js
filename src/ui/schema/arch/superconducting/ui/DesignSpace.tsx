@@ -3,8 +3,9 @@ import { GridCell } from './grid/GridItem.tsx'
 import SelectionVisual from './grid/SelectionVisual.tsx';
 
 import styles from './styles/DesignSpace.module.css'
-import {RegionCell} from '../model/RegionData.ts';
-import {Workspace, WorkspaceData} from './workspace/Workspace.ts';
+import {RegionCell} from '../obj/RegionData.ts';
+import { ArchWorkspace, ArchWorkspaceData } from '../../ArchWorkspace.ts';
+import { Superconducting2DArchitecture } from '../Superconducting.ts';
 
 /**
  * Selection Box
@@ -59,7 +60,7 @@ type RegionCellAggr = {
  * created.
  */
 export type GridData = {
-	workspaceData: WorkspaceData
+	workspaceData: ArchWorkspaceData
 }
 
 /**
@@ -67,26 +68,21 @@ export type GridData = {
  * a reference to regions that are placed on it. 
  */
 export class DesignSpace extends React.Component<GridData, GridState> 
-	implements Workspace {
+	implements ArchWorkspace {
 		
-	toolKind = this.props.workspaceData
-		.container
-		.getToolIndex();
-	parentContainer = this.props
-		.workspaceData
-		.container;
+	container = this.props.workspaceData.architecture as Superconducting2DArchitecture;
+	toolKind = this.container.getStateData().getUIState().getToolIndex();
+	parentContainer = this.container;
 	
 
 	state: GridState = {
-		cells: DesignSpace.FillCells(this.props
-					     .workspaceData
-					     .container
-					     .getProjectDetails().width,
-
-					     this.props
-					     .workspaceData
-					     .container
-					     .getProjectDetails().height),
+		cells: DesignSpace.FillCells(
+				this.container
+	     .getProject().body
+	     .object['width'],
+			 this.container
+			 .getProject().body
+			 .object['height']),
 		gridPosition: [0, 0],
 		middleIsDown: false,
 		leftIsDown: false,
@@ -126,7 +122,9 @@ export class DesignSpace extends React.Component<GridData, GridState>
 
 	onGridDown(e: React.MouseEvent<HTMLUListElement>) {
 		
-		const toolKind = this.parentContainer.getToolIndex();
+		const toolKind = this.parentContainer
+			.getStateData().getUIState()
+			.getToolIndex();
 		if(e.button === 1 || toolKind === 7) {
 			const x = e.movementX;
 			const y = e.movementY;
@@ -283,8 +281,14 @@ export class DesignSpace extends React.Component<GridData, GridState>
 		const container = this.parentContainer;
 		this.tagSelectedData();	
 		
-		if(container.getCurrentRDBuffer().empty()) {
-			container.applyRDBuffer();
+		if(container.getStateData()
+			.getWorkState()
+			.getRegionBuffer()
+			.empty()) {
+
+			container.getStateData()
+				.getWorkState()
+				.applyRegionDataBuffer();
 		}
 		
 		newGS.middleIsDown = false;
@@ -303,7 +307,7 @@ export class DesignSpace extends React.Component<GridData, GridState>
 		const container = this.parentContainer;
 		
 		for(let [_, v] of cells) {
-			container.getCurrentRDBuffer()
+			container.getStateData().getWorkState().getRegionBuffer()
 				.insert(v.regData);
 		}
 
@@ -361,22 +365,25 @@ export class DesignSpace extends React.Component<GridData, GridState>
 	}
 
 	onWheelTrigger(e: React.WheelEvent<HTMLUListElement>) {
-		const container = this.parentContainer;
+		/*const container = this.parentContainer;
 		if(e.deltaY < 0) {
-			container.zoomIn(25);
+			//container.zoomIn(25);
 		} else if(e.deltaY > 0) {
 			if(this.parentContainer.state
 			   .appStateData.zoomValue >= 50) {
-				container.zoomIn(-25);
+				//container.zoomIn(-25);
 			}
-		}
+		}*/
 
 	}
 
 	selectCells(): Map<string, RegionCellAggr> {
 
 		const box = this.getCoordsFromSelectionData();
-		const width = this.parentContainer.getProjectDetails().width;
+		const width = this.container
+	     .getProject().body
+	     .object['width'];
+
 		let items: Map<string, RegionCellAggr> = new Map();
 		//if((box.x1 - box.x2 != 0 || box.y1 - box.y2 != 0)
 		//  && 
@@ -427,18 +434,19 @@ export class DesignSpace extends React.Component<GridData, GridState>
 	render() {
 		const gref = this;
 		
-		this.parentContainer = this.props
-			.workspaceData.container;
-		this.toolKind = this.props.workspaceData.container
+			
+		this.toolKind = this.container.getStateData().getUIState()
 			.getToolIndex();
 		const container = this.parentContainer;
-		const zoomValue = this.parentContainer.
-			state.appStateData.zoomValue;
+		// const zoomValue = this.parentContainer.
+		// 	state.appStateData.zoomValue;
+		const zoomValue = 100; //TODO: Fix this
+
 		const gwidth = this.parentContainer
-			.getProjectDetails().width;
+			.getProject().body.object['width'];
 		const paintMode = this.state.paintMode;
 
-		container.registerDesignSpace(gref);
+		//container.registerDesignSpace(gref);
 
 		const mgdownEvent = (e: 
 			React.MouseEvent<HTMLUListElement>) => {
@@ -460,14 +468,14 @@ export class DesignSpace extends React.Component<GridData, GridState>
 		}
 
 		const selectFn = (x: number, y: number) => {
-			container.updateSelectedRegion(x, y);
+			container.getStateData().getWorkState().updateSelectedRegion(x, y);
 		}
 		
 		const dataTagFn = (x: number, y: number) => {
 			gref.potentialStartMark(x, y);
 			gref.potentialEndMark(x, y);
 			if(paintMode) {
-				container.getCurrentRDBuffer()
+				container.getStateData().getWorkState().getRegionBuffer()
 					.insert({ x, y })
 			}	
 		}
@@ -483,6 +491,7 @@ export class DesignSpace extends React.Component<GridData, GridState>
 
 		//Get selected region
 		const selectedRegion = this.parentContainer
+			.getStateData().getUIState()
 			.getSelectedRegionData();
 
 		const renderableCells = 
@@ -490,6 +499,8 @@ export class DesignSpace extends React.Component<GridData, GridState>
 				const x = idx % gwidth;
 				const y = Math.floor(idx / gwidth);
 				const cda = container
+						.getStateData()
+						.getWorkState()
 						.getRegionList()
 						.getCellDataFromCoords(
 							x, y);
@@ -540,6 +551,8 @@ export class DesignSpace extends React.Component<GridData, GridState>
 				}
 				toolKind={
 					gref.parentContainer
+					.getStateData()
+					.getUIState()
 					.getToolIndex()
 				}
 				

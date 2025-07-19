@@ -2,14 +2,14 @@ import React from 'react';
 import Toolbox from '../Toolbox';
 import ToolboxOptions from '../ToolboxOptions';
 import RegionList from '../RegionList';
-import ErrorList from '../err/ErrorList';
 import RegionSettings from '../RegionSettings';
-import {RottnestKindMap} from '../../model/RegionKindMap';
-import {RegionData} from '../../model/RegionData';
-import {Workspace, WorkspaceProps} from '../workspace/Workspace';
-
 import toolStyle from '../styles/ToolContainer.module.css'
 import regionStyle from '../styles/RegionContainer.module.css'
+import { ArchWorkspace, ArchWorkspaceProps } from '../../../ArchWorkspace';
+import { RegionData } from '../../obj/RegionData';
+import { RottnestRouterKindMap } from '../../obj/RegionKindMap';
+import ErrorList from '../err/ErrorList';
+import { Superconducting2DArchitecture } from '../../Superconducting';
 
 /**
  * ContainerDefaults,
@@ -39,11 +39,11 @@ const ContainerDefaults = {
  * that contains both region list and errors
  */
 export class ToolContainer extends 
-	React.Component<WorkspaceProps, {}> 
-	implements Workspace {	
+	React.Component<ArchWorkspaceProps, {}> 
+	implements ArchWorkspace {	
 	render() {
 		const container = this.props
-			.workspaceData.container;
+			.workspaceData.architecture;
 		return (
 			<div 
 				className={toolStyle.toolContainer}
@@ -51,8 +51,8 @@ export class ToolContainer extends
 				data-help-id="tool_container"
 				onMouseMove={
 					(_) => {
-						container
-						.resetDSMove(); //This may require a cleaner way to reset the move when
+						//container
+						//.resetDSMove(); //This may require a cleaner way to reset the move when
 							//the cursor goes out of bounds
 					}
 				}
@@ -85,16 +85,21 @@ export class ToolContainer extends
  * that contains both region list and errors
  */
 export class RegionContainer 
-	extends React.Component<WorkspaceProps, {}> 
-	implements Workspace {	
+	extends React.Component<ArchWorkspaceProps, {}> 
+	implements ArchWorkspace {
 
 
 	render() {
 		const container = this.props.workspaceData
-			.container;
-		const regionList = container.getRegionList();
+			.architecture as Superconducting2DArchitecture;
+		const regionList = container.getStateData()
+			.getWorkState()
+			.getRegionList();
 		
-		const regListInfo = container.getRegionListData();
+		const regListInfo = container.getStateData()
+			.getWorkState()
+			.getRegionListData();
+
 		const selected = regListInfo.selectedKind;
 		const regKeyVal = regListInfo.selectedKind 
 			!== null ?
@@ -102,15 +107,16 @@ export class RegionContainer
 		const regSingular = RegionData.SingularKind(
 			regKeyVal);
 		const regKind = 
-			regSingular as keyof RottnestKindMap;
+			regSingular as keyof RottnestRouterKindMap;
+			//TODO: Not certain of the type change ^
 		const subtypesCol = selected === '' || 
 			selected === null ? [] :
 			regListInfo.subTypes[regKind]
 		
-		const connRecs = container
+		const connRecs = container.getStateData().getWorkState()
 			.getValidAdjacentsOfSelected();
 
-		const regData = container.getSelectedRegionData();
+		const regData = container.getStateData().getUIState().getSelectedRegionData();
 		let connectedIdx = 0;
 		let connectedKind = null;
 		
@@ -132,8 +138,7 @@ export class RegionContainer
 				data-help-id="region_container"
 				onMouseMove={
 					(_) => {
-						container
-						.resetDSMove();
+						//container.resetDSMove();
 					}
 				}
 			>
@@ -170,7 +175,8 @@ export class RegionContainer
 
 					
 					
-				<ErrorList rtc={container} errors={[]}
+				<ErrorList archObject={container}
+					errors={[]}
 					data-component="error_list"
 					data-help-id="error_list"
 					/>
