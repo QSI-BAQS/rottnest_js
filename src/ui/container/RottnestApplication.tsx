@@ -126,12 +126,10 @@ export default class RottnestApplication
 		// Help Componenet
 		const helpComponent = helpService.isActive() ?
   			<HelpContainer 
-    				toggleOff={() => helpService.handleEscKey}
+    				toggleOff={() => helpService.makeHidden()}
     				helpData={helpService.getHelpData()}
   			/> :
   		<></>;
-
-		console.log(helpService.isActive());
 
 		return (
 			<div className={styles.rottnest}>

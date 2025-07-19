@@ -14,6 +14,9 @@ type InputTransformerMap = {
 	number: (input: any) => number
 }
 
+/**
+ * Outlines the the different transformations
+ */
 const InputTransformer: InputTransformerMap = {
 	"string": (input: any) => String(input),
 	"number": (input: any) => Number(input),

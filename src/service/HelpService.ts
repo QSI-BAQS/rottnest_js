@@ -49,6 +49,21 @@ export class HelpService {
     return this.active;
   }
 
+  /**
+   * Hides the help view
+   */
+  makeHidden(): void {
+    console.log("What?");
+		this.active = false;
+		if (!this.active) {
+    	this.inpService.removeHook('keydown');
+    }
+    this.update.triggerRefresh();
+  }
+
+  /**
+   * Makes the current help view active
+   */
   makeActive(): void {
     
 		this.active = true;

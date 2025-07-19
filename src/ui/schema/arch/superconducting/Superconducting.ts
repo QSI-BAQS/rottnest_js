@@ -3,6 +3,7 @@ import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
   ArchitectureDesigner,
   ArchitectureExtensions,
+  ArchitectureFormatter,
   ArchitectureModulesMeta,
   ArchitectureObject,
   ArchitectureProject,
@@ -16,6 +17,7 @@ import { SuperconductingExtensionMap } from './SuperconductingExtension.ts';
 import { SuperconductingVisualiser } from './SuperconductingVisualiser.ts';
 import { SuperconductingNetManager } from './SuperconductingNetManager.ts';
 import { SuperconductingSerializer } from './io/Serializer.ts';
+import { SuperconductingFormatter } from './fmt/SuperconductingFormatter.ts';
 import { Services } from '../../../../service/Services.ts';
 import { RegionDataList } from './obj/RegionDataList.ts';
 import { ProjectDetailsDefaultData, ProjectDump } from './obj/Project.ts';
@@ -50,6 +52,7 @@ export class Superconducting2DArchitecture implements ArchitectureObject<RegionD
     callgraph: new SuperconductingCallGraphState(),
     extension: new SuperconductingExtensionMap(),
     netmanager: new SuperconductingNetManager(this),
+    formatter: new SuperconductingFormatter(this),
   }
 
   // Project Defaults
@@ -69,6 +72,13 @@ export class Superconducting2DArchitecture implements ArchitectureObject<RegionD
    */
   constructor(services: Services, _args: Map<string, string | number>) {
     this.services = services;
+  }
+
+  /**
+   * Gets the architecture formatter
+   */
+  getFormatter(): ArchitectureFormatter {
+    return this.components.formatter;
   }
 
   /**
