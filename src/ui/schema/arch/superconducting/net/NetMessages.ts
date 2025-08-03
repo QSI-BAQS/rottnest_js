@@ -1,3 +1,7 @@
+import { CUReqResult, CUReqResultDummy, SuperconductingCallGraph } from "../obj/CallGraph";
+import { RottnestRouterKindMap } from "../obj/RegionKindMap";
+import { TSchedData } from "../obj/TSchedData";
+import { DeRott } from "./AppServiceMessage";
 
 export type RouterAggr = {
 	options: Array<string>
@@ -27,7 +31,7 @@ export class RottArchMSG {
 
 export class RottGraphMSG implements DeRott  {
 
-	graph: RottCallGraph = {
+	graph: SuperconductingCallGraph = {
 		graph: new Map(),
 	};
 
@@ -73,10 +77,10 @@ export class RottStatusResponseMSG implements DeRott {
 
 export class RottRouterTypesMSG implements DeRott  {
 	
-	subtypes: RottnestKindMap;
+	subtypes: RottnestRouterKindMap;
 	subtypeMap: Map<string, RouterAggr> = new Map();
 
-	constructor(subtypes: RottnestKindMap) {
+	constructor(subtypes: RottnestRouterKindMap) {
 		this.subtypes = subtypes;
 		this.translateSubtypes();
 	}
@@ -84,7 +88,7 @@ export class RottRouterTypesMSG implements DeRott  {
 	translateSubtypes() {
 		
 		for(const k in this.subtypes) {
-			const key = k as keyof RottnestKindMap;
+			const key = k as keyof RottnestRouterKindMap;
 			const vCol = this.subtypes[key];
 			
 			for(const v of vCol) {
@@ -151,7 +155,7 @@ export class RottRouterTypesMSG implements DeRott  {
 
 export class RottSubTypesMSG implements DeRott  {
 	
-	regionKinds: RottnestKindMap = {
+	regionKinds: RottnestRouterKindMap = {
 		bus: [{ name: 'Not Selected' }],	
 		register: [{ name: 'Not Selected'}],
 		bellstate: [{ name: 'Not Selected'}],
@@ -164,14 +168,14 @@ export class RottSubTypesMSG implements DeRott  {
 		return null;
 	}
 	
-	fuzzyMatch(ky: string): keyof RottnestKindMap | null {
+	fuzzyMatch(ky: string): keyof RottnestRouterKindMap | null {
 		const fuzzies: Map<string, string> = new Map([
 			['bell', 'bellstate']
 		]);
 
 		if(fuzzies.has(ky)) {
 			const r = fuzzies.get(ky); 
-			return r as keyof RottnestKindMap;
+			return r as keyof RottnestRouterKindMap;
 		} else {
 			return null;
 		}

@@ -16,25 +16,25 @@
 
 export class RottnestCompatibility {
   
-	// WARNING: Not done
-	gotoVizWithData(data: any) {
-		console.log(data);
-		this.state.tabData.selectedTabIndex = 2;
-		this.state.tabData.availableTabs[2] = true;
-		//this.state.visData = data; //Causing issues
-		this.triggerUpdate();
-	}
+	// // WARNING: Not done
+	// gotoVizWithData(data: any) {
+	// 	console.log(data);
+	// 	this.state.tabData.selectedTabIndex = 2;
+	// 	this.state.tabData.availableTabs[2] = true;
+	// 	//this.state.visData = data; //Causing issues
+	// 	this.triggerUpdate();
+	// }
 
-	// WARNING: Not done
-	getProjectAssembly(): ProjectAssembly {
-		return {
-			projectDetails: this.state
-				.projectDetails,
-			regionList: this.state.regionList
-		}
-	}
+	// // WARNING: Not done
+	// getProjectAssembly(): ProjectAssembly {
+	// 	return {
+	// 		projectDetails: this.state
+	// 			.projectDetails,
+	// 		regionList: this.state.regionList
+	// 	}
+	// }
 	
-	getProjectDetails() {
-		return this.state.projectDetails;
-	}
+	// getProjectDetails() {
+	// 	return this.state.projectDetails;
+	// }
 }

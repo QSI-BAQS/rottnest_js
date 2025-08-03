@@ -1,6 +1,6 @@
 
 import { ArchActionTracker } from '../../ArchActionTracker';
-import { SuperconductingDesignBuffer } from '../des/buf/SuperconductingDesignBuffer';
+import { SuperconductingWorkingState } from '../state/WorkingState';
 import {RegionDataList}  from './RegionDataList';
 /**
  * This allows for undo and redo functionality
@@ -8,12 +8,12 @@ import {RegionDataList}  from './RegionDataList';
  */
 export class RegionsSnapshotStack implements ArchActionTracker<RegionDataList> {
 
-	bufferComponent: SuperconductingDesignBuffer;
+	bufferComponent: SuperconductingWorkingState;
 	redoListStack: Array<RegionDataList> = [];
 	regionListStack: Array<RegionDataList> = [];
 	capacity: number = 128;
 
-	constructor(bufcomp: SuperconductingDesignBuffer) {
+	constructor(bufcomp: SuperconductingWorkingState) {
 		this.bufferComponent = bufcomp;
 	}
 

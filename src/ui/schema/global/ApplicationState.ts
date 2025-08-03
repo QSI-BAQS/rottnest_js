@@ -19,6 +19,7 @@ import { ZoomState } from "./modules/ZoomState";
 import AppServiceModule from "../../../net/AppServiceModule";
 import RottnestApplication from "../../container/RottnestApplication";
 import { Superconducting2DSchema } from "../arch/superconducting/Superconducting";
+import { RunResultService } from "../../../service/RunResultService";
 
 /**
  * Return Object for project state
@@ -257,6 +258,14 @@ export class RottnestApplicationServices implements ServicesHolder {
 	 */
   getRefreshService(): RefreshService {
   	return this.services.refresh;
+  }
+
+	/**
+	 * Gets the runresult service that will be used for logging results
+	 * from a run
+	 */
+  getRunResultService(): RunResultService {
+  	return this.services.rrservice;
   }
 
 	/**

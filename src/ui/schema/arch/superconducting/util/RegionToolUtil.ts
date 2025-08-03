@@ -1,4 +1,4 @@
-import { Regions } from "../obj/LatticeRegionData";
+import { Regions } from "../obj/RegionData";
 
 
 

@@ -65,8 +65,8 @@ export class ArchPluginLoader {
   /**
    * Attempts to load the architecture plugin
    */
-  loadPlugin(): ArchPlugin {
-
+  loadPlugin(): ArchPlugin | null {
+    //TODO: Finish the plugin loader
     return null;
   }
 

@@ -59,7 +59,7 @@ export class SuperconductingVisualiserPlayer implements ArchitectureVisualiserPl
   }
 
   //TODO: Fix this
-  togglePlay(state: ArchitecturePlayerState): boolean {
+  togglePlay(_state: ArchitecturePlayerState): boolean {
     return false;
   }
 
@@ -79,12 +79,12 @@ export class SuperconductingVisualiserPlayer implements ArchitectureVisualiserPl
   }
 
   //TODO: Fix this
-  play(state: ArchitecturePlayerState): void {
+  play(_state: ArchitecturePlayerState): void {
     
   }
   
   //TODO: Fix this
-  stop(state: ArchitecturePlayerState): void {
+  stop(_state: ArchitecturePlayerState): void {
     
   }
 }

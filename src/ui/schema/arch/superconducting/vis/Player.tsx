@@ -17,7 +17,7 @@ import {
   PreRenderedPatches,
   FRAMERATE
 }
-from "./SuperconductingVisualiserObjects.tsx";
+from "./VisualiserObjects.tsx";
 
 import {
   OnRangeChange,

@@ -364,7 +364,8 @@ export class DesignSpace extends React.Component<GridData, GridState>
 		return { x1, x2, y1, y2 }
 	}
 
-	onWheelTrigger(e: React.WheelEvent<HTMLUListElement>) {
+	onWheelTrigger(_e: React.WheelEvent<HTMLUListElement>) {
+		//TODO: Need to reimplement using Zoom Service
 		/*const container = this.parentContainer;
 		if(e.deltaY < 0) {
 			//container.zoomIn(25);

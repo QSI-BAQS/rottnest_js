@@ -1,5 +1,4 @@
 import { PluginEntry } from "../../ui/global/settings/GeneralSettings"
-import { ArchitectureExtObj } from "../../ui/schema/arch/ArchSchema"
 
 
 /**

@@ -1,4 +1,8 @@
 
+
+export type CUResultKind = "CUResultData" | "CUCacheData";
+
+
 /**
  * Compute Unit Source, just a loose mapping
  */
@@ -32,6 +36,27 @@ export type CUTocks = {
 	total: number
 }
 
+/**
+ * Current status of the call graph
+ */
+export type CGStatus = {
+	status: string
+}
+
+/**
+ * NOTE: Not sure why mixed exists
+ */
+export type CUResultMixed = {
+	kind: CUResultKind
+	mxid: number
+	volumes: CUVolume
+	tSource: CUSource
+	tocks: CUTocks
+	cuID?: number
+	status?: string
+	npQubits?: number
+	cacheHash?: CUHashHex
+}
 
 /**
  * CallGraph Result, aggregation
@@ -45,4 +70,19 @@ export type CGResult = {
 	npQubits: number
 }
 
+/**
+ * Hash Result, with typical components
+ */
+export type CGHashResult = {
+	volumes: CUVolume
+	tSource: CUSource
+	tocks: CUTocks
+	cacheHash: CUHashHex
+}
 
+/**
+ * Compute Unit Hash as Hexadecimal
+ */
+export type CUHashHex = {
+	hashhex: string
+}

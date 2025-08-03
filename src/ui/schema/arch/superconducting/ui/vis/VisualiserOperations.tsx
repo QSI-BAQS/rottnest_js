@@ -17,11 +17,12 @@ from "./VisualiserElements";
 
 
 
-import { Workspace, WorkspaceData } from "../workspace/Workspace.ts";
 
 import style from "../styles/SchedulerVisualiser.module.css"
 import { OnRangeChange, OnVisualiserExportJSON, OnVisualiserFrameNext, OnVisualiserFramePrev, OnVisualiserPlay, OnVisualiserReset, OnVisualiserSaveAnimation, OnVisualiserSaveFrame } from "./VisualiserEvents.ts";
-import { DownloadFile } from "../../util/FileDownload.ts";
+import { DownloadFile } from "../../../../../../util/FileDownload.ts";
+import { ArchWorkspace, ArchWorkspaceData } from "../../../ArchWorkspace.ts";
+import { Superconducting2DArchitecture } from "../../Superconducting.ts";
 
 
 /**
@@ -358,7 +359,7 @@ export type SchedulerVisData = {
 }
 
 export type SchedulerVisProps = {
-	workspaceData: WorkspaceData
+	workspaceData: ArchWorkspaceData
 }
 
 /**
@@ -531,7 +532,7 @@ export class SchedulerControls extends React.Component<SchedulerControlsProps, {
 
 
 export class SchedulerVisualiser extends React.Component<SchedulerVisProps,
-	SchedulerVisData> implements Workspace {
+	SchedulerVisData> implements ArchWorkspace {
 		
 	
 	state: SchedulerVisData = {
@@ -539,7 +540,9 @@ export class SchedulerVisualiser extends React.Component<SchedulerVisProps,
 		initd: true,
 		isPlaying: false,
 		interval: null,
-		data: this.props.workspaceData.container.getVisData(),
+		data: (this.props.workspaceData.architecture as Superconducting2DArchitecture)
+			.getStateData().getVisState().getVizData(),
+		
 		offsets: [0, 0],
 		midDown: false,
 	}

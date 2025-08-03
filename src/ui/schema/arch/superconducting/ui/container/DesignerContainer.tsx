@@ -1,18 +1,21 @@
 import React from "react";
 
+import { ArchWorkspaceGroup, ArchWorkspaceProps} 
+	from "../../../ArchWorkspace.ts";
+import {ArchStashMapTrigger, ArchStashMap} from "../../../ArchWorkspace.ts";
 import styles from '../styles/WorkspaceContainer.module.css';
-import {WorkspaceContainerProps, WorkspaceGroup, WorkspaceProps} 
-	from "../workspace/Workspace";
-import {ArchGroup} from "../workspace/ArchGroup";
-import {VisualiserGroup} from "../workspace/VisualiserGroup";
-import {CallGraphGroup} from "../workspace/CallGraphGroup";
-import {BufferMapTrigger, WorkspaceBufferMap} 
-	from "../workspace/WorkspaceBufferMap";
-import {RunChartGroup} from "../workspace/ChartGroup";
+import { SuperconductingDesignUIGroup } from "../../groups/DesignGroup.tsx";
+import { CallGraphGroup } from "../../groups/CallGraphGroup.tsx";
+import { VisualiserGroup } from "../../groups/VisualiserGroup.tsx";
+import { RunChartGroup } from "../../groups/RunChartGroup.tsx";
 
 
 type WorkspaceContainerState = {
-	bufferMap: WorkspaceBufferMap
+	bufferMap: ArchStashMap
+}
+
+type WorkspaceGroupData = {
+	[key: string]: ArchWorkspaceGroup
 }
 
 /**
@@ -20,21 +23,21 @@ type WorkspaceContainerState = {
  * workspace components, including tools, regions and design space
  */
 class WorkspaceContainer 
-	extends React.Component<WorkspaceContainerProps, 
+	extends React.Component<ArchWorkspaceProps, 
 		WorkspaceContainerState> 
-	implements BufferMapTrigger
+	implements ArchStashMapTrigger
 	{
 	
 	state: WorkspaceContainerState = {
-		bufferMap: new WorkspaceBufferMap(this)
+		bufferMap: new ArchStashMap(this)
 	}
 
-	workspaceGroups: Array<WorkspaceGroup> = [
-		new ArchGroup(),
-		new CallGraphGroup(),
-		new VisualiserGroup(),
-		new RunChartGroup(),
-	]
+	workspaceGroups: WorkspaceGroupData = {
+		"Designer": new SuperconductingDesignUIGroup(),
+		"CallGraph": new CallGraphGroup(),
+		"Visualiser": new VisualiserGroup(),
+		"Chart": new RunChartGroup(),
+	}
 	
 	refresh() {
 		const nState = {...this.state};
@@ -44,18 +47,15 @@ class WorkspaceContainer
 
 	render() {
 		const data = this.props;
-		const group = this.workspaceGroups[data
-			.container.state.tabData.selectedTabIndex %
-			this.workspaceGroups.length];
+		const context = data.workspaceData.archcontext.getCurrent();
+		// const ctxObj = data.workspaceData.archcontext.move(context, {});
+		const group = this.workspaceGroups[context];
 		
-		const wdata : WorkspaceProps = { 
-			workspaceData: {
-				container: data.container,
-				bufferMap: this.state.bufferMap
-			}
+		const wdata : ArchWorkspaceProps = { 
+			workspaceData: data.workspaceData
 		};
 
-		const comps = group.MakeGroup(wdata);
+		const comps = group.makeGroup(wdata);
 
 		return (
 			<div className={styles.workspaceContainer}>

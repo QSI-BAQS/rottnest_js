@@ -26,19 +26,23 @@ export class SuperconductingState {
 
   // cgstate, will be related to the callgraph state
   cgstate: SuperconductingCallGraphState;
+
+  // Callback to ensure that it refreshes the UI on updates
+  refreshCallback: () => void;
   
-  constructor() {
+  constructor(refreshCallback: () => void) {
     this.workstate = new SuperconductingWorkingState(this);
     this.uistate = new SuperconductingUIState(this);
     this.visstate = new SuperconductingVisState(this);
     this.cgstate = new SuperconductingCallGraphState(this);
+    this.refreshCallback = refreshCallback;
   }
 
   /**
    * Triggers a refresh from the parent object
    */
   triggerUpdate() {
-    //TODO: Implement for other components
+    this.refreshCallback();
   }
 
   /**

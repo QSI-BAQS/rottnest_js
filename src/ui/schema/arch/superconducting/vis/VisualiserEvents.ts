@@ -1,4 +1,4 @@
-import { SchedulerVisualiser } from "./SuperconductingPlayer.tsx";
+import { SchedulerVisualiser } from "./Player";
 
 
 export function OnRangeChange(visualiser: SchedulerVisualiser, value: number) {

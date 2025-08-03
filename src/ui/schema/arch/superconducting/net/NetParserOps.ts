@@ -1,9 +1,11 @@
-import { RottRouterTypesMSG } from "../../../../../net/Messages";
+import { ArchitectureConnectionManager } from "../../ArchSchema";
+import { RottnestRouterKindMap } from "../obj/RegionKindMap";
+import { RottArchMSG, RottGraphMSG, RottRouterTypesMSG, RottSubTypesMSG } from "./NetMessages";
 
 
 export class SuperconductingParserOperations {
   
-	retrieveRouters(subTypes: RottnestKindMap, data: any) {
+	retrieveRouters(subTypes: RottnestRouterKindMap, data: any) {
 		const msgContainer =
 			new RottRouterTypesMSG(subTypes);
 		data.parseData();
@@ -39,9 +41,10 @@ export class SuperconductingParserOperations {
 		return null;
 	}
 	
-	submitArch(schedMsg: RottArchMSG) {
-		if(this.socket) {
-			this.socket.send(schedMsg.toJsonStr());
+	submitArch(obj: ArchitectureConnectionManager, schedMsg: RottArchMSG) {
+		let socket = obj.getNetworkService();
+		if(socket) {
+			socket.sendMessage(schedMsg.toJsonStr());
 		}
 	}
 }

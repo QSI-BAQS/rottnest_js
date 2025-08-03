@@ -2,10 +2,11 @@
 
 import { AppServiceClient } from "../../../../../net/AppService";
 import { RottRunResultMSG } from "../../../../../net/Messages";
-import { Superconducting2DArchitecture } from "../Superconducting2D.ts";
+import { Superconducting2DArchitecture } from "../Superconducting.ts";
 import { CommEventOps, CommOpQueue, CommsActions } from '../../../global/ops/CommsOps.ts';
 
 import { MSG_REMAP } from "../../../../../net/MessageRemap";
+import { SuperconductingParserOperations } from "./NetParserOps.ts";
 
 /**
  *
@@ -17,11 +18,14 @@ export const RTCCommEvents: CommEventOps<Superconducting2DArchitecture> = {
   recvSubType: {
     evkey: MSG_REMAP['subtype'],
     evtrigger: (appService: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
-      let kinds = appService
+    	
+			let parserOps = new SuperconductingParserOperations();
+      let kinds = parserOps
 				.retrieveSubTypes(m);
 			appService.consumeFromQueue();
 			if(kinds) {
-				obj.updateSubTypes(kinds);
+
+				obj.getStateData().uistate.updateSubTypes(kinds);
 
 			}
 		}
@@ -29,11 +33,14 @@ export const RTCCommEvents: CommEventOps<Superconducting2DArchitecture> = {
   recvGetRouter: {
     evkey: MSG_REMAP['get_router'],
     evtrigger: (appService: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
-      let kinds = appService
+    	let subTypes = obj.getStateData().uistate.subTypes;
+			let parserOps = new SuperconductingParserOperations();
+      let kinds = parserOps
 					.retrieveRouters(
-						obj.state.subTypes,m);
+						subTypes,
+						m);
 			if(kinds) {
-				obj.updateRouterList(kinds);
+	    	obj.getStateData().uistate.updateRouterList(kinds);
 			}
 			appService.consumeFromQueue();
 		}
@@ -49,7 +56,7 @@ export const RTCCommEvents: CommEventOps<Superconducting2DArchitecture> = {
 				appService.consumeFromQueue();
 		  }
   },
-  recvErr: {
+  /*recvErr: {
     evkey: MSG_REMAP['err'],
     evtrigger: (_: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
     
@@ -59,7 +66,7 @@ export const RTCCommEvents: CommEventOps<Superconducting2DArchitecture> = {
 			console.error(`Error occurred: ${someMsg}`);
 			obj.triggerUpdate();
 		}
-	},
+	},*/
 
   recvRunResult: {
     evkey: MSG_REMAP['run_result'],
@@ -68,8 +75,9 @@ export const RTCCommEvents: CommEventOps<Superconducting2DArchitecture> = {
       //TODO Set the graph id for
 			//the msg to be sent for
 			//get_graph
-			let rrBuf = obj.getRRBuffer();
+			let rrBuf = obj.services.getRunResultService();
 			let json = m.interpretedData; 
+			let modMeta = obj.meta;
 		
 			//A lot of heavy lifting done with this
 			//to address a terrible messaging system
@@ -83,37 +91,31 @@ export const RTCCommEvents: CommEventOps<Superconducting2DArchitecture> = {
 			
 			let shouldUpdate = false;
 			if(rkind === "CUIDObj" || rkind === "CUIDTotal") {
-				obj.state.tabData
-				.availableTabs[3]
-					= true;
-				
-				obj.state.tabData
-				.availableTabs[1]
-					= true;
+
+				modMeta.setEnable("CallGraph")
+				modMeta.setEnable("Chart")
+	
 				shouldUpdate = true;
 			}
 			if(rkind === "VisualResult") {
-				obj.state.visData = mdat;
-				obj.state.tabData
-				.availableTabs[2]
-					= true;
+				obj.getStateData().getVisState().getVizData = mdat;
+				modMeta.setEnable("Visualiser");
 				shouldUpdate = true;
 			}
 			if(shouldUpdate) {
-				obj.triggerUpdate();
+				obj.services.getRefreshService().triggerRefresh();
 			}
-			//This needs to trigger
-			//a retrieval on get_graph
 		}
 	},
 
   recvGetRootGraph: {
     evkey: MSG_REMAP['get_root_graph'],
     evtrigger: (appService: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
-      let graph = appService
+			let parserOps = new SuperconductingParserOperations();
+      let graph = parserOps
 				.decodeGraph(m);
 			if(graph) {
-				obj.getVisualiser().setViewData(graph);
+				obj.getStateData().getCallGraphState().setGraphViewData(graph);
 			}       
 			appService.consumeFromQueue();
 		}

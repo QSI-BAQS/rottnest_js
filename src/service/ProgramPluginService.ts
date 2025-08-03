@@ -25,6 +25,21 @@ export class ProgramPluginService {
     this.refservice = upservice;
   }
 
+
+	/**
+	 * Stores programs into the service
+	 */
+  storePrograms(progs: Array<ProgramPlugin>) {
+  	this.stored.programs = progs;
+  }
+
+	/**
+	 * Stores the configuration
+	 */
+  storeConfig(config: string) {
+  	this.stored.config.contents = config;
+  }
+
   /**
    * Saves the program data
    */  

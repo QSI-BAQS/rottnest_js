@@ -40,33 +40,39 @@ export class Superconducting2DSchema implements ArchitectureSchema {
 }
 
 /**
+ * Different components of the superconducting plugin
+ */
+type SuperconductingComponents = {
+  serializer: SuperconductingSerializer,
+  visualiser: SuperconductingVisualiser,
+  callgraph: SuperconductingCallGraphState,
+  extension: SuperconductingExtensionMap,
+  netmanager: SuperconductingNetManager,
+  formatter: SuperconductingFormatter,
+  designer: SuperconductingDesigner,
+  statedata: SuperconductingState
+}
+
+
+/**
  * The Superconducting2DArchitecture object that will be a facade object
  * that RottnestContainer will use.
  */
 export class Superconducting2DArchitecture implements ArchitectureObject<RegionDataList, any> {
 
   services: Services;
-  components = {
-    designer: new SuperconductingDesigner(),
-    serializer: new SuperconductingSerializer(),
-    visualiser: new SuperconductingVisualiser(),
-    callgraph: new SuperconductingCallGraphState(),
-    extension: new SuperconductingExtensionMap(),
-    netmanager: new SuperconductingNetManager(this),
-    formatter: new SuperconductingFormatter(this),
-    statedata: new SuperconductingState(),
-  }
 
+  components: SuperconductingComponents;
+  
   // Project Defaults
   project: ProjectDump = ProjectDetailsDefaultData()
 
   // Meta data, keeps track of what is active
-  meta: ArchitectureModulesMeta = {
-        modules: ["Designer", "Visualiser", "CallGraph"],
-        available: ["Designer"],
-        availability: [true, false, false],
-        count: 3
-  }
+  meta: ArchitectureModulesMeta = new ArchitectureModulesMeta(
+        ["Designer", "Visualiser", "CallGraph", "Chart"],
+        ["Designer"],
+        [true, false, false, false], 4)
+  
 
   /**
    * Constructor for the Superconducting2DArchitecture with its abstraction
@@ -74,6 +80,21 @@ export class Superconducting2DArchitecture implements ArchitectureObject<RegionD
    */
   constructor(services: Services, _args: Map<string, string | number>) {
     this.services = services;
+    let statedata = new SuperconductingState(
+      () => { services.getRefreshService().triggerRefresh(); }
+    );
+    let designer = new SuperconductingDesigner(statedata);
+
+    this.components = {
+      serializer: new SuperconductingSerializer(),
+      visualiser: new SuperconductingVisualiser(),
+      callgraph: new SuperconductingCallGraphState(),
+      extension: new SuperconductingExtensionMap(),
+      netmanager: new SuperconductingNetManager(this),
+      formatter: new SuperconductingFormatter(this),
+      designer,
+      statedata
+    }
   }
 
   /**

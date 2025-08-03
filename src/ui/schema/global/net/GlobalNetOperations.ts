@@ -4,18 +4,18 @@ import { AppServiceClient } from "../../../../net/AppService";
 import { ProgramPlugin } from '../../../../obj/plugin/Program.ts'
 import { ArchitecturePlugin } from '../../../../obj/plugin/Architecture.ts'
 import { CommEventOps, CommOpQueue, CommsActions } from '../ops/CommsOps.ts';
-import { RottnestApplication } from "../../../container/RottnestApplication.tsx";
 
 import { MSG_REMAP, MSG_GLOBAL_MAP } from "../../../../net/MessageRemap";
+import RottnestApplication from "../../../container/RottnestApplication.tsx";
 
 export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvErr: {
     evkey: MSG_REMAP['err'],
     evtrigger: (_: AppServiceClient, obj: RottnestApplication, m: any) => {
-    
-      let someMsg = JSON.stringify(m); 
-			obj.state.errorMessage = someMsg;
-			obj.state.errorDisplay = true;
+    	let errState = obj.getModuleStates().getErrorState();
+      let someMsg = JSON.stringify(m);
+      
+			errState.setError(someMsg);
 			console.error(`Error occurred: ${someMsg}`);
 			obj.triggerUpdate();
 		}
@@ -32,12 +32,15 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 					api_map: {}
 				})
 			}
+
+			let archservice = obj.getServices().getArchPluginService();
+
+			archservice.storeArchs(newArchs);
 			
-    	obj.state.appStateData.archData.architectures = newArchs;
-    	if(newArchs.length > 0) {
+    	/*if(newArchs.length > 0) {
     		obj.state.appStateData.archData.current = newArchs[0]
-    	}
-    	obj.triggerUpdate();
+    	}*/
+    	//obj.triggerUpdate();
 			appService.consumeFromQueue();
 		}
   },
@@ -50,12 +53,18 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 				params: prg['prg_params'].map((p: any) =>
 					{ return{ param: p.name, kind: 'any'}}) //TODO: Fix the kind
 			};
+
+			let notifyservice = obj.getServices().getNotifyService();
+			let prgservice = obj.getServices().getProgramPluginService();
+			prgservice.saveProgramData({
+				plgKey: newProg.name,
+				plgValue: newProg.name
+			})
 			
-    	obj.state.appStateData.progData.current = newProg;
-    	obj.makeNotification({
-    		header: "Program Set",
-    		body: "Retrieved the current executable from the server"
-    	});
+    	//obj.state.appStateData.progData.current = newProg;
+    	notifyservice.makeMessageWithId("prg-set",
+    		"Program Set",
+    		"Retrieved the current executable from the server");
     	obj.triggerUpdate();
 			appService.consumeFromQueue();
 		}
@@ -72,8 +81,9 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 						{ return{ param: p.name, kind: 'any'}}) //TODO: Fix the kind
 				})
 			}
-			
-    	obj.state.appStateData.progData.programs = newProgData
+			let prgservice = obj.getServices().getProgramPluginService();
+			prgservice.storePrograms(newProgData);
+    	//obj.state.appStateData.progData.programs = newProgData
     	obj.triggerUpdate();
 			appService.consumeFromQueue();
 		}
@@ -81,7 +91,9 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvArchConfig: {
     evkey: MSG_GLOBAL_MAP['arch_get_config'],
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-    	obj.state.appStateData.archData.config.config = m.getJSON().payload.config;
+    	let archservice = obj.getServices().getArchPluginService();
+    	archservice.storeConfig(m.getJSON().payload.config);
+    	//obj.state.appStateData.archData.config.config = m.getJSON().payload.config;
     	obj.triggerUpdate();
 			appService.consumeFromQueue();
 		}
@@ -89,7 +101,8 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvProgramConfig: {
     evkey: MSG_GLOBAL_MAP['program_get_config'],
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-    	obj.state.appStateData.progData.config.config = m.getJSON().payload.config;
+			let prgservice = obj.getServices().getProgramPluginService();
+			prgservice.storeConfig(m.getJSON().payload.config);
     	obj.triggerUpdate();
 			appService.consumeFromQueue();
 		}

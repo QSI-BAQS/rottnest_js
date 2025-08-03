@@ -78,11 +78,40 @@ export interface ArchitectureComponentModule<P, S> {
  * related to the kind of modules and availability
  * along with the count
  */
-export type ArchitectureModulesMeta = {
+export class ArchitectureModulesMeta {
   modules: Array<string>
   available: Array<string>
   availability: Array<boolean>
   count: number
+
+  constructor(modules: Array<string>, available: Array<string>, availability: Array<boolean>, count: number) {
+
+    this.modules = modules;
+    this.available = available;
+    this.availability = availability;
+    this.count = count;
+    
+  }
+
+  setEnable(name: string) {
+    
+    if(this.modules.includes(name) && !this.available.includes(name)) {
+      let idx = this.modules.findIndex((e) => e === name);
+      
+      this.available.push(name);
+      this.availability[idx] = true;
+    }
+  }
+
+  setDisable(name: string) {
+    
+    if(this.modules.includes(name) && this.available.includes(name)) {
+      let idx = this.modules.findIndex((e) => e === name);
+      
+      this.available.splice(idx, 1);
+      this.availability[idx] = false;
+    }
+  }
 }
 
 /**

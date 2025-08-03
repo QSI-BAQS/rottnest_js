@@ -10,6 +10,8 @@ import {AppServiceMessage} from "../../net/AppServiceMessage";
 import styles from '../styles/CGSpace.module.css'
 import { ArchStashMap, ArchWorkspaceData } from "../../../ArchWorkspace";
 import { Superconducting2DArchitecture } from "../../Superconducting";
+import { RottStatusResponseMSG } from "../../net/NetMessages";
+import { SuperconductingParserOperations } from "../../net/NetParserOps";
 
 
 interface CGUpdateableContext {	
@@ -306,12 +308,15 @@ class CGObject extends React.Component<CGDispData,
 				this.data.bufferMap.commit();
 			} else {
 				const container = this.props.wdaggr
-					.workspaceData.architecture;
+					.workspaceData.architecture as Superconducting2DArchitecture;
+
+				const rrBuf = container.getServices().getRunResultService();
+				
 				
 				const gidx = this.props.index;
-				const ifReqd = container.getRRBuffer()
+				const ifReqd = rrBuf
 					.checkIfRequested(gidx);
-				const ifFin = container.getRRBuffer()
+				const ifFin = rrBuf
 					.checkIfFinished(gidx);
 				bmap.insert('viz_sim_data',
 					JSON.stringify({
@@ -539,7 +544,7 @@ export class CallGraphSpace extends
 	serviceHook(asm: AppServiceMessage): void {
 		const cgspace = this;	
 		const container = this.props.architecture as Superconducting2DArchitecture;
-		const appService = container.getConnectionManager().getNetworkService();
+		//const appService = container.getConnectionManager().getNetworkService();
 
 		const jsonObj = asm.getJSON()
 		if(jsonObj) {
@@ -564,7 +569,8 @@ export class CallGraphSpace extends
 				}
 			} else if(jsonObj.message === 'cg_lat2d_get_graph') {
 				//let gid = jsonObj.gid;
-				let graph = appService.decodeGraph(asm); //TODO
+				let parserOps = new SuperconductingParserOperations();
+				let graph = parserOps.decodeGraph(asm); //TODO
 				let expands = true;
 				let expGid = 'invalid';
 
@@ -610,7 +616,8 @@ export class CallGraphSpace extends
 				cgspace.setState(nState);
 
 			} else if(jsonObj.message === 'cg_lat2d_get_root_graph') {
-				let graph = appService.decodeGraph(asm);
+				let parserOps = new SuperconductingParserOperations();
+				let graph = parserOps.decodeGraph(asm);
 				let expands = true;
 				this.props.stash
 					.insert('cgviz_chart_gid_data',
@@ -644,7 +651,7 @@ export class CallGraphSpace extends
 				.availableTabs[2]
 					= true;*/
 
-				let rrBuf = container.getRRBuffer();
+				let rrBuf = container.getServices().getRunResultService();
 
 			
 				//A lot of heavy lifting done with this
@@ -654,14 +661,11 @@ export class CallGraphSpace extends
 				let shouldUpdate = false;
 				//TODO: This is bloody nasty!
 				// WARNING: You are dealing with something quite gross here!
-				// 
+				let modMeta = container.getModulesMeta();
 				if(rkind === "CUIDObj" || rkind === "CUIDTotal") {
-					container.state.tabData
-					.availableTabs[3]
-						= true;
-					container.state.tabData
-					.availableTabs[1]
-						= true;
+					modMeta.setEnable("CallGraph");
+					modMeta.setEnable("Chart");
+
 					shouldUpdate = true;
 				}
 					
@@ -670,9 +674,7 @@ export class CallGraphSpace extends
 					console.log("Got viz-result");
 					console.log(mdat, rkind); 	
 					container.getStateData().getVisState().setVizData(mdat);
-					container.state.tabData
-					.availableTabs[2]
-						= true;
+					modMeta.setEnable("Visualiser");
 					this.props.stash
 					.insert('viz_sim_data',
 						JSON.stringify({
@@ -685,7 +687,7 @@ export class CallGraphSpace extends
 				}
 
 				if(shouldUpdate) {
-					container.triggerUpdate();
+					container.getServices().getRefreshService().triggerRefresh();
 				}
 
 				
@@ -693,7 +695,7 @@ export class CallGraphSpace extends
 		}
 	}
 
-	traverseGraph(graph: RottCallGraph, 
+	traverseGraph(graph: SuperconductingCallGraph, 
 		      rootIdx: string)
 		: CGTreeDisplayData {
 
@@ -857,11 +859,12 @@ export class CallGraphSpace extends
 			workspaceData: this.props
 		}
     // const rootList = this.identifyRoots(graphFromContainer);
-    const rootList = Array.from(graphFromContainer.graph.entries());
+    // TODO: Re-evaluate this operation
+    const rootList = Array.from(graphFromContainer.graph.entries()) as Array<Array<any>>;
 
 		if(rootList.length !== 0) {
 			
-			let selectedIndex = rootList[0][0];	
+			let selectedIndex = rootList[0][0];
 			const selectedData = JSON.parse(
 				bmap.get('root_node'));
 			if(selectedData !== null) {

@@ -42,12 +42,12 @@ export class NoArchSchema implements ArchitectureSchema {
 export class NoArchObject implements ArchitectureObject<any, any> {
 
 
-  meta: ArchitectureModulesMeta = {
-    modules: ["Designer"],
-    available: ["Designer"],
-    availability: [true],
-    count: 1
-  }
+  meta: ArchitectureModulesMeta = new ArchitectureModulesMeta(
+    ["Designer"],
+    ["Designer"],
+    [true],
+    1
+  )
 
   /**
    * Will return an error

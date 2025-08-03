@@ -7,6 +7,7 @@ import { ProgramPluginService } from "./ProgramPluginService";
 import { ArchPluginService } from "./ArchPluginService";
 import { UnimplReturn } from "../ui/schema/util/unimpl";
 import { ValidationService } from "./ValidatorService";
+import { RunResultService } from "./RunResultService";
 
 /**
  * ServicesHolder is the container that will
@@ -32,6 +33,8 @@ export interface ServicesHolder {
 
   getValidationService(): ValidationService;
 
+  getRunResultService(): RunResultService;
+
   getServices(): Services;
 
 }
@@ -51,9 +54,10 @@ export class Services {
   valservice: ValidationService = new ValidationService();
   programplugins: ProgramPluginService;
   archplugins: ArchPluginService;
+  rrservice: RunResultService;
   help: HelpService;
 
-  constructor(refreshTarget: UpdateTrigger, container: ServicesHolder) {
+  constructor(refreshTarget: UpdateTrigger, _container: ServicesHolder) {
     this.refresh = new RefreshService(refreshTarget);
     this.notify = new NotifyService();
     this.network = new NetworkService();
@@ -62,6 +66,7 @@ export class Services {
     this.programplugins = new ProgramPluginService(this.refresh, this.network);
     this.archplugins = new ArchPluginService(this.refresh, this.network);
     this.help = new HelpService(this.refresh, this.inputs);
+    this.rrservice = new RunResultService();
   }
 
   
@@ -127,6 +132,13 @@ export class Services {
 	getValidationService(): ValidationService {
 		return this.valservice;
 	}
+
+	/**
+	 * Gets the run result service
+	 */
+  getRunResultService(): RunResultService {
+    return this.rrservice;
+  }
 }
 
 /**
@@ -151,6 +163,13 @@ export class NoServicesHolder implements ServicesHolder {
    */
   getRefreshService(): RefreshService {
     return RefreshService.NoRefresh();
+  }
+
+	/**
+	 * Gets the run result service
+	 */
+  getRunResultService(): RunResultService {
+    return new RunResultService();
   }
 
   /**

@@ -59,7 +59,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 			})
 	}
 
-	gotoVisualiserWithData(data: any) {
+	gotoVisualiserWithData(_data: any) {
 
 		
 		const container = this.props.workspaceData
@@ -86,7 +86,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 
 		const container = this.props.workspaceData
 			.architecture as Superconducting2DArchitecture;
-		const rrbuf = container.getRRBuffer();
+		const rrbuf = container.getServices().getRunResultService();
 
 		const gvolumes = rrbuf.getTotalArray();
 		if(gvolumes.length > 0) {
@@ -99,7 +99,9 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 	}
 
 	getCompilationFinished(): string {
-		const rrbuf = this.props.workspaceData.container.getRRBuffer();
+		const container = this.props.workspaceData
+			.architecture as Superconducting2DArchitecture;
+		const rrbuf = container.getServices().getRunResultService();
 
 		const gendcomp = rrbuf.getEndComp();
 		if(gendcomp.length > 0) {

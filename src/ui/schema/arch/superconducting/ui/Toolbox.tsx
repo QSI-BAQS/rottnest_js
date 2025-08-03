@@ -10,7 +10,8 @@ import {BellStateToolOperations} from './tools/BellStateToolItem.ts';
 import {SelectorToolOperations} from './tools/SelectorToolItem.ts';
 import {UnselectToolOperations} from './tools/UnselectToolItem.ts';
 import {PanToolOperations} from './tools/PanTool.ts';
-import RottnestContainer from './container/RottnestContainer.tsx';
+import { ArchitectureObject } from '../../ArchSchema.ts';
+import { Superconducting2DArchitecture } from '../Superconducting.ts';
 
 
 /**
@@ -21,7 +22,7 @@ import RottnestContainer from './container/RottnestContainer.tsx';
  */
 type ToolboxProps = {
 	toolbox: { headerName: string }
-	container: RottnestContainer
+	container: ArchitectureObject
 	'data-component'?: string,
 	'data-help-id'?: string,
 }
@@ -36,7 +37,7 @@ type ToolboxProps = {
  */
 type ToolboxState = {
 	selectedToolIndex: number
-	container: RottnestContainer
+	container: ArchitectureObject
 }
 
 /**
@@ -127,17 +128,17 @@ class Toolbox extends React.Component<ToolboxProps, ToolboxState> {
 	updateSelected(idx: number) {
 		//TODO: Still need to set the current events for
 		//the design space
-		this.state.container.
-			state.appStateData
+		//TODO: Clean up conversion
+		let scontainer = this.state.container as Superconducting2DArchitecture;
+		scontainer.getStateData().getUIState()		
 			.componentData
 			.selectedTool = idx;
 		
-		const { subTypes } = this.state.container
+		const { subTypes } = scontainer.getStateData().getUIState()
 			.getSubTypesAndSelected()
 		//TODO: Make a setter in the container, this
 		//is gross
-		this.state.container
-			.state.appStateData
+		scontainer.getStateData().getUIState()		
 			.componentData
 			.selectedSubTool = subTypes.length === 0 ?
 				0 :
@@ -147,7 +148,8 @@ class Toolbox extends React.Component<ToolboxProps, ToolboxState> {
 			selectedToolIndex: idx,
 			container: this.state.container
 		});
-		this.state.container.triggerUpdate();
+
+		scontainer.getStateData().triggerUpdate();
 	}
 
 	render() {	

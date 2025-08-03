@@ -1,4 +1,4 @@
-import { AppServiceClient } from "../../../net/AppService";
+import { AppServiceClient } from "../../../../net/AppService";
 
 export type CommDispatch<T> = {
   opkey: string

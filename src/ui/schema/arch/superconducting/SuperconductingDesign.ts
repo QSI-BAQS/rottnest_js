@@ -4,42 +4,42 @@ import { ArchActionTracker } from '../ArchActionTracker.ts';
 import { ArchCapabilityQuery, ArchCapabilityResult } from '../ArchContext.ts';
 import { ArchitectureDesigner } from '../ArchSchema.ts';
 import { ArchWorkspaceGroup } from '../ArchWorkspace.ts';
-import { SuperconductingDesignBuffer } from './des/buf/DesignBuffer.ts';
 import { SuperconductingDesignUIGroup } from './groups/DesignGroup.tsx';
-import { RegionData } from './obj/RegionData.ts';
 import { RegionDataList } from './obj/RegionDataList.ts';
+import { SuperconductingState } from './state/ArchState.ts';
+import { SuperconductingWorkingState } from './state/WorkingState.ts';
 
-/**
- * State object of things which are currently being operated on.
- */
-export class SuperconductingWorkingState {
+// /**
+//  * State object of things which are currently being operated on.
+//  */
+// export class SuperconductingWorkingState {
 
-  selectedRegion: number = -1;
-  selectedRegionType: string = 'N/A';
+//   selectedRegion: number = -1;
+//   selectedRegionType: string = 'N/A';
   
-	getSelectedRegionData(): RegionData | null {
-		const getSelectedIdx = this.selectedRegion;
-		const selKey = this.selectedRegionType 
-			!== null ? this.selectedRegionType  : 'NA';
-		const getSelectedKeyStr = RegionData
-			.PluraliseKind(
-			selKey);
+// 	getSelectedRegionData(): RegionData | null {
+// 		const getSelectedIdx = this.selectedRegion;
+// 		const selKey = this.selectedRegionType 
+// 			!== null ? this.selectedRegionType  : 'NA';
+// 		const getSelectedKeyStr = RegionData
+// 			.PluraliseKind(
+// 			selKey);
 
 
-		return this.getRegionList()
-			.retrieveByIdx(getSelectedKeyStr, 
-			getSelectedIdx);
-	}
+// 		return this.getRegionList()
+// 			.retrieveByIdx(getSelectedKeyStr, 
+// 			getSelectedIdx);
+// 	}
 
 	
-	updateSelectedSubType(subTypeIndex: number) {
-		this.state.appStateData
-			.componentData
-			.selectedSubTool = subTypeIndex;
-		this.opers.validate(this);
-		this.triggerUpdate();
-	}
-}
+// 	updateSelectedSubType(subTypeIndex: number) {
+// 		this.state.appStateData
+// 			.componentData
+// 			.selectedSubTool = subTypeIndex;
+// 		this.opers.validate(this);
+// 		this.triggerUpdate();
+// 	}
+// }
 
 
 /**
@@ -48,9 +48,19 @@ export class SuperconductingWorkingState {
  */
 export class SuperconductingDesigner implements ArchitectureDesigner {
 
-	designBuffer = new SuperconductingDesignBuffer();
-  workingState: SuperconductingWorkingState = new SuperconductingWorkingState();
+	//designBuffer = new SuperconductingDesignBuffer();
+  workingState: SuperconductingWorkingState;
 
+
+	constructor(state: SuperconductingState) {
+		this.workingState = state.getWorkState();
+	}
+  
+
+	/**
+	 * Gets the current region data list
+	 * TODO: DataList is unimpled
+	 */
 	getProjectBuffer(): RegionDataList {
 		return UnimplReturn<RegionDataList>();
 	}
@@ -78,7 +88,7 @@ export class SuperconductingDesigner implements ArchitectureDesigner {
 	 * Gets the snapshot tracker for undo and redo functionality
 	 */
 	getActionTracker(): ArchActionTracker {
-		return this.designBuffer.getSnapshopStack();
+		return this.getActionTracker();
 	}
 
 	/**

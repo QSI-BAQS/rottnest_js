@@ -29,6 +29,13 @@ export class ArchPluginService {
 
 
 	/**
+	 * Stores the configuration
+	 */
+  storeConfig(config: string) {
+  	this.stored.config.contents = config;
+  }
+
+	/**
 	 * Retrieves the architecture that is currently in the list
 	 * using a key and maps it to an existing key
 	 * if not found, it will not save
@@ -57,6 +64,12 @@ export class ArchPluginService {
 		this.refservice.triggerRefresh();
 	}
 
+	/**
+	 * Stores the architectures within the service
+	 */
+	storeArchs(archs: Array<ArchitecturePlugin>) {
+		this.stored.architectures = archs;
+	}
 
 
 	/**
