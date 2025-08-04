@@ -45,9 +45,14 @@ class WorkspaceTabBar extends React
 
 			const isSelected = t == selTab;
 			const available = avaibilities[idx];
+			const ctxkey = data.context.getTabs().keys[idx]
+			console.log(avaibilities, idx)
 			const updateSelected = () => {
 				if(available) {
-					context.updateSelectedTab(idx);
+					
+					context.move(ctxkey, {});
+					console.log('yo', ctxkey);
+					//context.updateSelectedTab(idx);
 				}
 			};
 

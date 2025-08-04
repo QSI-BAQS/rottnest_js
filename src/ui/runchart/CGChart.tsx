@@ -357,7 +357,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	const nLins = data.idxs.map((_, idx) => LineColorList[idx % 
 				    		LineColorList.length])
 	
-	const bmap = props.workspaceData.bufferMap;
+	const bmap = props.workspaceData.stash;
 	const [keyref, setKeyRef] = useState<CUDataKeyRef>({ keyvalue: String(props.selKey) });
 	//const [lineref, setLineRef] = useState<CUWidgetKeyRef>({ keyvalue: -1 });
 	const [scaleref, setScaleRef] = useState<CUScaleKeyRef>({keyvalue: 'Linear'});

@@ -2,7 +2,6 @@ import {ReactElement} from "react";
 import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../../ArchWorkspace";
 import { ArchWorkspaceZone } from "../../../../workspace/WorkspaceZone.tsx";
 import { CGGraphColumn, CGNodeColumn } from "../ui/callgraph/CallGraphColumn.tsx";
-import { CallGraphSpace } from "../ui/callgraph/CallGraphSpace.tsx";
 
 
 /**
@@ -13,8 +12,14 @@ export class RunChartGroup implements ArchWorkspaceGroup {
 	
 	makeGroup(data: ArchWorkspaceProps): Array<ReactElement> {
 
-		const wspace = <CallGraphSpace
-			{...data.workspaceData} />;	
+		// 
+		const RunChartTemplate = data.workspaceData.architecture
+			.getServices()
+			.getRunResultService()
+			.RunChartTemplate();
+
+		const wspace = <RunChartTemplate
+			{...data} />;	
 		const group = [
 			<CGGraphColumn 
 			key={"widget_graph_column"} 

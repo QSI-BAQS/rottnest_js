@@ -48,8 +48,8 @@ export function ArchitecturePluginGetName(prog: ArchitecturePlugin): string {
  */
 export function ArchSetDefault(): ArchSet {
   return {
-    architectures: [],
-    config: { contents: ''}
+    architectures: [ArchPluginDefault()],
+    config: { contents: '[]'}
   }
 }
 

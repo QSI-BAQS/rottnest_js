@@ -277,6 +277,7 @@ export class ArchitectureUIContext {
   move(name: string, data: any): ArchContextReturnObj | null {
 
     const ret = this.switches[name](this.archObject, data);
+    console.log(ret);
     if(ret) {
       return ret;
     } else {

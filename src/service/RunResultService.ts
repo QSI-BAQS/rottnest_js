@@ -1,4 +1,5 @@
 import { CGHashResult, CGResult, CGStatus, CUHashHex, CUResultKind, CUResultMixed } from "../obj/chart/Metrics";
+import { RunChartContainer } from "../ui/runchart/RunChart";
 
 
 
@@ -27,6 +28,13 @@ export class RunResultService {
 	endComps: Array<CGResult> = [];
   
 	//runResults: Map<string, CGVisualResult> = new Map();
+
+	/**
+	 * Returns the container class (not an instance)
+	 */
+	RunChartTemplate() {
+		return RunChartContainer;
+	}
 
 
 	/**

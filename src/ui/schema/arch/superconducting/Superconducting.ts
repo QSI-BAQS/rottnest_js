@@ -70,8 +70,8 @@ export class Superconducting2DArchitecture implements ArchitectureObject<RegionD
   // Meta data, keeps track of what is active
   meta: ArchitectureModulesMeta = new ArchitectureModulesMeta(
         ["Designer", "Visualiser", "CallGraph", "Chart"],
-        ["Designer"],
-        [true, false, false, false], 4)
+        ["Designer", "Visualiser"],
+        [true, true, false, false], 4)
   
 
   /**

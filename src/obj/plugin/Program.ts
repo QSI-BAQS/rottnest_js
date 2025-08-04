@@ -60,7 +60,7 @@ export function ProgramPluginGetName(prog: ProgramPlugin): string {
  */
 export function ProgramPluginDefault(): ProgramPlugin {
   return {
-    name: 'N/A',
+    name: 'NoPrg',
     params: []
   }
 }
@@ -70,7 +70,7 @@ export function ProgramPluginDefault(): ProgramPlugin {
  */
 export function ProgramPluginSetDefault(): ProgramPluginSet {
   return {
-    programs: [],
-    config: { contents: '' }
+    programs: [ProgramPluginDefault()],
+    config: { contents: '[]' }
   }
 }

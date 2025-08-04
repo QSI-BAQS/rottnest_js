@@ -1,5 +1,5 @@
-import {WorkspaceData} from "../workspace/Workspace";
 import {CUVolume} from "../../obj/chart/Metrics.ts";
+import { ArchWorkspaceData } from "../schema/arch/ArchWorkspace.ts";
 export type CUDataKey = keyof CUVolume;
 export type CUAggrKey = keyof DataAggrMap;
 
@@ -57,18 +57,17 @@ export type CGChartDimensions = {
 }
 
 export type RunChartProps = {
-	workspaceData: WorkspaceData 
+	workspaceData: ArchWorkspaceData 
 
 }
 
 export type CallGraphSpaceData = {
-	workspaceData: WorkspaceData 
-	//graphData: Array<Array<CGSample>>
+	workspaceData: ArchWorkspaceData 
 	selKey: string 
 }
 
 export type CallGraphStatsData = {
-	workspaceData: WorkspaceData
+	workspaceData: ArchWorkspaceData
 	graphData: DataAggregate	
 	selKey: CUDataKey
 	dimensions: CGChartDimensions	
