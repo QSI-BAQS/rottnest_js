@@ -59,6 +59,7 @@ export const ArchUIContextDefaults: ArchUIContextMapping = {
 export type ArchStandardCapabilities = "CanZoom"
   | "CanNetwork" | "CanJSON"
 
+
 /**
  * Concrete answer from the capability query
  */
@@ -240,6 +241,7 @@ export class ArchitectureUIContext {
 		this.triggerUpdate();*/
 	}
 
+
   /**
    * Returns the list of the switches
    */
@@ -264,6 +266,13 @@ export class ArchitectureUIContext {
   }
 
   /**
+   * Sets the current cursor to the elected key
+   */
+	setCurrent(key: string) {
+	  this.cursor = key;
+	}
+
+  /**
    * This is the current location that the user is in
    */
   getCurrent(): string {
@@ -274,17 +283,15 @@ export class ArchitectureUIContext {
    * Will move to the group and accept any data
    * that the module could use
    */
-  move(name: string, data: any): ArchContextReturnObj | null {
-
-    const ret = this.switches[name](this.archObject, data);
-    console.log(ret);
-    if(ret) {
-      return ret;
+  move(name: string, data: any) {
+    //const ret = this.switches[name](this.archObject, data);
+    this.setData(data);
+    if(name) {
+      this.setCurrent(name)
     } else {
     
       console.error("Unable to change to location");
       console.error("Are you sure the name is correct?");
-      return null;
     }
   }
   

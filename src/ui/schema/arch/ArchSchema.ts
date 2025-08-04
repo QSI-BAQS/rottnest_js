@@ -93,6 +93,18 @@ export class ArchitectureModulesMeta {
     
   }
 
+  /**
+   * Gets the key based on an index
+   */
+  getMetaKey(idx: number): string | null {
+    let key = this.modules[idx];
+    if(key) {
+      return key.toLowerCase();
+    } else {
+      return null;
+    }
+  }
+
   setEnable(name: string) {
     
     if(this.modules.includes(name) && !this.available.includes(name)) {

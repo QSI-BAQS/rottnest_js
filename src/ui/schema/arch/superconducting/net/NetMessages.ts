@@ -1,5 +1,5 @@
 import { CUReqResult, CUReqResultDummy, SuperconductingCallGraph } from "../obj/CallGraph";
-import { RottnestRouterKindMap } from "../obj/RegionKindMap";
+import { RottnestRouterKindMap, SuperconductingRegionKindMap } from "../obj/RegionKindMap";
 import { TSchedData } from "../obj/TSchedData";
 import { DeRott } from "./AppServiceMessage";
 
@@ -77,10 +77,10 @@ export class RottStatusResponseMSG implements DeRott {
 
 export class RottRouterTypesMSG implements DeRott  {
 	
-	subtypes: RottnestRouterKindMap;
+	subtypes: SuperconductingRegionKindMap;
 	subtypeMap: Map<string, RouterAggr> = new Map();
 
-	constructor(subtypes: RottnestRouterKindMap) {
+	constructor(subtypes: SuperconductingRegionKindMap) {
 		this.subtypes = subtypes;
 		this.translateSubtypes();
 	}
@@ -112,7 +112,7 @@ export class RottRouterTypesMSG implements DeRott  {
 
 		if(fuzzies.has(ky)) {
 			const r = fuzzies.get(ky); 
-			return  r as keyof RottnestRouterKindMap;
+			return  r as keyof SuperconductingRegionKindMap;
 		} else {
 			return null;
 		}

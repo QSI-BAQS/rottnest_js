@@ -29,6 +29,17 @@ export default class RottnestApplication
 	}
 
 	/**
+	 * Constructs the application, ensures context has the arch object
+	 */
+	constructor(props: RottnestProperties) {
+		super(props);
+		this.state.appContext = new ArchitectureUIContext(
+			this.state.appState
+			.getArchitectureObject()
+		);
+	}
+
+	/**
 	 * Requires to be implemented as part of update
 	 * trigger interface
 	 */

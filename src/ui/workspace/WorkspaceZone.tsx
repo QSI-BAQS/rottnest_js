@@ -43,16 +43,18 @@ class WorkspaceTabBar extends React
 		const avaibilities = data.availableTabs;
 		const tabs = data.tabTitles.map((t, idx) => {
 
-			const isSelected = t == selTab;
+			const isSelected = t.toLowerCase() === selTab;
+			const ctxdata = context.getData();
 			const available = avaibilities[idx];
-			const ctxkey = data.context.getTabs().keys[idx]
-			console.log(avaibilities, idx)
+			const ctxkey = data.container.getModulesMeta()
+				.getMetaKey(idx) || 'default';
+			const refservice = this.props.container
+				.getServices()
+				.getRefreshService();
 			const updateSelected = () => {
 				if(available) {
-					
-					context.move(ctxkey, {});
-					console.log('yo', ctxkey);
-					//context.updateSelectedTab(idx);
+					context.move(ctxkey, ctxdata);
+					refservice.triggerRefresh();					
 				}
 			};
 
@@ -90,7 +92,6 @@ export class ArchWorkspaceZone
 		const selKey = data.archcontext.getCurrent();
 		const moduleMeta = data.architecture.getModulesMeta();
 		const component = this.props.wsComponent;
-
 		
 		const availableTabs = moduleMeta.availability;
 		

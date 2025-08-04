@@ -2,12 +2,8 @@ import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext.ts";
 import { ArchitecturePlayerState, ArchitectureVisualiser, ArchitectureVisualiserPlayer } from "../ArchSchema";
 import { ArchWorkspaceGroup } from "../ArchWorkspace.ts";
 import { VisualiserGroup } from "./groups/VisualiserGroup.tsx";
+import { SuperconductingState } from "./state/ArchState.ts";
 
-
-
-export class SuperconductingVisualiserContainer {
-  
-}
 
 /**
  * Superconducting Player state,
@@ -95,11 +91,16 @@ export class SuperconductingVisualiserPlayer implements ArchitectureVisualiserPl
  */
 export class SuperconductingVisualiser implements ArchitectureVisualiser {
 
+
+  state: SuperconductingState;
   
-  visualiser: SuperconductingVisualiserContainer = new SuperconductingVisualiserContainer();
-  visData: any = {};
-
-
+  /**
+   * Constructor for the state
+   */
+  constructor(state: SuperconductingState) {
+    this.state = state;
+  }
+  
    /**
    * Queries the capabiliteies of the designer
    */
@@ -138,15 +139,14 @@ export class SuperconductingVisualiser implements ArchitectureVisualiser {
    * has been moved to the visualiser
    */
   getVisData(): any {
-    //Retrieve from the object
-    // getVisData(object: ArchitectureObject)
+    return this.state.getVisState();
   }
 
   /**
    * Sets the visualisation data
    */
   setVisData(visData: any) {
-    this.visData = visData; 
+    this.state.getVisState().setVizData(visData);
   }
   
 }

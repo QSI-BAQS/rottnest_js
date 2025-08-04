@@ -87,7 +87,7 @@ export class Superconducting2DArchitecture implements ArchitectureObject<RegionD
 
     this.components = {
       serializer: new SuperconductingSerializer(),
-      visualiser: new SuperconductingVisualiser(),
+      visualiser: new SuperconductingVisualiser(statedata),
       callgraph: new SuperconductingCallGraphState(),
       extension: new SuperconductingExtensionMap(),
       netmanager: new SuperconductingNetManager(this),

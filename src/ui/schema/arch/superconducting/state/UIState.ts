@@ -4,6 +4,13 @@ import { SubKind, SuperconductingRegionKindMap } from "../obj/RegionKindMap"
 import { SuperconductingState } from "./ArchState"
 
 
+const RottnestSubKinds: SuperconductingRegionKindMap = {
+	bus: [{ name: 'Not Selected' }],	
+	register: [{ name: 'Not Selected'}],
+	bellstate: [{ name: 'Not Selected'}],
+	factory: [{ name: 'Not Selected'}],
+	buffer: [{ name: 'Not Selected' }]	
+}
 /**
  * UIComponentData from rottnest app state, it has been
  * composed into a different part but focuses on the region tooling
@@ -46,7 +53,7 @@ export class SuperconductingUIState {
 
 	// Update subtypes
 	// TODO: Investigate this
-  subTypes: any = [];
+  subTypes: SuperconductingRegionKindMap = RottnestSubKinds;
 
 	// Outlines if the subtypes have been received
 	subTypesRecvd: boolean = false;
@@ -151,9 +158,11 @@ export class SuperconductingUIState {
 		const key = RegionData.SingularKind(
 			keyObj) as keyof SuperconductingRegionKindMap;
 
+		console.log(key, keyObj);
+		console.log(this.subTypes);
 		//TODO: You are apparently a map?
 
-		if(key !== null) {
+		if(key !== null && this.subTypes[key]) {
 			return {
 				subTypes: this.subTypes[key].map((e: any) => 
 					{ return (

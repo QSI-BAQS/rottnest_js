@@ -6,6 +6,8 @@ import { RunResultBuffer } from "../obj/RunResult";
 import { SuperconductingState } from "./ArchState";
 
 
+
+
 /**
  * It will receive run results from the backend
  * which correspond to widget ids and different components
@@ -146,6 +148,7 @@ export class SuperconductingWorkingState {
 				const pkey = RegionData.SingularKind(rkey);
 
 				const pkeyCvt = pkey as keyof SuperconductingRegionKindMap;
+				console.log(uistate.subTypes, pkeyCvt)
 				const subkindFor = uistate.subTypes[pkeyCvt];
 				let kindex = uistate.componentData.selectedSubTool;
 
