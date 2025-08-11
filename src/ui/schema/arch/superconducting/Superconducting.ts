@@ -29,6 +29,8 @@ import { SuperconductingState } from './state/ArchState.ts';
  */
 export class Superconducting2DSchema implements ArchitectureSchema {
 
+  identifier: string = "Superconducting";
+
   /**
    * Creates an architecture object that can be used by
    * application

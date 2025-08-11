@@ -61,6 +61,11 @@ export class ProgramPluginService {
 			{ config: data.plgValue });
 	}
 
+	//TODO: Finish this
+	getParameters(_ident: string) {
+		return { parameters: [] }
+	}
+
   /**
    * Gets the program configuration so it can be updated
    * by the user

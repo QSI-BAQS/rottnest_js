@@ -48,9 +48,25 @@ export function ArchitecturePluginGetName(prog: ArchitecturePlugin): string {
  */
 export function ArchSetDefault(): ArchSet {
   return {
-    architectures: [ArchPluginDefault()],
+    architectures: ArchCorePlugins(),
     config: { contents: '[]'}
   }
+}
+
+/**
+ * Sets the core plugins - This is a somewhat hardcoded solution
+ */
+export function ArchCorePlugins(): Array<ArchitecturePlugin> {
+  return [
+    {
+      identifier: 'NoArch',
+      api_map: {},
+    },
+    {
+      identifier: 'Superconducting',
+      api_map: {},
+    }
+  ]
 }
 
 

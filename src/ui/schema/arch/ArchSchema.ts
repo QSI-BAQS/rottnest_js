@@ -58,6 +58,9 @@ export interface ArchitectureProject<T> extends ArchitectureProjectData<T> {
  * that will provide interfaces for sub components
  */
 export interface ArchitectureSchema {
+
+  identifier: string
+  
   createArchitecture<T=any, E=any>(services: Services, args?: Map<string, string | number>): ArchitectureObject<T, E>; 
 }
 

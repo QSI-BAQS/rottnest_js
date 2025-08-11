@@ -4,6 +4,7 @@ import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
   ArchitectureDesigner,
   ArchitectureExtensions,
+  ArchitectureExtObj,
   ArchitectureFormatter,
   ArchitectureModulesMeta,
   ArchitectureObject,
@@ -11,28 +12,45 @@ import { ArchitectureCallGraph,
   ArchitectureSchema,
   ArchitectureSerializer,
   ArchitectureVisualiser } from '../ArchSchema.ts';
-import { NoArchCallGraph } from './NoArchCallGraph.ts';
-import { NoArchDesigner } from './NoArchDesigner.ts';
-import { NoArchExtensions } from './NoArchExtensions.ts';
-import { NoArchNetManager } from './NoArchNetwork.ts';
-import { NoArchSerializer } from './NoArchSerializer.ts';
-import { NoArchVisualiser } from './NoArchVisualiser.ts';
+import { ActiveVolumeCallGraph } from './ActiveVolumeCallGraph.ts';
+import { ActiveVolumeDesigner } from './ActiveVolumeDesigner.ts';
+import { ActiveVolumeNetManager } from './ActiveVolumeNetwork.ts';
+import { ActiveVolumeSerializer } from './ActiveVolumeSerializer.ts';
+import { ActiveVolumeVisualiser } from './ActiveVolumeVisualiser.ts';
 
+
+class ActiveVolumeExtensions implements ArchitectureExtensions<any> {
+  
+  extensions: Map<string, any> = new Map(); 
+  
+  getExtension(name: string): ArchitectureExtObj<any> {
+    const res = this.extensions.get(name);
+    if(res === undefined || res === null) {
+      return new ArchitectureExtObj(null);
+    } else {
+      return new ArchitectureExtObj(res);
+    }
+  }
+
+  getAllExtensions(): Map<string, any> {
+    return this.extensions;
+  }
+}
 
 /**
- * NoArchSchema is for building a noarch object when there are
+ * ActiveVolumeSchema is for building a noarch object when there are
  * no architectures available
  */
-export class NoArchSchema implements ArchitectureSchema {
+export class ActiveVolumeSchema implements ArchitectureSchema {
 
-  identifier: string = "NoArch";
+  identifier: string = "ActiveVolume";
   
   /**
    * Creates a noarch schema that can be style and outline when the application is
    * not ready
    */
   createArchitecture(_services: Services, _args: Map<string, string | number>): ArchitectureObject {
-    return new NoArchObject();
+    return new ActiveVolumeObject();
   }
   
 }
@@ -41,7 +59,7 @@ export class NoArchSchema implements ArchitectureSchema {
  * Inplace for when there is no architecture ready
  * to be used, this would be when the user is still selecting
  */
-export class NoArchObject implements ArchitectureObject<any, any> {
+export class ActiveVolumeObject implements ArchitectureObject<any, any> {
 
 
   meta: ArchitectureModulesMeta = new ArchitectureModulesMeta(
@@ -62,10 +80,10 @@ export class NoArchObject implements ArchitectureObject<any, any> {
   getProject(): ArchitectureProject<any> {
     return {
       header: {
-        name: 'NoArch',
+        name: 'ActiveVolume',
         version: 'Invalid',
         author: 'You',
-        architecture: 'NoArch',
+        architecture: 'ActiveVolume',
         description: 'Absolutely no architecture'
       },
       body: {
@@ -105,7 +123,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    * application
    */
   getDesigner(): ArchitectureDesigner {
-    return new NoArchDesigner();
+    return new ActiveVolumeDesigner();
   }
 
   /**
@@ -114,7 +132,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    * application
    */
   getVisualiser(): ArchitectureVisualiser {
-    return new NoArchVisualiser();    
+    return new ActiveVolumeVisualiser();    
   }
 
   /**
@@ -123,7 +141,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    * application
    */
   getCallGraph(): ArchitectureCallGraph {
-    return new NoArchCallGraph();
+    return new ActiveVolumeCallGraph();
   }
 
   /**
@@ -132,7 +150,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    * application
    */
   getSerializer(): ArchitectureSerializer<any> {
-    return new NoArchSerializer();
+    return new ActiveVolumeSerializer();
   }
 
   /**
@@ -140,7 +158,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    * components or shared components
    */
   getExtensions(): ArchitectureExtensions<any> {
-    return new NoArchExtensions();
+    return new ActiveVolumeExtensions();
   }
 
   /**
@@ -148,7 +166,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    * Will have access to the websockets that will be given to it
    */
   getConnectionManager(): ArchitectureConnectionManager {
-    return new NoArchNetManager(this);
+    return new ActiveVolumeNetManager(this);
   }
 
   /**

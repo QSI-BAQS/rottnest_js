@@ -8,7 +8,72 @@ import { ArchitecturePlugin, ArchitecturePluginConfig,
 import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
 import { PluginEntry } from "../ui/global/settings/GeneralSettings";
 
+///TODO: Move the interfaces into a separate module
+import { ArchitectureSchema } from "../ui/schema/arch/ArchSchema";
+import { ArchPluginLoader } from "../ui/schema/arch/ArchPlugin";
 
+
+// Temporary callbacks
+export type ArchUpdateTrigger = (arch: ArchitectureSchema) => void;
+
+
+
+/**
+ * Storage for all the plugins
+ */
+export class ArchPluginStorage {
+	core: Map<string, ArchitectureSchema>;
+	plugins: Map<string, ArchitectureSchema>;
+
+	/**
+	 * Core Plugins construction
+	 */
+	static withCore(schemas: Array<ArchitectureSchema>) {
+		const storage = new ArchPluginStorage();
+		
+		storage.core = new Map();
+		schemas.forEach((e) => {
+			storage.core.set(e.identifier, e);
+		});
+		return storage;
+	}
+
+	/**
+	 * Loads it with the core and external plugins
+	 * components
+	 */
+	static withCoreAndPlugins(_core: Array<ArchitectureSchema>,
+		_pluginConfigs: ArchitecturePluginConfig) {
+		//TODO: Implement this	
+	}
+
+	constructor() {
+		this.core = new Map();
+		this.plugins = new Map();
+	}
+
+	/**
+	 * Adds another architecture into the map
+	 */
+	addPlugin(arch: ArchitectureSchema) {
+		this.plugins.set(arch.identifier, arch);
+	}
+
+	/**
+	 * Gets an architecture as part of core or plugin
+	 */
+	getArchitecture(ident: string): ArchitectureSchema | null {
+		const coreArch = this.core.get(ident)
+		const pluginArch = this.plugins.get(ident)
+		if(coreArch) {
+			return coreArch;
+		} else if(pluginArch) {
+			return pluginArch;
+		} else {
+			return null;
+		}
+	}
+}
 
 /**
  * Service that will retrieve arch information
@@ -17,16 +82,36 @@ import { PluginEntry } from "../ui/global/settings/GeneralSettings";
  */
 export class ArchPluginService {
 
+	storage: ArchPluginStorage;
   stored: ArchSet = ArchSetDefault();
   current: ArchitecturePlugin = ArchPluginDefault();
   netservice: NetworkService;
   refservice: RefreshService;
+	update: ArchUpdateTrigger;
 
-  constructor(upservice: RefreshService, netservice: NetworkService) {
+  constructor(schemas: Array<ArchitectureSchema>,
+  	update: ArchUpdateTrigger,
+  	upservice: RefreshService,
+  	netservice: NetworkService) {
+
+		this.storage = ArchPluginStorage.withCore(schemas);
+  	this.update = update;
     this.netservice = netservice;
     this.refservice = upservice;
   }
 
+	/**
+	 * Will attempt to load the schema, once done it will trigger a refresh.
+	 */
+	async loadSchema(archname: string): boolean {
+		let loadResult: ArchitectureSchema = await ArchPluginLoader.GetSchema(archname);
+		if(this.storage.getArchitecture(loadResult.identifier)) {
+			return false;
+		} else {
+			this.storage.addPlugin(loadResult);
+			return true;
+		}
+	}
 
 	/**
 	 * Stores the configuration
@@ -36,15 +121,32 @@ export class ArchPluginService {
   }
 
 	/**
+	 * Sets the current architecture
+	 */
+  setCurrent(arch: ArchitecturePlugin) {
+  	this.current = arch;
+  }
+
+	/**
 	 * Retrieves the architecture that is currently in the list
 	 * using a key and maps it to an existing key
 	 * if not found, it will not save
 	 */
 	saveArchData(data: PluginData) {
-		const arch = this.stored.architectures.find((e: ArchitecturePlugin) => e.identifier
+		console.log(data);
+		const archMap = this.stored.architectures.find((e: ArchitecturePlugin) => e.identifier
 				=== data.plgKey);
-		if(arch) {
-			this.current = arch;
+
+		
+		if(archMap) {
+			const arch = this.storage.getArchitecture(archMap.identifier);
+			this.current = archMap; //Gets set here?
+			if(arch) {
+				this.update(arch);
+			} else {
+				console.error("Unable to swap architecture, metadata listed, plugin missing");
+			}
+			//this.update()
 			this.refservice.triggerRefresh();
 		} else {
 			console.error("Unable to save architecture")
@@ -66,9 +168,17 @@ export class ArchPluginService {
 
 	/**
 	 * Stores the architectures within the service
+	 * Checks to see if we need to dynamically load as well
 	 */
 	storeArchs(archs: Array<ArchitecturePlugin>) {
 		this.stored.architectures = archs;
+		let doRefresh = false;
+		for(const a in archs) {
+			doRefresh = doRefresh || this.loadSchema(a);
+		}
+		if(doRefresh) {
+			this.refservice.triggerRefresh();
+		}
 	}
 
 

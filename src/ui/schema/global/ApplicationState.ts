@@ -18,8 +18,12 @@ import { ProjectSettingsState } from "./modules/SettingsState";
 import { ZoomState } from "./modules/ZoomState";
 import AppServiceModule from "../../../net/AppServiceModule";
 import RottnestApplication from "../../container/RottnestApplication";
-import { Superconducting2DSchema } from "../arch/superconducting/Superconducting";
 import { RunResultService } from "../../../service/RunResultService";
+import { NoArchSchema } from "../arch/noarch/NoArch";
+import { Superconducting2DSchema } from "../arch/superconducting/Superconducting";
+
+
+type ArchSwapFn = (arch: ArchitectureSchema) => void;
 
 /**
  * Return Object for project state
@@ -61,13 +65,26 @@ export class RottnestApplicationState {
 	/**
 	 * Initialises the architecture state to a default
 	 */
-	constructor(app: RottnestApplication, architectureSchema: ArchitectureSchema = new Superconducting2DSchema()) {
+	constructor(app: RottnestApplication, architectureSchema: ArchitectureSchema = new NoArchSchema(),
+	coreSchemas=[new NoArchSchema(), new Superconducting2DSchema()]) {
 
-		const services = new RottnestApplicationServices(app);
+		const services = new RottnestApplicationServices(app,
+				this.getSwapCallback(), coreSchemas);
+		
 		this.architectureSchema = architectureSchema;
 		this.architectureObject = architectureSchema.createArchitecture(services
 			.getServices());
 		this.modstate = new RottnestApplicationModulesState(services, this);
+	}
+
+	/**
+	 * Gets the callback for swapping the architectures
+	 */
+	getSwapCallback() {
+		const ref = this;
+		return (arch: ArchitectureSchema) => {
+			ref.swapArchitecture(arch)
+		};
 	}
 
 	/**
@@ -247,8 +264,10 @@ export class RottnestApplicationServices implements ServicesHolder {
 
 	services: Services;
 
-	constructor(reftarget: RottnestApplication) {
-		this.services = new Services(reftarget, this);
+	constructor(reftarget: RottnestApplication, archSwap: ArchSwapFn,
+		coreSchemas: Array<ArchitectureSchema>) {
+		
+		this.services = new Services(reftarget, this, archSwap, coreSchemas);
 	}
 	
 	/**

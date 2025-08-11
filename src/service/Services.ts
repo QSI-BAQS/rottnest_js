@@ -4,10 +4,11 @@ import { NetworkService } from "./NetworkService";
 import { NotifyService } from "./NotifyService"
 import { RefreshService, UpdateTrigger } from "./RefreshService"
 import { ProgramPluginService } from "./ProgramPluginService";
-import { ArchPluginService } from "./ArchPluginService";
+import { ArchPluginService, ArchUpdateTrigger } from "./ArchPluginService";
 import { UnimplReturn } from "../ui/schema/util/unimpl";
 import { ValidationService } from "./ValidatorService";
 import { RunResultService } from "./RunResultService";
+import { ArchitectureSchema } from "../ui/schema/arch/ArchSchema";
 
 /**
  * ServicesHolder is the container that will
@@ -57,14 +58,18 @@ export class Services {
   rrservice: RunResultService;
   help: HelpService;
 
-  constructor(refreshTarget: UpdateTrigger, _container: ServicesHolder) {
+  constructor(refreshTarget: UpdateTrigger, _container: ServicesHolder,
+    archUpdate: ArchUpdateTrigger, schemas: Array<ArchitectureSchema>) {
+    
     this.refresh = new RefreshService(refreshTarget);
     this.notify = new NotifyService();
     this.network = new NetworkService();
     this.inputs = new InputHookService();
     this.valservice = new ValidationService();
-    this.programplugins = new ProgramPluginService(this.refresh, this.network);
-    this.archplugins = new ArchPluginService(this.refresh, this.network);
+    this.programplugins = new ProgramPluginService(this.refresh,
+      this.network);
+    this.archplugins = new ArchPluginService(schemas, archUpdate,
+      this.refresh, this.network);
     this.help = new HelpService(this.refresh, this.inputs);
     this.rrservice = new RunResultService();
   }
@@ -147,7 +152,8 @@ export class Services {
  */
 export class NoServices extends Services {
   constructor() {
-    super({ triggerUpdate: () => {} }, new NoServicesHolder());
+    super({ triggerUpdate: () => {} }, new NoServicesHolder(), () => {},
+    []);
   }
 }
 

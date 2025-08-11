@@ -16,7 +16,6 @@ export type PluginPackage = {
 }
 
 
-
 /**
  * PluginSettingsProps
  *
@@ -24,7 +23,7 @@ export type PluginPackage = {
  * about the pluggable settings
  *
  */
-export interface PluginSettingsProps {
+export interface ProgramPluginSettingsProps {
   plgname: string;
   index: number;
   plgItemsGetter: (rott: RottnestApplication) => Array<PluginEntry>
@@ -35,31 +34,50 @@ export interface PluginSettingsProps {
   saveDataFn: (data: PluginPackage) => void;
   saveConfigFn: (data: PluginPackage) => void;
   cancelFn:(data:PluginPackage) => void;
+  getParams:(rott:RottnestApplication, ident: string) => ProgramPluginParams;
 }
 
 /**
  * PluginSettingsData
- *
  * Used for maintaining settings for the pluggable elements
  */
 export interface PluginSettingsData {
   index: number;
   selected: string | null;
   config: string;
-  configActive: boolean;
+  configActive: boolean
+  params: ProgramPluginParams | null
+}
+
+/**
+ * Parameter entry
+ */
+export type ProgramParam = {
+  name: string
+  type: string
+  value: number | string
+  default?: number | string
+}
+
+/**
+ * Parameters and their bindings
+ */
+export type ProgramPluginParams = {
+  parameters: Array<ProgramParam>
 }
 
 /**
  * Constructs a plugin settings component
  */
-export class PluginSettings
-  extends React.Component<PluginSettingsProps, PluginSettingsData> {
+export class ProgramPluginSettings
+  extends React.Component<ProgramPluginSettingsProps, PluginSettingsData> {
 
   state: PluginSettingsData = {
     index: this.props.index,
     selected: null,
     configActive: false,
-    config: this.props.getConfig(this.props.container)     
+    config: this.props.getConfig(this.props.container),
+    params: null,
   }
 
   /**
@@ -68,6 +86,15 @@ export class PluginSettings
   toggleConfig() {
     this.state.configActive = !this.state.configActive;
     this.updateState(this.state);
+  }
+
+  /**
+   * Updates the current set of parameters
+   */
+  updateParams(params: ProgramPluginParams) {
+    this.state.params = params;
+    const nstate = {...this.state};
+    this.updateState(nstate);
   }
 
   /**
@@ -256,12 +283,12 @@ function PluginSettingsList(props: PluginOptionsData) {
 /**
  * Object data button in the global bar
  */
-export type PluginObjectProps = {
+export type ProgramPluginObjectProps = {
   title: string
   issueFn: (rott:RottnestApplication) => string
   styleName: string
   response: (data: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => void
-  settings: PluginSettingsProps
+  settings: ProgramPluginSettingsProps
   container: RottnestApplication
   
 }
@@ -271,7 +298,7 @@ export type PluginObjectProps = {
  * This will be associated with the global bar and allow the user to
  * modify the current arch and/or program
  */
-export function PluginObject(props: PluginObjectProps) {
+export function ProgramPluginObject(props: ProgramPluginObjectProps) {
 
   const title = props.title;
   const issueFn = props.issueFn;

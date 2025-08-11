@@ -39,6 +39,7 @@ import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings }
 import RottnestApplication from '../container/RottnestApplication.tsx';
 import styles from '../styles/GlobalBar.module.css';
 import { LoadComponent } from './LoadExtra.tsx';
+import { ProgramPluginObjectProps } from './settings/ProgramSettings.tsx';
 /**
  * GlobalBarProps, has a reference to
  * its container and a component map of values
@@ -121,9 +122,12 @@ const BarItem: React.FC<BarItemData> = (props) => {
 	);
 };
 
+/**
+ * GlobalBar data, holding onto arch and prog data
+ */
 export type GlobalBarData = {
 	archData: PluginObjectProps,
-	progData: PluginObjectProps
+	progData: ProgramPluginObjectProps
 }
 
 /**
@@ -146,9 +150,12 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			},
 			container: this.props.container,
 			settings: {
-				plgname: 'Architecture',
 				index: 0,
-				selected: '',
+				plgname: 'Architecture',
+				getSelected: (rott: RottnestApplication) => {
+					return rott.getServices().getArchPluginService()
+						.getCurrentArch().identifier;
+				},
 				getConfig: (rott: RottnestApplication) => {
 					return rott.getServices().archplugins.getArchConfig().contents;
 				},
@@ -176,19 +183,26 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 		},
 		progData: {
 			title: 'Program',
+			styleName: 'pluginProgram',
+			container: this.props.container,
 			issueFn: (rott:RottnestApplication) => {
 				const exe = rott.getServices().programplugins.getCurrentExe();
 				return ProgramPluginGetName(exe); },
-			styleName: 'pluginProgram',
 			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => {
 				const progState = rott.getModuleStates().getProgramState();
 				progState.showProgramSettings();
 			},
-			container: this.props.container,
 			settings: {
 				plgname: 'Program',
 				index: 0,
-				selected: '',
+				getParams: (rott: RottnestApplication, ident: string) => {
+						return rott.getServices().getProgramPluginService()
+							.getParameters(ident)
+				},
+				getSelected: (rott: RottnestApplication) => {
+					return rott.getServices().getProgramPluginService()
+						.getCurrentExe().name;
+				},
 				getConfig: (rott: RottnestApplication) => {
 					return rott.getServices().programplugins.getProgramConfig();
 				},
@@ -208,8 +222,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				},
 				cancelFn: (data: PluginPackage) => {
 					const rott = data.container;
-					rott.getModuleStates().getProgramState().closeProgramSettings();					
-					
+					rott.getModuleStates().getProgramState().closeProgramSettings();
 				}
 				
 			}

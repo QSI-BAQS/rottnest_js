@@ -1,51 +1,3 @@
-import { ArchitectureSchema } from "./ArchSchema";
-
-
-/**
- * ArchPlugin object, it is a proxy object for the plugin itself
- */
-export class ArchPlugin {
-
-  name: string;
-  schema: ArchitectureSchema | null;
-
-  /**
-   * Constructs an ArchPlugin object that will
-   * also have a name that refers to what kind of
-   * plugin it is.
-   * Name will be used to match it up to the backend identifiers
-   */
-  constructor(name: string, schema: ArchitectureSchema | null) {
-    this.name = name;
-    this.schema = schema;
-  }
-
-  /**
-   * Checks to see if the plugin contains a schema
-   * that can then construct object
-   */
-  didLoad(): boolean {
-    return this.schema !== null;
-  }
-
-  /**
-   * Gets the name of the plugin
-   */
-  getName(): string {
-    return this.name;
-  }
-
-  /**
-   * Will retrieve the schema that the main
-   * application can use
-   * null if it did not load correctly
-   */
-  getSchema(): ArchitectureSchema | null {
-    return this.schema;
-  }
-}
-
-
 /**
  * Architecture Plugin Loader
  * This will be used to construct/load a plugin from disk
@@ -56,20 +8,20 @@ export class ArchPlugin {
  */
 export class ArchPluginLoader {
 
-  path: string;
- 
-  constructor(path: string) {
-    this.path = path;
+  /**
+   * Formats the endpoint to be used
+   */
+  static FormatEndpointURL(archname: string, kind: string, filename: string) {
+    return `/plugin/${archname}/${kind}/${filename}`;
   }
 
   /**
-   * Attempts to load the architecture plugin
+   * Gets the schema from the backend
    */
-  loadPlugin(): ArchPlugin | null {
-    //TODO: Finish the plugin loader
-    return null;
+  static async GetSchema(archname: string) {
+    return import(ArchPluginLoader.FormatEndpointURL(archname,
+      "schema", "schema.js"));
   }
-
   
   
 }
