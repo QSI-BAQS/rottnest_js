@@ -45,7 +45,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 		}
   },
   recvProgramGetCurrent: {
-    evkey: MSG_GLOBAL_MAP['program_get_current'],
+    evkey: 'program_get_current',
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
 			const prg = m.getJSON().payload.prg;
 			let newProg: ProgramPlugin = {

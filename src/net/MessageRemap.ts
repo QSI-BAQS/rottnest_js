@@ -13,8 +13,6 @@ export const MSG_REMAP = {
 	"use_arch": "arch_lat2d_use",
 	"run_result": "arch_lat2d_run_result",
 	"get_args" : "arch_lat2d_get_args",
-	"get_root_graph" : "cg_lat2d_get_root_graph",
-	"get_graph" : "cg_lat2d_get_graph",
 	"err": "err",
 }
 
@@ -36,5 +34,7 @@ export const MSG_GLOBAL_MAP = {
 	"program_get_config": "prgs_program_get_config",
 	"program_set_config": "prgs_program_set_config",
 	"program_save_config": "prgs_program_save_config",
+	"get_root_graph" : "callgraph_get_root_graph",
+	"get_graph" : "callgraph_get_graph",
 	
 }

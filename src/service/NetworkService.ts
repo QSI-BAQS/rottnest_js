@@ -1,5 +1,6 @@
 import { AppServiceClient } from "../net/AppService";
 import AppServiceModule from '../net/AppServiceModule.ts';
+import { AppMessageMapper } from "../net/Message.ts";
 
 /**
  * Network Service, will provide access to necessary
@@ -8,13 +9,15 @@ import AppServiceModule from '../net/AppServiceModule.ts';
 export class NetworkService {
 
   appService: AppServiceClient;
-
+	appMapper: AppMessageMapper;
+	
   /**
    * Constructs an app service client as part of connecting
    * to the client
    */
   constructor() { 
 	  this.appService = AppServiceModule.GetAppServiceInstance();
+	  this.appMapper = AppMessageMapper.Default();
   }
 
   /**
