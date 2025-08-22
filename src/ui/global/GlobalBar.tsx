@@ -146,7 +146,11 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			styleName: 'pluginArch',
 			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => {
 				const archState = rott.getModuleStates().getArchState();
-				archState.showArchSettings();
+				if(archState.areSettingsActive()) {
+					archState.closeArchSettings();
+				} else {
+					archState.showArchSettings();
+				}
 			},
 			container: this.props.container,
 			settings: {
@@ -190,7 +194,11 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				return ProgramPluginGetName(exe); },
 			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => {
 				const progState = rott.getModuleStates().getProgramState();
-				progState.showProgramSettings();
+				if(progState.areSettingsActive()) {
+					progState.closeProgramSettings();
+				} else {
+					progState.showProgramSettings();
+				}
 			},
 			settings: {
 				plgname: 'Program',
