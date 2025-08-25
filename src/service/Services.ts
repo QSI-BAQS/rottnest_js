@@ -47,7 +47,7 @@ export interface ServicesHolder {
  * ArchitectureObjects when they need to interact
  * with the application's services
  */
-export class Services {  
+export class Services implements ServicesHolder {  
   refresh: RefreshService = RefreshService.NoRefresh();
   notify: NotifyService = new NotifyService();
   network: NetworkService = new NetworkService();
@@ -74,6 +74,12 @@ export class Services {
     this.rrservice = new RunResultService();
   }
 
+  /**
+   * Returns itself
+   */
+  getServices() {
+    return this;
+  }
   
 	/**
 	 * Allows the architecture object to retrieve a service
