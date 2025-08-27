@@ -34,7 +34,6 @@ export class ArchPluginState{
    * Shows the arch settings when clicked
    */
 	showArchSettings() {
-		console.log("Here!");
 	  this.swapFn(true, false);
 		this.updateTrigger.triggerRefresh();
 	}

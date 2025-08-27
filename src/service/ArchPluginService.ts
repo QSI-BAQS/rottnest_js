@@ -55,8 +55,9 @@ export class ArchPluginStorage {
 	/**
 	 * Adds another architecture into the map
 	 */
-	addPlugin(arch: ArchitectureSchema) {
-		this.plugins.set(arch.identifier, arch);
+	addPlugin(arch: { default: ArchitectureSchema }) {
+		this.core.set(arch.default.name, arch.default);
+		debugger;
 	}
 
 	/**
@@ -98,17 +99,27 @@ export class ArchPluginService {
   	this.update = update;
     this.netservice = netservice;
     this.refservice = upservice;
+    this.loadDebug().then((e) => {
+    	
+			this.storage.addPlugin(e);
+
+    })
   }
+
+	async loadDebug() {
+		return ArchPluginLoader.GetSchemaDefault('/home/ahto/Projects/work/uts/rottnest/build/tscheduler/src/t_scheduler/ui/js/Superconducting.mjs');
+
+	}
 
 	/**
 	 * Will attempt to load the schema, once done it will trigger a refresh.
 	 */
-	async loadSchema(archname: string): boolean {
-		let loadResult: ArchitectureSchema = await ArchPluginLoader.GetSchema(archname);
+	async loadSchema(archname: string): Promise<boolean> {
+		let loadResult: ArchitectureSchema = await ArchPluginLoader.GetSchemaDefault(archname);
 		if(this.storage.getArchitecture(loadResult.identifier)) {
 			return false;
 		} else {
-			this.storage.addPlugin(loadResult);
+			this.storage.addPlugin({ default: loadResult });
 			return true;
 		}
 	}
@@ -170,11 +181,11 @@ export class ArchPluginService {
 	 * Stores the architectures within the service
 	 * Checks to see if we need to dynamically load as well
 	 */
-	storeArchs(archs: Array<ArchitecturePlugin>) {
+	async storeArchs(archs: Array<ArchitecturePlugin>) {
 		this.stored.architectures = archs;
 		let doRefresh = false;
 		for(const a in archs) {
-			doRefresh = doRefresh || this.loadSchema(a);
+			doRefresh = doRefresh || await this.loadSchema(a);
 		}
 		if(doRefresh) {
 			this.refservice.triggerRefresh();

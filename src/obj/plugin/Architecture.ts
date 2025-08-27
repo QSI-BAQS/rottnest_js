@@ -62,10 +62,6 @@ export function ArchCorePlugins(): Array<ArchitecturePlugin> {
       identifier: 'NoArch',
       api_map: {},
     },
-    {
-      identifier: 'Superconducting',
-      api_map: {},
-    }
   ]
 }
 

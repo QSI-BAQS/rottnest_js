@@ -1,4 +1,3 @@
-import { unmountComponentAtNode } from "react-dom";
 import RottnestApplication from "../ui/container/RottnestApplication";
 import { ArchitectureObject } from "../ui/schema/arch/ArchSchema";
 import { GlobalProtocolSet } from "./GlobalMessageMap";

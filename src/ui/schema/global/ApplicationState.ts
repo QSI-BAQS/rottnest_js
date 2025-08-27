@@ -20,7 +20,7 @@ import AppServiceModule from "../../../net/AppServiceModule";
 import RottnestApplication from "../../container/RottnestApplication";
 import { RunResultService } from "../../../service/RunResultService";
 import { NoArchSchema } from "../arch/noarch/NoArch";
-import { Superconducting2DSchema } from "../arch/superconducting/Superconducting";
+//import { Superconducting2DSchema } from "../arch/superconducting/Superconducting";
 
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
@@ -66,10 +66,12 @@ export class RottnestApplicationState {
 	 * Initialises the architecture state to a default
 	 */
 	constructor(app: RottnestApplication, architectureSchema: ArchitectureSchema = new NoArchSchema(),
-	coreSchemas=[new NoArchSchema(), new Superconducting2DSchema()]) {
+	coreSchemas=[new NoArchSchema()]) {
 
 		const services = new RottnestApplicationServices(app,
 				this.getSwapCallback(), coreSchemas);
+
+		debugger;	
 		
 		this.architectureSchema = architectureSchema;
 		this.architectureObject = architectureSchema.createArchitecture(services
@@ -263,11 +265,25 @@ export class RottnestApplicationComponentStates {
 export class RottnestApplicationServices implements ServicesHolder {
 
 	services: Services;
-
+	static _appService: RottnestApplication | null;
 	constructor(reftarget: RottnestApplication, archSwap: ArchSwapFn,
 		coreSchemas: Array<ArchitectureSchema>) {
 		
 		this.services = new Services(reftarget, this, archSwap, coreSchemas);
+	}
+
+	static GetServices(
+		reftarget: RottnestApplication,
+		archSwap: ArchSwapFn,
+		coreSchemas: Array<ArchitectureSchema>		
+	) {
+		if(RottnestApplicationServices._appService === null) {
+
+			const appserv = new RottnestApplicationServices(reftarget, archSwap, coreSchemas);
+			RottnestApplicationServices._appService = appserv;
+			return RottnestApplicationServices._appService;
+		}
+		return RottnestApplicationServices._appService;
 	}
 	
 	/**
