@@ -1,4 +1,5 @@
 
+import { ArchPluginService } from "../../../../service/ArchPluginService";
 import { RefreshService } from "../../../../service/RefreshService";
 import { PluginRepresetationState } from "./PluginRepState";
 
@@ -9,6 +10,7 @@ import { PluginRepresetationState } from "./PluginRepState";
 export class ArchPluginState{
 
   updateTrigger: RefreshService;
+  archService: ArchPluginService;
   plgstates: PluginRepresetationState;
   swapFn: (arch: boolean, prog: boolean) => void;
   
@@ -16,7 +18,9 @@ export class ArchPluginState{
 	 * Constructor, requires knowing the current refresh service
 	 * and a callback on what to switch the settings to
 	 */
-  constructor(trigger: RefreshService, plgstates: PluginRepresetationState) {
+  constructor(trigger: RefreshService, plgstates: PluginRepresetationState,
+  	archService: ArchPluginService) {
+  	this.archService = archService;
     this.updateTrigger = trigger;
     this.plgstates = plgstates;
     this.swapFn = plgstates.getCallback();
@@ -30,10 +34,18 @@ export class ArchPluginState{
 		return this.plgstates.getStates()[0];
 	}
 
+	/**
+	 * Gets the list of plugins to then load and maintain
+	 */
+	getPlugins() {
+		this.archService.requestArchitectures();
+	}
+
   /**
    * Shows the arch settings when clicked
    */
 	showArchSettings() {
+		this.getPlugins();
 	  this.swapFn(true, false);
 		this.updateTrigger.triggerRefresh();
 	}

@@ -26,11 +26,21 @@ export class ArchPluginLoader {
 
   /**
    * The current version where we will retrieve it
-   * based on the file name on teh host system
+   * based on the file name on the host system
    */
   static async GetSchemaDefault(url: string) {
-    return await import(url);
+    console.log(url);
+    const resp = await fetch(url, {
+      headers: {
+        "Content-Type": "application/javascript"
+      }
+    });
+    
+    const modtext = btoa(await resp.text())
+    console.log(modtext);
+    const module = await import('data:text/javascript;base64,' + modtext);
+    return module;
+    
   }
-  
-  
+
 }

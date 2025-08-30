@@ -16,7 +16,7 @@ export class NetworkService {
    * to the client
    */
   constructor() { 
-	  this.appService = AppServiceModule.GetAppServiceInstance();
+	  this.appService = AppServiceModule.GetNetworkInstance();
 	  this.appMapper = AppMessageMapper.Default();
   }
 

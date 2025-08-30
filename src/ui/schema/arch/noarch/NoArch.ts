@@ -25,14 +25,17 @@ import { NoArchVisualiser } from './NoArchVisualiser.ts';
  */
 export class NoArchSchema implements ArchitectureSchema {
 
-  identifier: string = "NoArch";
+  name: string = "NoArch";
+
+
   
   /**
    * Creates a noarch schema that can be style and outline when the application is
    * not ready
    */
-  createArchitecture(_services: Services, _args: Map<string, string | number>): ArchitectureObject {
-    return new NoArchObject();
+  createArchitecture(services: Services = new NoServices(), _args: Map<string, string | number>): ArchitectureObject {
+    let noarch = new NoArchObject(services);
+    return noarch;
   }
   
 }
@@ -43,6 +46,8 @@ export class NoArchSchema implements ArchitectureSchema {
  */
 export class NoArchObject implements ArchitectureObject<any, any> {
 
+  services: Services;  
+
 
   meta: ArchitectureModulesMeta = new ArchitectureModulesMeta(
     ["Designer"],
@@ -50,6 +55,10 @@ export class NoArchObject implements ArchitectureObject<any, any> {
     [true],
     1
   )
+
+  constructor(services: Services) {
+    this.services = services;
+  }
 
   /**
    * Will return an error
@@ -155,6 +164,6 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    * Gets access to the application's services
    */
   getServices(): Services {
-    return new NoServices();
+    return this.services;
   }
 }

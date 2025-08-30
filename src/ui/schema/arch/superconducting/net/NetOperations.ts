@@ -5,7 +5,7 @@ import { RottRunResultMSG } from "../../../../../net/Messages";
 import { Superconducting2DArchitecture } from "../Superconducting.ts";
 import { CommEventOps, CommOpQueue, CommsActions } from '../../../global/ops/CommsOps.ts';
 
-import { MSG_REMAP } from "../../../../../net/MessageRemap";
+import { MSG_GLOBAL_MAP, MSG_REMAP } from "../../../../../net/MessageRemap";
 import { SuperconductingParserOperations } from "./NetParserOps.ts";
 
 /**
@@ -109,7 +109,7 @@ export const RTCCommEvents: CommEventOps<Superconducting2DArchitecture> = {
 	},
 
   recvGetRootGraph: {
-    evkey: MSG_REMAP['get_root_graph'],
+    evkey: MSG_GLOBAL_MAP['get_root_graph'],
     evtrigger: (appService: AppServiceClient, obj: Superconducting2DArchitecture, m: any) => {
 			let parserOps = new SuperconductingParserOperations();
       let graph = parserOps
@@ -148,7 +148,7 @@ const RTCDispatchOperations = [
 			if(appService.isConnected()) {	
 				appService.enqueueMessage(MSG_REMAP['subtype']);
 				appService.enqueueMessage(MSG_REMAP['get_router']);
-				appService.enqueueMessage(MSG_REMAP['get_root_graph']);
+				appService.enqueueMessage(MSG_GLOBAL_MAP['get_root_graph']);
 				appService.consumeFromQueue();
 			}
 		}

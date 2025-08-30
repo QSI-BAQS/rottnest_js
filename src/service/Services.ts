@@ -9,6 +9,7 @@ import { UnimplReturn } from "../ui/schema/util/unimpl";
 import { ValidationService } from "./ValidatorService";
 import { RunResultService } from "./RunResultService";
 import { ArchitectureSchema } from "../ui/schema/arch/ArchSchema";
+import { StyleService } from "./StyleService";
 
 /**
  * ServicesHolder is the container that will
@@ -35,6 +36,8 @@ export interface ServicesHolder {
   getValidationService(): ValidationService;
 
   getRunResultService(): RunResultService;
+
+  getStyleService(): StyleService;
 
   getServices(): Services;
 
@@ -68,7 +71,7 @@ export class Services implements ServicesHolder {
     this.valservice = new ValidationService();
     this.programplugins = new ProgramPluginService(this.refresh,
       this.network);
-    this.archplugins = new ArchPluginService(schemas, archUpdate,
+    this.archplugins = ArchPluginService.GetPluginService(schemas, archUpdate,
       this.refresh, this.network);
     this.help = new HelpService(this.refresh, this.inputs);
     this.rrservice = new RunResultService();
@@ -149,6 +152,10 @@ export class Services implements ServicesHolder {
 	 */
   getRunResultService(): RunResultService {
     return this.rrservice;
+  }
+
+  getStyleService(): StyleService {
+    return StyleService.GetInstance(this.getRefreshService());
   }
 }
 
@@ -240,5 +247,10 @@ export class NoServicesHolder implements ServicesHolder {
    */
   getHelpService(): HelpService {
     return new HelpService(this.getRefreshService(), this.getInputService());
+  }
+
+  
+  getStyleService(): StyleService {
+    return StyleService.GetInstance(this.getRefreshService());
   }
 }

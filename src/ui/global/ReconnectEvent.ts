@@ -2,7 +2,7 @@ import AppServiceModule from "../../net/AppServiceModule"
 import RottnestApplication from "../container/RottnestApplication"
 
 const leftClick = (_: RottnestApplication) => { 
-	const appService = AppServiceModule.GetAppServiceInstance();
+	const appService = AppServiceModule.GetNetworkInstance();
 	appService.reconnect();
 }
 

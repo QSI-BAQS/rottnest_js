@@ -63,8 +63,9 @@ export class ArchWorkspaceContainer
 				}
 			};
 
-			const comps = wgroup.makeGroup(wdata);
-
+			const comps = wgroup.makeGroup(wdata).map((e) => {
+				return e;
+			});
 			return (
 				<div className={styles.workspaceContainer}>
 					{comps}

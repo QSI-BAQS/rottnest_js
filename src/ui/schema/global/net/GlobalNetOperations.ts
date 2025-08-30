@@ -2,7 +2,7 @@
 
 import { AppServiceClient } from "../../../../net/AppService";
 import { ProgramPlugin } from '../../../../obj/plugin/Program.ts'
-import { ArchitecturePlugin } from '../../../../obj/plugin/Architecture.ts'
+//import { ArchitecturePlugin } from '../../../../obj/plugin/Architecture.ts'
 import { CommEventOps, CommOpQueue, CommsActions } from '../ops/CommsOps.ts';
 
 import { MSG_REMAP, MSG_GLOBAL_MAP } from "../../../../net/MessageRemap";
@@ -22,26 +22,49 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 	},
   recvArchList: {
     evkey: MSG_GLOBAL_MAP['arch_list'],
-    evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-    	
-			const plist = m.getJSON().payload.arch_list;
-			let newArchs: Array<ArchitecturePlugin> = [];
-			for(const prg of plist) {
-				newArchs.push({
-					identifier: prg['arch_name'],
-					api_map: {}
-				})
-			}
+    evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
+    	//TODO: We have to refactor this now
+    	//
+    	//
+			// const plist = m.getJSON().payload.arch_list;
+			// let newArchs: Array<ArchitecturePlugin> = [];
+			// for(const prg of plist) {
+			// 	newArchs.push({
+			// 		identifier: prg['arch_name'],
+			// 		api_map: {}
+			// 	})
+			// }
 
-			let archservice = obj.getServices().getArchPluginService();
+			// let archservice = obj.getServices().getArchPluginService();
 
-			archservice.storeArchs(newArchs);
+			// archservice.storeArchs(newArchs);
 			
-    	/*if(newArchs.length > 0) {
-    		obj.state.appStateData.archData.current = newArchs[0]
-    	}*/
-    	//obj.triggerUpdate();
-			appService.consumeFromQueue();
+	   //  	/*if(newArchs.length > 0) {
+	   //  		obj.state.appStateData.archData.current = newArchs[0]
+	   //  	}*/
+	   //  	//obj.triggerUpdate();
+			// appService.consumeFromQueue();
+			//
+			// NOTE: Above is old code to remove
+			const styService = obj.getServices().getStyleService();
+			const refService = obj.getServices().getRefreshService();
+			const archService = obj.getServices().getArchPluginService();
+			const plist = m.getJSON().payload.arch_list;
+			for(const a of plist) {
+				const [aname, adetails] = a;
+
+				const cssFile = adetails.cssData;
+				const jsFile = adetails.jsData;
+				//console.log(jsFile);
+				console.log(cssFile);
+				styService.appendToRootInline(cssFile)
+				await archService.mapArch(aname, { kind: "Serialised", data: jsFile });
+				//archService.loadSchema()
+				//archService.setArch(aname, adetails);
+			}
+			refService.triggerRefresh();
+			//console.log(plist)
+			
 		}
   },
   recvProgramGetCurrent: {

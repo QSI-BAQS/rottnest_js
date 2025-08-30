@@ -1,5 +1,16 @@
 import { PluginEntry } from "../../ui/global/settings/GeneralSettings"
 
+export type ArchPackageType = "Serialised" | "PathedLocal"
+
+/**
+ * Current package to get around a bunch of
+ * quirks
+ */
+export type ArchPackage = {
+  kind: ArchPackageType,
+  data: string
+}
+
 
 /**
  * Set of architecture and the configuration associated

@@ -92,7 +92,6 @@ export class PluginSettings
       },
       container: this.props.container
     }
-    console.log(sdata);
     savfn(sdata);
   }
 
@@ -138,12 +137,12 @@ export class PluginSettings
    */
   render() {
 
-    console.log(this.props);
     const container = this.props.container;
     const selectedKey = this.props.getSelected(container);
     const plglabel = this.props.plgname;
     const plgOptions = this.props.plgItemsGetter(container);
     const plgConfig = this.state.config;
+
 
     if(this.state.selected === null) {
       this.state.selected = selectedKey;

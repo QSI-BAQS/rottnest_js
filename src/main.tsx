@@ -3,11 +3,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 
-(async() => {
-  let mod = await import('/home/ahto/Projects/work/uts/rottnest/build/tscheduler/src/t_scheduler/ui/js/Superconducting.mjs');
-  let schema = mod.Superconducting2DSchema;
+ 
 
-})();
+// const t =
+//   await import('/home/ahto/Projects/work/uts/rottnest/build/tscheduler/src/t_scheduler/ui/css/Superconducting.css', { with: { type: 'css' }});
 
 
 /**
@@ -17,5 +16,5 @@ import './index.css'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
   <App />
-  </StrictMode>,
+  </StrictMode>
 )

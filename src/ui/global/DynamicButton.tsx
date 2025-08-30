@@ -114,7 +114,7 @@ const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ container, on
         "Connected to workpool");
       
       refresh.triggerRefresh();
-  		setConnectionState(nstate);
+  		//setConnectionState(nstate);
   	};
 
   	const handleDisconnect = () => {

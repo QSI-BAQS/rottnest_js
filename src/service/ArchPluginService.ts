@@ -3,7 +3,7 @@ import { NetworkService } from "./NetworkService";
 import { RefreshService } from "./RefreshService";
 import { PluginData } from "../obj/plugin/Generic";
 import { ArchitecturePlugin, ArchitecturePluginConfig,
-	ArchitecturesToEntry, ArchPluginDefault, ArchSet, ArchSetDefault }
+	ArchitecturesToEntry, ArchPackage, ArchPluginDefault, ArchSet, ArchSetDefault }
 	from "../obj/plugin/Architecture";
 import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
 import { PluginEntry } from "../ui/global/settings/GeneralSettings";
@@ -11,12 +11,11 @@ import { PluginEntry } from "../ui/global/settings/GeneralSettings";
 ///TODO: Move the interfaces into a separate module
 import { ArchitectureSchema } from "../ui/schema/arch/ArchSchema";
 import { ArchPluginLoader } from "../ui/schema/arch/ArchPlugin";
+import { Services } from "./Services";
 
-
+//import StorageDB from "../db/StorageDB";
 // Temporary callbacks
 export type ArchUpdateTrigger = (arch: ArchitectureSchema) => void;
-
-
 
 /**
  * Storage for all the plugins
@@ -33,7 +32,7 @@ export class ArchPluginStorage {
 		
 		storage.core = new Map();
 		schemas.forEach((e) => {
-			storage.core.set(e.identifier, e);
+			storage.core.set(e.name, e);
 		});
 		return storage;
 	}
@@ -44,7 +43,6 @@ export class ArchPluginStorage {
 	 */
 	static withCoreAndPlugins(_core: Array<ArchitectureSchema>,
 		_pluginConfigs: ArchitecturePluginConfig) {
-		//TODO: Implement this	
 	}
 
 	constructor() {
@@ -55,9 +53,13 @@ export class ArchPluginStorage {
 	/**
 	 * Adds another architecture into the map
 	 */
-	addPlugin(arch: { default: ArchitectureSchema }) {
-		this.core.set(arch.default.name, arch.default);
-		debugger;
+	addPlugin(arch: { archname: string, default: ArchitectureSchema }) {
+		let archInst = arch.default;
+		if(arch.default) {
+			let cot: any = arch.default;
+			archInst = new cot(); //Reflected construction, need to use any
+		}
+		this.core.set(arch.archname, archInst);
 	}
 
 	/**
@@ -90,6 +92,8 @@ export class ArchPluginService {
   refservice: RefreshService;
 	update: ArchUpdateTrigger;
 
+	static plgservice: ArchPluginService | null = null;
+
   constructor(schemas: Array<ArchitectureSchema>,
   	update: ArchUpdateTrigger,
   	upservice: RefreshService,
@@ -99,27 +103,72 @@ export class ArchPluginService {
   	this.update = update;
     this.netservice = netservice;
     this.refservice = upservice;
-    this.loadDebug().then((e) => {
-    	
-			this.storage.addPlugin(e);
 
-    })
+    debugger;
   }
 
-	async loadDebug() {
-		return ArchPluginLoader.GetSchemaDefault('/home/ahto/Projects/work/uts/rottnest/build/tscheduler/src/t_scheduler/ui/js/Superconducting.mjs');
+	static GetPluginService(
+		defaultSchemas: Array<ArchitectureSchema>,
+		update: ArchUpdateTrigger,
+		upservice: RefreshService,
+		netservice: NetworkService
+	): ArchPluginService {
+		if(ArchPluginService.plgservice === null) {
+			ArchPluginService.plgservice = new ArchPluginService(defaultSchemas, update,
+				upservice, netservice);
+		} else {
+			const plgs = ArchPluginService.plgservice;
+			plgs.setNetworkService(netservice);
+			plgs.setRefreshService(upservice);
+			debugger;
+			plgs.setUpdate(update);
+		}
+		return ArchPluginService.plgservice;
+	}
 
+	static FileSystemInit() {
+		//Consider this
+	}
+
+	setNetworkService(netservice: NetworkService) {
+		this.netservice = netservice;
+	}
+
+	setRefreshService(upservice: RefreshService) {
+		this.refservice = upservice;
+	}
+
+	setUpdate(update: ArchUpdateTrigger) {
+		debugger;
+		this.update = update;
+	}
+
+	
+	/**
+	 * Maps an architecture and stores
+	 * it into the storage class for it to be held
+	 */
+	async mapArch(name: string, archpkg: ArchPackage) {
+		if(archpkg.kind === "Serialised") {
+	    const modtext = btoa(archpkg.data)
+	    const module = await import('data:text/javascript;base64,' + modtext);
+			this.storage.addPlugin({
+				archname: name,
+				default: module.default
+			});
+    }
 	}
 
 	/**
 	 * Will attempt to load the schema, once done it will trigger a refresh.
 	 */
 	async loadSchema(archname: string): Promise<boolean> {
-		let loadResult: ArchitectureSchema = await ArchPluginLoader.GetSchemaDefault(archname);
-		if(this.storage.getArchitecture(loadResult.identifier)) {
+		let loadResult: ArchitectureSchema
+			= await ArchPluginLoader.GetSchemaDefault(archname);
+		if(this.storage.getArchitecture(loadResult.name)) {
 			return false;
 		} else {
-			this.storage.addPlugin({ default: loadResult });
+			//this.storage.addPlugin({ name: loadResult.name, default: loadResult });
 			return true;
 		}
 	}
@@ -144,15 +193,23 @@ export class ArchPluginService {
 	 * if not found, it will not save
 	 */
 	saveArchData(data: PluginData) {
-		console.log(data);
-		const archMap = this.stored.architectures.find((e: ArchitecturePlugin) => e.identifier
-				=== data.plgKey);
-
-		
+		const archMap = this.storage.core.get(data.plgKey);
+		console.log(data.plgKey);
 		if(archMap) {
-			const arch = this.storage.getArchitecture(archMap.identifier);
-			this.current = archMap; //Gets set here?
+			let arch = {
+				name: archMap.name, //TODO: Will need to figure out the prototype fix...
+				createArchitecture: (services: Services) => {
+					return archMap.createArchitecture(services)
+				}
+			};
+			
+			this.current = {
+				identifier: archMap.name,
+				api_map: {}
+			}
 			if(arch) {
+				debugger;
+				
 				this.update(arch);
 			} else {
 				console.error("Unable to swap architecture, metadata listed, plugin missing");
@@ -163,6 +220,15 @@ export class ArchPluginService {
 			console.error("Unable to save architecture")
 		}
 			
+	}
+
+	/**
+	 * Uses the network service to request all
+	 * the architectures on the backend
+	 */
+	requestArchitectures() {
+		this.netservice.getNetworkService()
+			.sendMessage(MSG_GLOBAL_MAP['arch_list']);
 	}
 
 	/**
@@ -204,9 +270,13 @@ export class ArchPluginService {
 	 * Gets the currently retrieve set of plugin entries
 	 */
 	getArchItems(): Array<PluginEntry> {
-		return this.stored.architectures.map((a) => {
-			return ArchitecturesToEntry(a);
-		});
+		return new Array(...this.storage.core.entries().map((a) => {
+			console.log(a);
+			return ArchitecturesToEntry({
+				identifier: a[0],
+				api_map: {}
+			});
+		}));
 	}
 
 

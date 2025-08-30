@@ -1,27 +1,23 @@
-import {AppServiceClient, APP_URL} from './AppService'
+import {AppServiceClient, GetAppServiceInstance} from './AppService'
 
 
-let appService: AppServiceClient | null = null 
+//let appService: AppServiceClient | null = null 
 
 /**
  * Gets an application service instance
  * Will attempt to connect once requested
  */
-export function GetAppServiceInstance() {
-	if(appService === null) {
-		appService = new AppServiceClient(APP_URL);
-	}
-	return appService;
+export function GetNetworkInstance(): AppServiceClient {
+	return GetAppServiceInstance();
 }
 
 /**
  * Will close the application service for
  * the network
  */
-export function CloseAppService() {
+/*export function CloseAppService() {
 	//appService.shutdown();
-	appService = null;
-}
+}*/
 
 /**
  * Checks to see if the connection is ready
@@ -30,8 +26,8 @@ export function CloseAppService() {
  */
 export function ConnectionReady(): boolean {
 
-	if(appService !== null) {
-		return appService.isConnected();
+	if(GetNetworkInstance() !== null) {
+		return GetNetworkInstance().isConnected();
 	} else {
 		return false;
 	}
@@ -39,7 +35,6 @@ export function ConnectionReady(): boolean {
 
 
 export default {
-	GetAppServiceInstance,
-	CloseAppService,
+	GetNetworkInstance,
 	ConnectionReady
 };

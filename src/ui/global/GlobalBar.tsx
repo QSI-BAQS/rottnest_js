@@ -165,7 +165,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				},
 				
 				plgItemsGetter: (rott: RottnestApplication) => {
-					return rott.getServices().archplugins.getArchItems();
+					return rott.getServices().getArchPluginService().getArchItems();
 				},
 				container: this.props.container,
 				saveDataFn: (data: PluginPackage) => {
@@ -458,7 +458,6 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			<PluginSettings {...programSettings} /> : <></>);
 
 		// For some reason they are not change...
-		//console.log(archPluginActive, programPluginActive);
 		return (
 			<div 
 				className={styles.globalBar}

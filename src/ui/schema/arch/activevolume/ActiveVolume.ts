@@ -43,7 +43,7 @@ class ActiveVolumeExtensions implements ArchitectureExtensions<any> {
  */
 export class ActiveVolumeSchema implements ArchitectureSchema {
 
-  identifier: string = "ActiveVolume";
+  name: string = "ActiveVolume";
   
   /**
    * Creates a noarch schema that can be style and outline when the application is

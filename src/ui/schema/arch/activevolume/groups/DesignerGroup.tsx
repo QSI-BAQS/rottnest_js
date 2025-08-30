@@ -10,7 +10,7 @@ import { ArchWorkspaceZone }
  * Constructs the workspace group that will be used by the workspace component
  * within rottnest
  */
-export class NoArchDesignGroup implements ArchWorkspaceGroup {
+export class ActiveVolumeDesignGroup implements ArchWorkspaceGroup {
 
 	/**
 	* Constructs an architecture design group

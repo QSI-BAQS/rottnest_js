@@ -139,8 +139,9 @@ export class AppServiceClient {
 	 * Sends an object as part of the payload
 	 */
 	sendObj(message: string, payload: any) {
-			
+		console.log("Yo");
 		if(this.socket) {
+			console.log("Did we send?");
 			this.socket.send(
 				JSON.stringify({
 					message,
@@ -192,6 +193,7 @@ export class AppServiceClient {
 		
 		const onOpenHandler = (_: any) => {
 			if(self.onOpenTrigger) {
+				console.log("Socket is opening");
 				self.onOpenTrigger();
 			}
 		}
@@ -204,7 +206,8 @@ export class AppServiceClient {
 
 	  	const onCloseHandler = (_: any) => {
 	    	if(self.onDisconnectTrigger) {
-	      		self.onDisconnectTrigger();
+	    		console.log("Socket is closing");	
+	      	self.onDisconnectTrigger();
 	    	}
 	  	}
 

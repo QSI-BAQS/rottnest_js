@@ -1,3 +1,4 @@
+import { Services } from "../../../service/Services";
 import { ArchitectureCallGraph, ArchitectureDesigner,
   ArchitectureObject, ArchitectureVisualiser } from "./ArchSchema";
 import { NoArchObject } from "./noarch/NoArch";
@@ -187,8 +188,10 @@ export class ArchitectureUIContext {
   /**
    * Initialises the architecture object, defaults outlined to
    * ensure it knows what component to use
+   * WARN: Default object uses quite unsafe instantiation
    */
-  constructor(object: ArchitectureObject = new NoArchObject(),
+  constructor(object: ArchitectureObject = new NoArchObject({} as Services),
+    
     defaults: ArchUIDefaults = ArchUIDefaultData) {
     this.defaults = defaults;
     this.archObject = object;

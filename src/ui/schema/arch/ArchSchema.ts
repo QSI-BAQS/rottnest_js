@@ -61,7 +61,7 @@ export interface ArchitectureProject<T> extends ArchitectureProjectData<T> {
  */
 export interface ArchitectureSchema {
 
-  identifier: string
+  name: string
   
   createArchitecture<T=any, E=any>(services: Services, args?: Map<string, string | number>): ArchitectureObject<T, E>; 
 }

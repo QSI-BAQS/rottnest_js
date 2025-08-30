@@ -9,7 +9,6 @@ import { Services, ServicesHolder } from "../../../service/Services";
 import { ValidationService } from "../../../service/ValidatorService";
 import { ArchitectureUIContext } from "../arch/ArchContext";
 import { ArchitectureObject, ArchitectureSchema } from "../arch/ArchSchema";
-//import { NoArchSchema } from "../arch/noarch/NoArch";
 import { ArchPluginState } from "./modules/ArchPlugin";
 import { ErrorState } from "./modules/ErrorState";
 import { PluginRepresetationState } from "./modules/PluginRepState";
@@ -20,8 +19,8 @@ import AppServiceModule from "../../../net/AppServiceModule";
 import RottnestApplication from "../../container/RottnestApplication";
 import { RunResultService } from "../../../service/RunResultService";
 import { NoArchSchema } from "../arch/noarch/NoArch";
-//import { Superconducting2DSchema } from "../arch/superconducting/Superconducting";
-
+import { StyleService } from "../../../service/StyleService";
+import { RTACommActions } from "./net/GlobalNetOperations";
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
 
@@ -65,14 +64,14 @@ export class RottnestApplicationState {
 	/**
 	 * Initialises the architecture state to a default
 	 */
-	constructor(app: RottnestApplication, architectureSchema: ArchitectureSchema = new NoArchSchema(),
-	coreSchemas=[new NoArchSchema()]) {
+	constructor(app: RottnestApplication,
+		architectureSchema: ArchitectureSchema = new NoArchSchema(),
+		coreSchemas: Array<ArchitectureSchema> = [new NoArchSchema()]) {
 
-		const services = new RottnestApplicationServices(app,
-				this.getSwapCallback(), coreSchemas);
+		const services = 
+			new RottnestApplicationServices(app, this.getSwapCallback(),
+				coreSchemas);
 
-		debugger;	
-		
 		this.architectureSchema = architectureSchema;
 		this.architectureObject = architectureSchema.createArchitecture(services
 			.getServices());
@@ -85,7 +84,7 @@ export class RottnestApplicationState {
 	getSwapCallback() {
 		const ref = this;
 		return (arch: ArchitectureSchema) => {
-			ref.swapArchitecture(arch)
+			ref.swapArchitecture(arch);
 		};
 	}
 
@@ -118,6 +117,7 @@ export class RottnestApplicationState {
 	 */
 	swapArchitecture(schema: ArchitectureSchema): boolean {
 		this.architectureSchema = schema;
+		debugger;
 		this.architectureObject = schema.createArchitecture(this
 			.modstate.getServices())
 		return true;
@@ -135,7 +135,6 @@ export class RottnestApplicationModulesState {
 	
   constructor(services: RottnestApplicationServices,
   	appState: RottnestApplicationState) {
-  	
   	
   	this.services = services;
   	this.states = new RottnestApplicationComponentStates(
@@ -161,12 +160,15 @@ export class RottnestApplicationModulesState {
    * Checks to see if the network connection is ready
    * This is used on the 
    */
-	readyAppService() {
+	readyAppService(app: RottnestApplication) {
 		//const selfRef = this;
+		const appClient = AppServiceModule.GetNetworkInstance();
+		RTACommActions.ApplyInternal(appClient, app);
 		const appReady = AppServiceModule.ConnectionReady();
 		//const appService = AppServiceModule.GetAppServiceInstance();
 		
-		if(!appReady) { 
+		if(appReady) {
+			
       //TODO: Fix this
   		/*selfRef.rtcCommsActions.ApplyInternal(
   			selfRef.commData.appService, selfRef);
@@ -198,7 +200,7 @@ export class RottnestApplicationComponentStates {
 		const refresh = services.refresh;
 		this.pluginsState = new PluginRepresetationState();
 		this.zoomState = new ZoomState(100, refresh);
-		this.archState = new ArchPluginState(refresh, this.pluginsState);
+		this.archState = new ArchPluginState(refresh, this.pluginsState, services.getArchPluginService());
 		this.programState = new ProgramPluginState(refresh, this.pluginsState);
 		this.errorState = new ErrorState();
 		this.projectState = new ProjectSettingsState(appState, refresh);
@@ -265,7 +267,7 @@ export class RottnestApplicationComponentStates {
 export class RottnestApplicationServices implements ServicesHolder {
 
 	services: Services;
-	static _appService: RottnestApplication | null;
+	static appService: RottnestApplicationServices | null = null;
 	constructor(reftarget: RottnestApplication, archSwap: ArchSwapFn,
 		coreSchemas: Array<ArchitectureSchema>) {
 		
@@ -276,14 +278,16 @@ export class RottnestApplicationServices implements ServicesHolder {
 		reftarget: RottnestApplication,
 		archSwap: ArchSwapFn,
 		coreSchemas: Array<ArchitectureSchema>		
-	) {
-		if(RottnestApplicationServices._appService === null) {
+	): RottnestApplicationServices {
+		if(RottnestApplicationServices.appService === null) {
 
-			const appserv = new RottnestApplicationServices(reftarget, archSwap, coreSchemas);
-			RottnestApplicationServices._appService = appserv;
-			return RottnestApplicationServices._appService;
+			const appserv = new RottnestApplicationServices(reftarget,
+				archSwap,
+				coreSchemas);
+			RottnestApplicationServices.appService = appserv;
+			return RottnestApplicationServices.appService;
 		}
-		return RottnestApplicationServices._appService;
+		return RottnestApplicationServices.appService;
 	}
 	
 	/**
@@ -355,6 +359,11 @@ export class RottnestApplicationServices implements ServicesHolder {
 	 */
 	getValidationService(): ValidationService {
 		return this.services.valservice;
+	}
+
+
+	getStyleService(): StyleService {
+		return StyleService.GetInstance(this.getRefreshService())
 	}
 
 	/**

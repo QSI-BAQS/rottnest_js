@@ -53,7 +53,11 @@ export default class RottnestApplication
 	 * if certain objects are ready.
 	 */
 	componentDidMount() {
-		//this.state.appState.readyAppService();
+		this.state.appState
+			.getModuleStates()
+			.readyAppService(this);
+
+		
 	}
 
 	/**
@@ -98,6 +102,7 @@ export default class RottnestApplication
 	 * TODO: Fix this all
 	 */
 	render() {
+		console.log(this);
 		const rottContainer = this;
 		const updateables = new Map();
 		const zoomState = this.getModuleStates().getZoomState();
@@ -116,6 +121,7 @@ export default class RottnestApplication
 		let isNewProject = isProjVisible;
 		const projectState = projectRet.obj;
 		
+
 		let settingsForm = <></>;
 		if(isProjectUsable && isProjVisible && projectState) {
 			const settingsisActive = projectState.isProjectSettingsActive();
