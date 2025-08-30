@@ -1,7 +1,26 @@
 import React from 'react';
-import {ProjectDetails} from '../../model/Project';
+import { ProjectSettingsCallbacks, ProjectSettingsState }
+	from '../schema/global/modules/SettingsState';
+import { ArchitectureProject }
+	from '../schema/arch/ArchSchema';
 import styles from '../styles/SettingsForm.module.css';
-import RottnestContainer from './RottnestContainer';
+
+/**
+ * Allows us to map to a transformer when we want
+ * convert data
+ */
+type InputTransformerMap = {
+	string: (input: any) => string
+	number: (input: any) => number
+}
+
+/**
+ * Outlines the the different transformations
+ */
+const InputTransformer: InputTransformerMap = {
+	"string": (input: any) => String(input),
+	"number": (input: any) => Number(input),
+}
 
 /**
  * Settings Properties, initialises
@@ -11,10 +30,10 @@ import RottnestContainer from './RottnestContainer';
  * Warning: We have coupled this component
  * 	to the root container.
  */
-type SettingsProps = {
+export type SettingsProps = {
+	isNew: boolean
 	isHidden: boolean
-	rootContainer: RottnestContainer
-	projectDetails: ProjectDetails
+	projectState: ProjectSettingsState
 };
 
 
@@ -23,8 +42,8 @@ type SettingsProps = {
  * of the project unless otherwise refreshed
  * by the root container.
  */
-type SettingsState = {
-	project: ProjectDetails
+export type SettingsState = {
+	project: ArchitectureProject<any>
 }
 
 /**
@@ -33,26 +52,26 @@ type SettingsState = {
  */
 class SettingsForm extends React.Component<SettingsProps, 
 	SettingsState> {
-	
-	rootContainer = this.props.rootContainer;
 
-	//TODO: Fix the setting props on the width and height
-	state: SettingsState = {
-		project: {
-			projectName: 'Project1', 
-			author: 'User',
-			width: 20,
-			height: 20,
-			description: 'Quick Description'	
-		}
-	};
+	projectState: ProjectSettingsState;
+	callbacks: ProjectSettingsCallbacks;
+	state: SettingsState;
+
+	constructor(props: SettingsProps) {
+		super(props);
+		this.projectState = props.projectState;
+		this.callbacks = props.projectState.isNewProjectActive() ?
+			props.projectState.callbacksForNew() :
+			props.projectState.callbacksForCurrent()
+		this.state = { project: this.callbacks.projectFill() };
+	}
 
 	/**
 	 * Cancels the component and triggers a re-render
 	 * of the root container
 	 */
 	cancel() {
-		this.rootContainer.cancelSettings();
+		this.callbacks.cancelSettings();
 	}
 
 	/**
@@ -61,41 +80,49 @@ class SettingsForm extends React.Component<SettingsProps,
 	 * to flush the changes to other components
 	 */
 	settingsApply() {
-		this.rootContainer
-			.applySettings(this.state.project);
+		this.callbacks.applySettings();
 	}
 
 
 	render() {
 		const sref = this;
 		const hidden = this.props.isHidden;
-		const inputChangeFn = (
+		// Changes for the header
+		const inputChangeHeaderFn = (
 			e: React.FormEvent<HTMLInputElement>,
-				key: keyof ProjectDetails) => {
+			key: string, kind: keyof InputTransformerMap) => {
 
-			let v: string | number = e.currentTarget.value;
-			if(key === 'width' || key ==='height') {
-				v = Number(v);
-			}
-			let partial: Partial<ProjectDetails> = {
-				[key]: v			
-			};
+			const inpfn = InputTransformer[kind];
+			const v: string | number = inpfn(e.currentTarget.value);
+			const oldHeader = { ...this.state.project.header };
+			const newHeader = { header: { [key]: v, ...oldHeader } };
 
-			let newState: SettingsState = {
-				...this.state, 
-			};
-
-			newState.project = {...newState.project,
-				...partial}
-
-			sref.setState(newState);
+			const newProject: SettingsState = { project: this.callbacks.newProject() };
+			newProject.project.header = newHeader.header;
+			newProject.project.body.object = this.state.project.body.object;			
+			sref.setState(newProject);
 		}
 
-			
+		// Changes for the body elements
+		const inputChangeFn = (
+			e: React.FormEvent<HTMLInputElement>,
+			key: string, kind: keyof InputTransformerMap) => {
+
+			const inpfn = InputTransformer[kind];
+			const v: string | number = inpfn(e.currentTarget.value);
+			const oldBody = { ...this.state.project.body };
+			const newBody = { object: { [key]: v, ...oldBody } };
+			const newProject: SettingsState = { project: this.callbacks.newProject() };
+			newProject.project.header = this.state.project.header;
+			newProject.project.body = newBody;			
+			sref.setState(newProject);
+		}
+
+		const bodyData: any = this.state.project.body.object;
 
 		return (
 			<div className={styles.parentContainer} 
-				style={{position:'relative',
+				style={{
 				visibility: hidden ?
 					"hidden" : "visible"
 				}}>
@@ -106,45 +133,42 @@ class SettingsForm extends React.Component<SettingsProps,
 				<label>Project Name</label>
 				<input type="text" name="projectName"
 					value={this.state
-						.project
-						.projectName} 
+						.project.header.name} 
 					onChange={(e) => {
-						inputChangeFn(e, 
-						'projectName')}}/>
+						inputChangeHeaderFn(e, 
+						'name', 'string')}}/>
 					<br />
 				<label>Author</label>
 				<input type="text" name="author"
 					value={this.state
-						.project.author} 
+						.project.header.author} 
 					onChange={(e) => 
-						{inputChangeFn(e, 
-						'author')}}/>
+						{inputChangeHeaderFn(e, 
+						'author', 'string')}}/>
 				<label>Width & Height</label>
 				<input type="number" name="width"
 					className={styles.inputMult}
-					value={this.state
-						.project.width} 
+					value={bodyData.width} 
 					onChange={(e) => 
 						{inputChangeFn(e, 
-						'width')}}/>x 
+						'width', 'number')}}/>x 
 				<input type="number" name="height"
 					className={styles
 						.inputMult}	
-					value={this.state
-						.project.height} 
+					value={bodyData.height} 
 					onChange={(e) => 
 						{inputChangeFn(e, 
-						'height')}}/>
+						'height', 'number')}}/>
 
 				
 				<label>Short Description</label>
 				<input type="text" name="description"
 					value={this.state
-						.project
+						.project.header
 						.description} 
 					onChange={(e) => 
-						{inputChangeFn(e, 
-						'description')}}/>
+						{inputChangeHeaderFn(e, 
+						'description', 'string')}}/>
 				
 				<div className={styles
 					.buttonSegment}>

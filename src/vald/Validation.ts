@@ -1,5 +1,5 @@
-import { ProjectAssembly } from "../model/Project";
 import ProjectRules from "./rules/ProjectRules";
+import { ValidationProject } from "./ValidationProject";
 import { EnforcementTuple, LocalValidator, RemoteValidator } from "./Validator";
 
 export type ValidationBuffers = {
@@ -41,7 +41,7 @@ export class ValidationExecutor {
    * Will apply a set of local rules on the current project
    * assembly.
    */
-  localOnly(assembly: ProjectAssembly): EnforcementTuple {
+  localOnly(assembly: ValidationProject<any>): EnforcementTuple {
     const localres = this.#localValidator.applyOn(assembly);
     this.validationbuffers.localbuf = localres;
     return localres;
@@ -51,7 +51,7 @@ export class ValidationExecutor {
    * Will apply the remote rules on the architecture object
    * TODO: Not implemented fully yet
    */
-  remoteOnly(assembly: ProjectAssembly): EnforcementTuple {
+  remoteOnly(assembly: ValidationProject<any>): EnforcementTuple {
     
     const localres = this.#remoteValidator.applyOn(assembly);
     this.validationbuffers.localbuf = localres;

@@ -1,0 +1,43 @@
+import {ReactElement} from "react";
+import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../../ArchWorkspace";
+import { ArchWorkspaceZone } from "../../../../workspace/WorkspaceZone.tsx";
+import { CGGraphColumn, CGNodeColumn } from "../ui/callgraph/CallGraphColumn.tsx";
+
+
+/**
+ * Constructs a callgraph UI group that can be used
+ * TODO: Finish this
+ */	
+export class RunChartGroup implements ArchWorkspaceGroup {
+	
+	makeGroup(data: ArchWorkspaceProps): Array<ReactElement> {
+
+		// 
+		const RunChartTemplate = data.workspaceData.architecture
+			.getServices()
+			.getRunResultService()
+			.RunChartTemplate();
+
+		const wspace = <RunChartTemplate
+			{...data} />;	
+		const group = [
+			<CGGraphColumn 
+			key={"widget_graph_column"} 
+				{...data} />,
+			<ArchWorkspaceZone 	
+				key={"widget_wz_design_space"}
+				wsComponent={wspace}
+				workspaceData={{
+					architecture: data.workspaceData.architecture,
+					archcontext: data.workspaceData.archcontext,
+					stash: data.workspaceData.stash
+				}} 
+				/>,
+			<CGNodeColumn 
+				key={"widget_node_column"}
+				{...data} />,
+		];	
+		return group;
+	}
+
+}

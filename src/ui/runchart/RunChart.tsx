@@ -3,14 +3,17 @@ import {CallGraphSpaceData, CGChartDimensions, CGSample, CUDataKey, DataAggregat
 import {CallGraphStatsSpace} from "./CGChart";
 
 import style from '../styles/CGChart.module.css';
-import {WorkspaceData} from "../workspace/Workspace";
-import {CUVolume} from "../../model/CallGraph";
+import {CUVolume} from "../../obj/chart/Metrics.ts";
+import { ArchWorkspaceData } from "../schema/arch/ArchWorkspace.ts";
 /*const PreMadeData = [
 	genData(20),
 	genData(20),
 	genData(20)
 ];*/
 
+/**
+ * Generates a data for testing
+ */
 export function GenData(n: number): Array<CGSample> {
 	const data: Array<CGSample> = [];
 	const nodesRan = [
@@ -38,7 +41,11 @@ export function GenData(n: number): Array<CGSample> {
 	return data;
 }
 
-export class RunChartContainer extends React.Component<RunChartProps, {}>{
+
+/**
+ * RunChartContainer, wraps the chart space
+ */
+export class RunChartContainer extends React.Component<RunChartProps, {}> {
 	render() {
 		const props = this.props;	
 		return (
@@ -49,8 +56,11 @@ export class RunChartContainer extends React.Component<RunChartProps, {}>{
 }
 
 
-
-const ResolveGraphData = (workspaceData: WorkspaceData): DataAggregate => {
+/**
+ * 
+ *
+ */
+const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 		//graphData: Array<Array<CGSample>>
 	/*
 	0 REGISTER_VOLUME
@@ -82,8 +92,9 @@ const ResolveGraphData = (workspaceData: WorkspaceData): DataAggregate => {
 
 	}
 
-	
-	const rrBuf = workspaceData.container.getRRBuffer();
+	//TODO: When fixing the lat2d implementation, we need to provide this information
+	const rrService = workspaceData.architecture.getServices().getRunResultService();
+	const rrBuf = rrService;
 	const cuidObjs = rrBuf.getVolumeSet();
 	//TODO: Temporary, could likely do it directly but not wanting to play games
 	//at the moment.

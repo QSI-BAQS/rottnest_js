@@ -1,4 +1,4 @@
-import { WorkspaceGroup, WorkspaceProps } from "./Workspace"
+/*import { WorkspaceGroup, WorkspaceProps } from "./Workspace"
 import {ReactElement} from "react";
 import {WorkspaceZone} from "./WorkspaceZone";
 import {CGGraphColumn, CGNodeColumn} 
@@ -34,5 +34,5 @@ export class RunChartGroup implements WorkspaceGroup {
 	}
 
 }
-
+*/
 

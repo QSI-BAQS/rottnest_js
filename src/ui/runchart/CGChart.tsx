@@ -207,12 +207,12 @@ const GenerateLine = (
 	yScale: d3.ScaleLinear<number, number> | d3.ScaleLogarithmic<number, number>, 
 	selKey: CUAggrKey,
 	colorStr: string,
-	key: string, idx: number):  ReactElement => {	
+	key: string, _idx: number):  ReactElement => {	
 
 	const lbuilder = d3
 			.line<DataAggrIdentifier>()
 			.x((d) => xScale(d.mxid ?? 0))
-			.y((d, ids) => yScale(data.aggrMap[selKey][ids] ?? 0));
+			.y((_d, ids) => yScale(data.aggrMap[selKey][ids] ?? 0));
 
 	const lres = lbuilder(data.idxs);
 
@@ -357,8 +357,8 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	const nLins = data.idxs.map((_, idx) => LineColorList[idx % 
 				    		LineColorList.length])
 	
-	const bmap = props.workspaceData.bufferMap;
-	const [keyref, setKeyRef] = useState<CUDataKeyRef>({ keyvalue: props.selKey });
+	const bmap = props.workspaceData.stash;
+	const [keyref, setKeyRef] = useState<CUDataKeyRef>({ keyvalue: String(props.selKey) });
 	//const [lineref, setLineRef] = useState<CUWidgetKeyRef>({ keyvalue: -1 });
 	const [scaleref, setScaleRef] = useState<CUScaleKeyRef>({keyvalue: 'Linear'});
 	const [lineCol, _setLineCol] = useState<Array<string>>(nLins);
@@ -375,16 +375,9 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	const height = props.dimensions.height;
 	const boundsWidth = width - mWidth;
 	const boundsHeight = height - mHeight;
-	//const selKey = (keyref.keyvalue) as CUDataKey;
 	const scaleFnStr = scaleref.keyvalue;
 	
 	const [wDat, _wLen] = [data.idxs, data.idxs.length];
-	/*const [wDat, _wLen] = data.idxs.map((e,i) => [e,i] as [DataAggrIdentifier, number])
-		.reduce((p, c, _, _a) => {
-			return p[0].length > c[0].length ? p : c; 
-		});*/
-	//TODO: Apparently the TS devs have not worked out this expression
-	//with their parser >.>
 	const { hArr } = data.dataRefs.map((e,i) => {
 			return { hlen: Math.max(...e), hArr: e, hIdx: i } as HDatKind; 
 		}).reduce((p: HDatKind, c: HDatKind, _, _a) =>  {
@@ -510,12 +503,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 		setEnableProxy = (_: Array<boolean>):void => {};
 
 	}
-	
-	//Because ain't we just a legend mateeee
 	const legendBro = GenerateLegend(legndNames, colorsIncluded, enableSet, setEnableProxy);
-
-	//const idxes = [{value:-1,display:'All'}]
-	//	.concat(data.map((_, idx) => { return {value: idx, display: `${idx+1}`} }));
 
 	const cacheOpts = [{value: 'ON', display: 'Cached Included'}, 
 		{value: 'OFF', display: 'Cached Removed'}];

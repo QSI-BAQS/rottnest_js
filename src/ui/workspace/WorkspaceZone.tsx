@@ -1,38 +1,60 @@
 import React, {ReactElement} from 'react';
-import RottnestContainer from "../container/RottnestContainer"
+import { Workspace } from './Workspace';
+import { ArchitectureUIContext } from '../schema/arch/ArchContext';
+import { ArchWorkspaceData } from '../schema/arch/ArchWorkspace';
+import { ArchitectureObject } from '../schema/arch/ArchSchema';
 import styles from '../styles/WorkspaceContainer.module.css';
-import {Workspace, WorkspaceData} from './Workspace';
 
+
+/**
+ * Tab data, the different tabs
+ * and the context, along with the architecture object
+ */
 type WorkspaceTabData = {
-	selectedTab: number
+	selectedTab: string
 	tabTitles: Array<string>
 	availableTabs: Array<boolean>
-	container: RottnestContainer
+	context: ArchitectureUIContext
+	container: ArchitectureObject
 }
 
-type WorkspaceZoneData = {
-	workspaceData: WorkspaceData
-	wsComponent: ReactElement 
+
+/**
+ * WorkspaceZoneData, it will reference the workspace data
+ * and the component that can be rendered
+ */
+export type ArchWorkspaceZoneData = {
+	workspaceData: ArchWorkspaceData,
+	wsComponent: ReactElement	
 }
 
+/**
+ * Workspace Tab Bar, it will list the tabs
+ * that it can present
+ */
 class WorkspaceTabBar extends React
 	.Component<WorkspaceTabData, {}> {
 	
 	render() {
 		const data = this.props;
-		const container = data.container;
+		const context = data.context;
 		const selTab = data.selectedTab;
 		
 		const avaibilities = data.availableTabs;
-
 		const tabs = data.tabTitles.map((t, idx) => {
 
-			const isSelected = idx == selTab;
+			const isSelected = t.toLowerCase() === selTab;
+			const ctxdata = context.getData();
 			const available = avaibilities[idx];
+			const ctxkey = data.container.getModulesMeta()
+				.getMetaKey(idx) || 'default';
+			const refservice = this.props.container
+				.getServices()
+				.getRefreshService();
 			const updateSelected = () => {
 				if(available) {
-					container
-					.updateSelectedTab(idx);
+					context.move(ctxkey, ctxdata);
+					refservice.triggerRefresh();					
 				}
 			};
 
@@ -60,27 +82,25 @@ class WorkspaceTabBar extends React
 }
 
 
-export class WorkspaceZone 
-	extends React.Component<WorkspaceZoneData, {}> 
+export class ArchWorkspaceZone 
+	extends React.Component<ArchWorkspaceZoneData, {}> 
 	implements Workspace {
 
 	render() {
 
-		const component = this.props.wsComponent;	
 		const data = this.props.workspaceData;
-		const selTab = data.container.
-			state.tabData.selectedTabIndex;
-		const tabTitles = data.container.
-			state.tabData.tabNames;
-		const availableTabs = data
-			.container.state
-			.tabData.availableTabs;	
+		const selKey = data.archcontext.getCurrent();
+		const moduleMeta = data.architecture.getModulesMeta();
+		const component = this.props.wsComponent;
+		
+		const availableTabs = moduleMeta.availability;
 		
 		return (<div className={styles.workspaceZone}>
 				<WorkspaceTabBar 
-				tabTitles={tabTitles}
-				container={data.container}
-				selectedTab={selTab} 
+				tabTitles={moduleMeta.modules}
+				container={data.architecture}
+				context={data.archcontext}
+				selectedTab={selKey} 
 				availableTabs={availableTabs}
 				/>
 				{component}

@@ -1,4 +1,4 @@
-import {ProjectAssembly} from "../model/Project";
+/*import {ProjectAssembly} from "../model/Project";
 import {TSchedData, TSchedDataNode} from "../model/TSchedData";
 
 
@@ -101,9 +101,8 @@ export default class ArchConverter {
 		}
 	}
 
-	//TODO
-	/*static FromTSched(tschedData: TSchedData): RegionDataList {
 		
 
-	}*/
+	
 }
+*/

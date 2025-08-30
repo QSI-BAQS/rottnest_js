@@ -1,8 +1,5 @@
-
-import {RottnestKindMap} from "../model/RegionKindMap.ts";
 import { AppServiceMessage } from "./AppServiceMessage.ts"; 
-import {RottArchMSG, RottGraphMSG, RottRouterTypesMSG,
-	RottRunResultMSG, RottSubTypesMSG} from "./Messages.ts";
+import { RottRunResultMSG} from "./Messages.ts";
 
 export const APP_URL: string = "ws://localhost:8080/websocket";
 
@@ -23,6 +20,8 @@ export type ASRecvCallback = (asm: AppServiceMessage) => void;
 export type ASRecvContextCallback 
 	= (ctx: ASContextHook, asm: AppServiceMessage) => void;
 
+export type ASDisconnectCallback = () => void;
+
 /**
  * Application Service Client,
  * Holds onto a websocket, buffer of messages (will be removed)
@@ -34,15 +33,18 @@ export class AppServiceClient {
 	socket: WebSocket | null = null;
 	buffer: Array<AppServiceMessage> = [];
 	bufferCapacity: number = 256;
+
+	sendQueue: Array<string> = [];
 	
 	receiveTriggers: Map<string, 
 		ASRecvCallback> = new Map();
 
 	onOpenTrigger: ASOpenCallback | null = null;
+	
+	onDisconnectTrigger: ASDisconnectCallback | null = null;
 
 	constructor(url: string | null) {
 		this.url = url;
-		
 	}
 
 	queue(msg: AppServiceMessage): boolean {
@@ -96,7 +98,31 @@ export class AppServiceClient {
 			return false;
 		}
 	}
+	
+	enqueueMessage(message: string) {
+		this.sendQueue.push(message);
+	}
 
+	consumeFromQueue(): boolean {
+		const message = this.sendQueue.shift();
+		if(message !== undefined) {
+			if(this.socket) {
+				this.socket.send(
+					JSON.stringify({
+						message,
+						payload: {}
+					})	
+				);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	
+	/**
+	 * Sends a message but no payload attached
+	 */
 	sendMessage(message: string) {
 		
 		if(this.socket) {
@@ -109,9 +135,13 @@ export class AppServiceClient {
 		}
 	}
 
+	/**
+	 * Sends an object as part of the payload
+	 */
 	sendObj(message: string, payload: any) {
-			
+		console.log("Yo");
 		if(this.socket) {
+			console.log("Did we send?");
 			this.socket.send(
 				JSON.stringify({
 					message,
@@ -121,13 +151,14 @@ export class AppServiceClient {
 		}
 	}
 
+	sendObject(message: string, payload: any) {
+		this.sendObj(message, payload);
+	}
+
 	
-	sendMsg(msg: string) {
-		if(this.socket) {
-			this.socket.send(
-				msg
-			);
-		}
+	// Method to register a disconnect callback
+	registerDisconnectFn(disconnectFn: ASDisconnectCallback) {
+  		this.onDisconnectTrigger = disconnectFn;
 	}
 
 	/**
@@ -141,8 +172,7 @@ export class AppServiceClient {
 		if(this.isConnected()) {
 			return true;
 		}
-		//TODO: Handle processing message
-		//effectively
+		
 		const onMsgHandler = (e: any) => {
 			const asm = 
 				new AppServiceMessage(e.data);
@@ -158,12 +188,29 @@ export class AppServiceClient {
 				}
 			}
 		}
+
 		const onSendHandler = (_: any) => {}
+		
 		const onOpenHandler = (_: any) => {
 			if(self.onOpenTrigger) {
+				console.log("Socket is opening");
 				self.onOpenTrigger();
 			}
 		}
+
+		const onErrorHandler = (_: any) => {
+    		if(self.onDisconnectTrigger) {
+      			self.onDisconnectTrigger();
+    		}
+  		}
+
+	  	const onCloseHandler = (_: any) => {
+	    	if(self.onDisconnectTrigger) {
+	    		console.log("Socket is closing");	
+	      	self.onDisconnectTrigger();
+	    	}
+	  	}
+
 		if(this.url) {
 			this.socket = new WebSocket(this.url);
 			//Attach the events
@@ -173,12 +220,15 @@ export class AppServiceClient {
 				WS_ONMESSAGE, onMsgHandler);
 			this.socket.addEventListener(
 				WS_ONSEND, onSendHandler);
+			this.socket.addEventListener(
+				"error", onErrorHandler);
+			this.socket.addEventListener(
+				"close", onCloseHandler);
 		}
+		
 		return this.isConnecting() ||
 			this.isConnected();
 	}
-
-	
 
 	registerReciverKinds(evKind: string, 
 			     callback: ASRecvCallback) {
@@ -196,59 +246,7 @@ export class AppServiceClient {
 		this.onOpenTrigger = openFn;	
 	}
 
-	decodeGraph(data: any) {
-		const msgContainer = new RottGraphMSG();
-		data.parseData();
-		const realData = data
-			.parseDataTo(msgContainer);
-		if(realData) {
-			return realData.graph;
-		}
-		return null;
-	}
-
-	retrieveSubTypes(data: any) {
-				
-		const msgContainer =
-			new RottSubTypesMSG();
-		data.parseData();
-		const realData = data
-			.parseDataTo(msgContainer);
-		if(realData) {
-			return realData.regionKinds;
-		}
-		return null;
-	}
-	
-	submitArch(schedMsg: RottArchMSG) {
-		if(this.socket) {
-			this.socket.send(schedMsg.toJsonStr());
-		}
-	}
-
-	retrieveRouters(subTypes: RottnestKindMap, data: any) {
-		const msgContainer =
-			new RottRouterTypesMSG(subTypes);
-		data.parseData();
-		const realData = data
-			.parseDataTo(msgContainer);
-		if(realData) {
-			return realData.subtypeMap;
-		}
-		return null;
-	}
-
-	retrieveArgs(m: any) {
-
-		/*const msgContainer =
-			new RottSubTypesMSG();
-		data.parseData();
-		const realData = data
-			.parseDataTo(msgContainer);
-		if(realData) {
-			return realData.regionKinds;
-		}*/
-
+	retrieveArgs(_m: any) {
 		return null;
 	}
 
@@ -258,5 +256,22 @@ export class AppServiceClient {
 			this.socket.send(runMsg.toJsonStr());
 		}
 	}
+}
 
+// Static function to check if connection is ready
+export function ConnectionReady(): boolean {
+  	const instance = GetAppServiceInstance();
+  	return instance.isConnected();
+}
+
+// Singleton instance
+let _appServiceInstance: AppServiceClient | null = null;
+
+// Function to get or create the AppServiceClient instance
+export function GetAppServiceInstance(): AppServiceClient {
+  	if (!_appServiceInstance) {
+    		_appServiceInstance = new AppServiceClient(APP_URL);
+  	}
+  	
+	return _appServiceInstance;
 }

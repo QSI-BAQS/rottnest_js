@@ -1,17 +1,8 @@
-import RottnestContainer from "../container/RottnestContainer"
+import RottnestApplication from "../container/RottnestApplication.tsx"
 
-const leftClick = (r: RottnestContainer) => { 
+const leftClick = (_r: RottnestApplication) => { }
 
-	//FUN DEBUG MESSAGE
-	const aps = r.commData
-		.appService.sendObj('debug_send', 
-		{
-			testdata: 'glhf!'
-		});
-
-}
-
-const auxEvent = (_: RottnestContainer) => { }
+const auxEvent = (_: RottnestApplication) => { }
 
 
 export default { leftClick, auxEvent }

@@ -1,10 +1,18 @@
-import RottnestContainer from "../container/RottnestContainer"
+import RottnestApplication from "../container/RottnestApplication"
 
-
-const leftClick = (rott: RottnestContainer) => {
-	rott.showNewProject();
+/**
+ * Shows the settings menu for a project with new project properties
+ */
+const leftClick = (rott: RottnestApplication) => {
+	const projectRet = rott.getModuleStates().getProjectState();
+	if(projectRet.isReady) {
+		const projectState = projectRet.obj;
+		if(projectState) {
+			projectState.showNewProject(); //TODO: Not making a difference
+		}
+	}
 }
 
-const auxEvent = (_: RottnestContainer) => { }
+const auxEvent = (_: RottnestApplication) => { }
 
 export default { leftClick, auxEvent }
