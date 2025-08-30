@@ -104,7 +104,6 @@ export class ArchPluginService {
     this.netservice = netservice;
     this.refservice = upservice;
 
-    debugger;
   }
 
 	static GetPluginService(
@@ -120,7 +119,6 @@ export class ArchPluginService {
 			const plgs = ArchPluginService.plgservice;
 			plgs.setNetworkService(netservice);
 			plgs.setRefreshService(upservice);
-			debugger;
 			plgs.setUpdate(update);
 		}
 		return ArchPluginService.plgservice;
@@ -139,7 +137,6 @@ export class ArchPluginService {
 	}
 
 	setUpdate(update: ArchUpdateTrigger) {
-		debugger;
 		this.update = update;
 	}
 
@@ -208,8 +205,6 @@ export class ArchPluginService {
 				api_map: {}
 			}
 			if(arch) {
-				debugger;
-				
 				this.update(arch);
 			} else {
 				console.error("Unable to swap architecture, metadata listed, plugin missing");

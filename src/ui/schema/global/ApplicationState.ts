@@ -117,7 +117,6 @@ export class RottnestApplicationState {
 	 */
 	swapArchitecture(schema: ArchitectureSchema): boolean {
 		this.architectureSchema = schema;
-		debugger;
 		this.architectureObject = schema.createArchitecture(this
 			.modstate.getServices())
 		return true;
