@@ -8,8 +8,8 @@ import { ArchPluginService, ArchUpdateTrigger } from "./ArchPluginService";
 import { UnimplReturn } from "../ui/schema/util/unimpl";
 import { ValidationService } from "./ValidatorService";
 import { RunResultService } from "./RunResultService";
-import { ArchitectureSchema } from "../ui/schema/arch/ArchSchema";
 import { StyleService } from "./StyleService";
+import { ArchStorageEntry } from "../obj/plugin/Architecture";
 
 /**
  * ServicesHolder is the container that will
@@ -62,7 +62,7 @@ export class Services implements ServicesHolder {
   help: HelpService;
 
   constructor(refreshTarget: UpdateTrigger, _container: ServicesHolder,
-    archUpdate: ArchUpdateTrigger, schemas: Array<ArchitectureSchema>) {
+    archUpdate: ArchUpdateTrigger, schemas: Array<ArchStorageEntry>) {
     
     this.refresh = new RefreshService(refreshTarget);
     this.notify = new NotifyService();

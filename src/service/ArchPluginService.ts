@@ -1,9 +1,9 @@
-
 import { NetworkService } from "./NetworkService";
 import { RefreshService } from "./RefreshService";
 import { PluginData } from "../obj/plugin/Generic";
-import { ArchitecturePlugin, ArchitecturePluginConfig,
-	ArchitecturesToEntry, ArchPackage, ArchPluginDefault, ArchSet, ArchSetDefault }
+import { ArchAPIMap, ArchitecturePlugin, ArchitecturePluginConfig,
+	ArchitecturesToEntry, ArchPackage, ArchPluginDefault, ArchSet, ArchSetDefault, 
+    ArchStorageEntry}
 	from "../obj/plugin/Architecture";
 import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
 import { PluginEntry } from "../ui/global/settings/GeneralSettings";
@@ -17,22 +17,23 @@ import { Services } from "./Services";
 // Temporary callbacks
 export type ArchUpdateTrigger = (arch: ArchitectureSchema) => void;
 
+
 /**
  * Storage for all the plugins
  */
 export class ArchPluginStorage {
-	core: Map<string, ArchitectureSchema>;
-	plugins: Map<string, ArchitectureSchema>;
+	core: Map<string, ArchStorageEntry>;
+	plugins: Map<string, ArchStorageEntry>;
 
 	/**
 	 * Core Plugins construction
 	 */
-	static withCore(schemas: Array<ArchitectureSchema>) {
+	static withCore(schemas: Array<ArchStorageEntry>) {
 		const storage = new ArchPluginStorage();
 		
 		storage.core = new Map();
 		schemas.forEach((e) => {
-			storage.core.set(e.name, e);
+			storage.core.set(e.schema.name, e);
 		});
 		return storage;
 	}
@@ -53,19 +54,23 @@ export class ArchPluginStorage {
 	/**
 	 * Adds another architecture into the map
 	 */
-	addPlugin(arch: { archname: string, default: ArchitectureSchema }) {
+	addPlugin(arch: { archname: string, default: ArchitectureSchema, apimap: ArchAPIMap }) {
 		let archInst = arch.default;
 		if(arch.default) {
 			let cot: any = arch.default;
 			archInst = new cot(); //Reflected construction, need to use any
 		}
-		this.core.set(arch.archname, archInst);
+		this.core.set(arch.archname, {
+			schema: archInst,
+			apimap: arch.apimap
+		});
+
 	}
 
 	/**
 	 * Gets an architecture as part of core or plugin
 	 */
-	getArchitecture(ident: string): ArchitectureSchema | null {
+	getArchitecture(ident: string): ArchStorageEntry | null {
 		const coreArch = this.core.get(ident)
 		const pluginArch = this.plugins.get(ident)
 		if(coreArch) {
@@ -94,7 +99,7 @@ export class ArchPluginService {
 
 	static plgservice: ArchPluginService | null = null;
 
-  constructor(schemas: Array<ArchitectureSchema>,
+  constructor(schemas: Array<ArchStorageEntry>,
   	update: ArchUpdateTrigger,
   	upservice: RefreshService,
   	netservice: NetworkService) {
@@ -107,7 +112,7 @@ export class ArchPluginService {
   }
 
 	static GetPluginService(
-		defaultSchemas: Array<ArchitectureSchema>,
+		defaultSchemas: Array<ArchStorageEntry>,
 		update: ArchUpdateTrigger,
 		upservice: RefreshService,
 		netservice: NetworkService
@@ -151,7 +156,8 @@ export class ArchPluginService {
 	    const module = await import('data:text/javascript;base64,' + modtext);
 			this.storage.addPlugin({
 				archname: name,
-				default: module.default
+				default: module.default,
+				apimap: archpkg.apimap
 			});
     }
 	}
@@ -194,15 +200,15 @@ export class ArchPluginService {
 		console.log(data.plgKey);
 		if(archMap) {
 			let arch = {
-				name: archMap.name, //TODO: Will need to figure out the prototype fix...
+				name: archMap.schema.name, //TODO: Will need to figure out the prototype fix...
 				createArchitecture: (services: Services) => {
-					return archMap.createArchitecture(services)
+					return archMap.schema.createArchitecture(services)
 				}
 			};
 			
 			this.current = {
-				identifier: archMap.name,
-				api_map: {}
+				identifier: archMap.schema.name,
+				api_map: archMap.apimap
 			}
 			if(arch) {
 				this.update(arch);
@@ -281,7 +287,4 @@ export class ArchPluginService {
 	getCurrentArch(): ArchitecturePlugin {
 		return this.current;
 	}
-	
-
-  
 }

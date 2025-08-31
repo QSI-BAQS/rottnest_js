@@ -23,29 +23,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvArchList: {
     evkey: MSG_GLOBAL_MAP['arch_list'],
     evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-    	//TODO: We have to refactor this now
-    	//
-    	//
-			// const plist = m.getJSON().payload.arch_list;
-			// let newArchs: Array<ArchitecturePlugin> = [];
-			// for(const prg of plist) {
-			// 	newArchs.push({
-			// 		identifier: prg['arch_name'],
-			// 		api_map: {}
-			// 	})
-			// }
 
-			// let archservice = obj.getServices().getArchPluginService();
-
-			// archservice.storeArchs(newArchs);
-			
-	   //  	/*if(newArchs.length > 0) {
-	   //  		obj.state.appStateData.archData.current = newArchs[0]
-	   //  	}*/
-	   //  	//obj.triggerUpdate();
-			// appService.consumeFromQueue();
-			//
-			// NOTE: Above is old code to remove
 			const styService = obj.getServices().getStyleService();
 			const refService = obj.getServices().getRefreshService();
 			const archService = obj.getServices().getArchPluginService();
@@ -55,16 +33,14 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 
 				const cssFile = adetails.cssData;
 				const jsFile = adetails.jsData;
-				//console.log(jsFile);
-				console.log(cssFile);
 				styService.appendToRootInline(cssFile)
-				await archService.mapArch(aname, { kind: "Serialised", data: jsFile });
-				//archService.loadSchema()
-				//archService.setArch(aname, adetails);
+				await archService.mapArch(aname, { kind: "Serialised",
+					data: jsFile,
+					apimap: adetails.api
+				});
+
 			}
-			refService.triggerRefresh();
-			//console.log(plist)
-			
+			refService.triggerRefresh();			
 		}
   },
   recvProgramGetCurrent: {

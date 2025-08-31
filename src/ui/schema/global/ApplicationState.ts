@@ -21,6 +21,7 @@ import { RunResultService } from "../../../service/RunResultService";
 import { NoArchSchema } from "../arch/noarch/NoArch";
 import { StyleService } from "../../../service/StyleService";
 import { RTACommActions } from "./net/GlobalNetOperations";
+import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
 
@@ -66,7 +67,8 @@ export class RottnestApplicationState {
 	 */
 	constructor(app: RottnestApplication,
 		architectureSchema: ArchitectureSchema = new NoArchSchema(),
-		coreSchemas: Array<ArchitectureSchema> = [new NoArchSchema()]) {
+		coreSchemas: Array<ArchStorageEntry> = [{ schema: new NoArchSchema(),
+			apimap: { routes: [], mask: '' }}]) {
 
 		const services = 
 			new RottnestApplicationServices(app, this.getSwapCallback(),
@@ -268,7 +270,7 @@ export class RottnestApplicationServices implements ServicesHolder {
 	services: Services;
 	static appService: RottnestApplicationServices | null = null;
 	constructor(reftarget: RottnestApplication, archSwap: ArchSwapFn,
-		coreSchemas: Array<ArchitectureSchema>) {
+		coreSchemas: Array<ArchStorageEntry>) {
 		
 		this.services = new Services(reftarget, this, archSwap, coreSchemas);
 	}
@@ -276,7 +278,7 @@ export class RottnestApplicationServices implements ServicesHolder {
 	static GetServices(
 		reftarget: RottnestApplication,
 		archSwap: ArchSwapFn,
-		coreSchemas: Array<ArchitectureSchema>		
+		coreSchemas: Array<ArchStorageEntry>		
 	): RottnestApplicationServices {
 		if(RottnestApplicationServices.appService === null) {
 

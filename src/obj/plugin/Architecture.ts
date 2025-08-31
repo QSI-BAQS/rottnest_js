@@ -1,6 +1,23 @@
 import { PluginEntry } from "../../ui/global/settings/GeneralSettings"
+import { ArchitectureSchema } from "../../ui/schema/arch/ArchSchema"
 
 export type ArchPackageType = "Serialised" | "PathedLocal"
+
+/**
+ * StorageEntry 
+ */
+export type ArchStorageEntry = {
+	schema: ArchitectureSchema
+	apimap: ArchAPIMap
+}
+
+/**
+ * The API map that is to be used
+ */
+export type ArchAPIMap = {
+  mask: string,
+  routes: Array<string>
+}
 
 /**
  * Current package to get around a bunch of
@@ -9,6 +26,7 @@ export type ArchPackageType = "Serialised" | "PathedLocal"
 export type ArchPackage = {
   kind: ArchPackageType,
   data: string
+  apimap: ArchAPIMap
 }
 
 
