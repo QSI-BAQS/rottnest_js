@@ -70,13 +70,13 @@ export class SuperconductingDesigner implements ArchitectureDesigner {
    */
   queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
     if(query.capability === 'CanZoom') {
-      return ArchCapabilityResult.Deny();
+      return ArchCapabilityResult.Confirm();
     }
     if(query.capability === 'CanUndo') {
-      return ArchCapabilityResult.Deny();
+      return ArchCapabilityResult.Confirm();
     }
     if(query.capability === 'CanSave') {
-      return ArchCapabilityResult.Deny();
+      return ArchCapabilityResult.Confirm();
     }
     if(query.capability === 'CanLoad') {
       return ArchCapabilityResult.Confirm();

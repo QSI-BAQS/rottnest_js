@@ -1,6 +1,5 @@
 import React from 'react';
 import GlobalBar from '../global/GlobalBar.tsx';
-import SettingsForm from './SettingsForm';
 import ErrorDisplay from './ErrorDisplay.tsx';
 import { HelpContainer } from './HelpContainer.tsx';
 import { NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
@@ -98,11 +97,18 @@ export default class RottnestApplication
 		return this.state.appState.modstate.getStates();
 	}
 
+	getSettingsForm() {
+		return this.state.appState
+			.getArchitectureObject()
+			.getProjectSettingsForm();
+	}
+
 	/**
 	 * TODO: Fix this all
 	 */
 	render() {
-		console.log(this);
+		//SettingsForm is a dynamic component
+		const SettingsForm = this.getSettingsForm();
 		const rottContainer = this;
 		const updateables = new Map();
 		const zoomState = this.getModuleStates().getZoomState();

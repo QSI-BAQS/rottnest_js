@@ -8,7 +8,7 @@ import { ActiveVolumeDesignGroup } from "./groups/DesignerGroup";
  * This action does nothing as it is realistically just
  * there to disable the tracking when no architecture is selected
  */
-class NoActionTracker implements ArchActionTracker {
+class ActiveVolumeTracker implements ArchActionTracker {
   action(_nothing: any) { }
 
   undo(): any { return {} }
@@ -39,7 +39,7 @@ export class ActiveVolumeWorkspaceGroup implements ArchWorkspaceGroup {
  */
 export class ActiveVolumeDesigner implements ArchitectureDesigner {
   getActionTracker(): ArchActionTracker {
-    return new NoActionTracker();
+    return new ActiveVolumeTracker();
   }
 
   /**

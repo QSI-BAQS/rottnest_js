@@ -1,17 +1,17 @@
 import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
 import { ArchitecturePlayerState, ArchitectureVisualiser, ArchitectureVisualiserPlayer } from "../ArchSchema";
-import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../ArchWorkspace";
+import { ArchWorkspaceGroup } from "../ArchWorkspace";
+import { ActiveVolumeVisualiserGroup } from "./groups/VisualiserGroup";
 
 /**
  * Constructs the workspace group that will be used by the workspace component
  * within rottnest, this will return nothing
- * TODO: Populate with nothing components
  */
-class ActiveVolumeWorkspaceGroup implements ArchWorkspaceGroup {
+/*class ActiveVolumeVisualiserGroup implements ArchWorkspaceGroup {
   makeGroup(_data: ArchWorkspaceProps): Array<React.ReactElement> {
-      return [];
+      return new ActiveVolumeVisualGroup().makeGroup;
   }
-}
+}*/
 
 /**
  * No ArchDesigner, it is used as a placeholder for when
@@ -20,7 +20,7 @@ class ActiveVolumeWorkspaceGroup implements ArchWorkspaceGroup {
 export class ActiveVolumeVisualiser implements ArchitectureVisualiser {
 
   makeWorkspaceGroup(): ArchWorkspaceGroup {
-      return new ActiveVolumeWorkspaceGroup();
+      return new ActiveVolumeVisualiserGroup();
   }
 
   makePlayer(): ArchitectureVisualiserPlayer {

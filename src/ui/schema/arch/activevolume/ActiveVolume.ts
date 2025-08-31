@@ -17,8 +17,13 @@ import { ActiveVolumeDesigner } from './ActiveVolumeDesigner.ts';
 import { ActiveVolumeNetManager } from './ActiveVolumeNetwork.ts';
 import { ActiveVolumeSerializer } from './ActiveVolumeSerializer.ts';
 import { ActiveVolumeVisualiser } from './ActiveVolumeVisualiser.ts';
+import { ActiveVolumeProject } from './obj/Project.ts';
+import { ActiveVolumeProjectForm } from './ui/ProjectForm.tsx';
 
 
+/**
+ * Volume Extensions
+ */
 class ActiveVolumeExtensions implements ArchitectureExtensions<any> {
   
   extensions: Map<string, any> = new Map(); 
@@ -49,8 +54,8 @@ export class ActiveVolumeSchema implements ArchitectureSchema {
    * Creates a noarch schema that can be style and outline when the application is
    * not ready
    */
-  createArchitecture(_services: Services, _args: Map<string, string | number>): ArchitectureObject {
-    return new ActiveVolumeObject();
+  createArchitecture(services: Services, _args: Map<string, string | number>): ArchitectureObject {
+    return new ActiveVolumeObject(services);
   }
   
 }
@@ -61,13 +66,23 @@ export class ActiveVolumeSchema implements ArchitectureSchema {
  */
 export class ActiveVolumeObject implements ArchitectureObject<any, any> {
 
+  services: Services;
+  project: ActiveVolumeProject = new ActiveVolumeProject();
 
+  getProjectSettingsForm() {
+    return ActiveVolumeProjectForm;
+  }
+  
   meta: ArchitectureModulesMeta = new ArchitectureModulesMeta(
-    ["Designer"],
-    ["Designer"],
-    [true],
-    1
+    ["Designer", "Visualiser"],
+    ["Designer", "Visualiser"],
+    [true, false],
+    2
   )
+
+  constructor(services: Services) {
+    this.services = services;
+  }
 
   /**
    * Will return an error
@@ -78,25 +93,7 @@ export class ActiveVolumeObject implements ArchitectureObject<any, any> {
   
   // Holds the project information
   getProject(): ArchitectureProject<any> {
-    return {
-      header: {
-        name: 'ActiveVolume',
-        version: 'Invalid',
-        author: 'You',
-        architecture: 'ActiveVolume',
-        description: 'Absolutely no architecture'
-      },
-      body: {
-        object: {}
-      },
-      getProject: function() { return {...this}; },
-      forFile: function() {
-        return {...this};
-      },
-      forNetwork: function() {
-        return {...this};
-      }
-    }
+    return this.project.getProject()
   }
 
   // Sets the project information

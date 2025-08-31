@@ -1,6 +1,7 @@
-import { RefreshService } from "../../../../service/RefreshService";
-import { ArchitectureObject, ArchitectureProject } from "../../arch/ArchSchema";
-import { RottnestApplicationState } from "../ApplicationState";
+
+import { ArchitectureObject, ArchitectureProject } from "./ArchSchema";
+
+export type RefreshFunction = () => void;
 
 
 /**
@@ -19,7 +20,7 @@ export type ProjectSettingsCallbacks = {
  */
 export class ProjectSettingsState<T=any> {
 
-	refservice: RefreshService;
+	refservice: RefreshFunction;
 	archobject: ArchitectureObject;
 	project: ArchitectureProject<T>
   showProjectNew: boolean = false;
@@ -29,11 +30,11 @@ export class ProjectSettingsState<T=any> {
    * Constructs a settings state, if a project is omitted as part of
    * its construction, it will use the default
    */
-  constructor(appState: RottnestApplicationState,
-  	trigger: RefreshService) {
+  constructor(archobject: ArchitectureObject,
+  	trigger: RefreshFunction) {
     this.refservice = trigger;
-    this.archobject = appState.getArchitectureObject();
-    this.project = appState.getArchitectureObject().getProject();
+    this.archobject = archobject;
+    this.project = archobject.getProject();
   }
 
 	/**
@@ -57,7 +58,7 @@ export class ProjectSettingsState<T=any> {
 	showSettings() {
 		this.showProjectSettings = true;
 		this.showProjectNew = false;
-		this.refservice.triggerRefresh();
+		this.refservice();
 	}
 
 	/**
@@ -67,7 +68,7 @@ export class ProjectSettingsState<T=any> {
 		this.showProjectNew = true
 		this.showProjectSettings = false;
 		this.resetData();
-		this.refservice.triggerRefresh();
+		this.refservice();
 	}
 
 	/**
@@ -76,7 +77,7 @@ export class ProjectSettingsState<T=any> {
   resetData() {
     const newProject = this.archobject.makeProject();
     this.project = newProject;
-		this.refservice.triggerRefresh();
+		this.refservice();
   }
 
 	/**
@@ -87,7 +88,7 @@ export class ProjectSettingsState<T=any> {
 		this.showProjectNew = false;
 		this.showProjectSettings = false;
 		this.archobject.setProject(this.project);
-		this.refservice.triggerRefresh();
+		this.refservice();
 	}
 	
 	/**
@@ -96,7 +97,7 @@ export class ProjectSettingsState<T=any> {
 	 */
 	cancelSettings() {
 		this.showProjectSettings = false;
-		this.refservice.triggerRefresh();
+		this.refservice();
 	}
 
 	/**
@@ -113,7 +114,7 @@ export class ProjectSettingsState<T=any> {
 		this.showProjectNew = false;
 		this.showProjectSettings = false;
 		this.resetData();
-		this.refservice.triggerRefresh();
+		this.refservice();
 	}
 
 	/**

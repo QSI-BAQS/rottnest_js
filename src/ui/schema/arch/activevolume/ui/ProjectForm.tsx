@@ -1,9 +1,8 @@
-import React from 'react';
-import { ProjectSettingsCallbacks, ProjectSettingsState }
-	from '../schema/global/modules/SettingsState';
-import { ArchitectureProject }
-	from '../schema/arch/ArchSchema';
-import styles from '../styles/SettingsForm.module.css';
+
+import React from "react";
+import { ArchitectureProject } from "../../ArchSchema";
+import { ProjectSettingsCallbacks, ProjectSettingsState } from "../../ArchProjectState";
+import styles from './ActiveVolumeForm.module.css';
 
 /**
  * Allows us to map to a transformer when we want
@@ -47,11 +46,10 @@ export type SettingsState = {
 }
 
 /**
- * Settings form component, will be always present
- * in the display but turned off and on when needed
+ * A project form so we know what is being set up and
+ * that it can specialise itself differently
  */
-class SettingsForm extends React.Component<SettingsProps, 
-	SettingsState> {
+export class ActiveVolumeProjectForm extends React.Component<SettingsProps, SettingsState> {
 
 	projectState: ProjectSettingsState;
 	callbacks: ProjectSettingsCallbacks;
@@ -145,20 +143,25 @@ class SettingsForm extends React.Component<SettingsProps,
 					onChange={(e) => 
 						{inputChangeHeaderFn(e, 
 						'author', 'string')}}/>
-				<label>Width & Height</label>
-				<input type="number" name="width"
+				<label>Registers, Ancilla, Factories</label>
+				<input type="number" name="registers"
 					className={styles.inputMult}
-					value={bodyData.width} 
+					value={bodyData.registers} 
 					onChange={(e) => 
 						{inputChangeFn(e, 
-						'width', 'number')}}/>x 
-				<input type="number" name="height"
-					className={styles
-						.inputMult}	
-					value={bodyData.height} 
+						'ancilla', 'number')}}/>
+				<input type="number" name="ancilla"
+					className={styles.inputMult}
+					value={bodyData.ancilla} 
 					onChange={(e) => 
 						{inputChangeFn(e, 
-						'height', 'number')}}/>
+						'ancilla', 'number')}}/>
+				<input type="number" name="factories"
+					className={styles.inputMult}
+					value={bodyData.factories} 
+					onChange={(e) => 
+						{inputChangeFn(e, 
+						'factories', 'number')}}/>
 
 				
 				<label>Short Description</label>
@@ -170,18 +173,15 @@ class SettingsForm extends React.Component<SettingsProps,
 						{inputChangeHeaderFn(e, 
 						'description', 'string')}}/>
 				
-				<div className={styles
-					.buttonSegment}>
-					<button className={styles
-						.settingsCancel}
+				<div className={styles.buttonSegment}>
+					<button className={styles.settingsCancel}
 						onClick={(_) => 
 							sref
 							.cancel()}
 						type="button">
 						Cancel
 					</button>
-					<button className={styles
-						.settingsApply}
+					<button className={styles.settingsApply}
 						onClick={(_) => 
 						sref
 						.settingsApply()
@@ -194,5 +194,3 @@ class SettingsForm extends React.Component<SettingsProps,
 		);
 	}
 }
-
-export default SettingsForm;

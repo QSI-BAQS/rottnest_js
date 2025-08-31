@@ -22,6 +22,7 @@ import { Services } from '../../../../service/Services.ts';
 import { RegionDataList } from './obj/RegionDataList.ts';
 import { ProjectDetailsDefaultData, ProjectDump } from './obj/Project.ts';
 import { SuperconductingState } from './state/ArchState.ts';
+import { SuperconductingProjectForm } from './util/ProjectForm.tsx';
 
 /**
  * Schema object, typically only one instance which is used to
@@ -97,6 +98,13 @@ export class Superconducting2DArchitecture implements ArchitectureObject<RegionD
       designer,
       statedata
     }
+  }
+
+  /**
+   * Gets the project form require for settings
+   */
+  getProjectSettingsForm() {
+    return SuperconductingProjectForm;
   }
 
   /**

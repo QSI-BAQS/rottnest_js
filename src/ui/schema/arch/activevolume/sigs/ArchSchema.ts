@@ -1,15 +1,13 @@
-import { AppServiceClient } from "../../../net/AppService";
-import { Services } from "../../../service/Services";
-import { CommEventOps, CommOpQueue } from "../global/ops/CommsOps";
-import { ArchActionTracker } from "./ArchActionTracker";
-import { ArchCapabilitiesObject } from "./ArchContext";
-import { ArchWorkspaceGroup } from "./ArchWorkspace";
+import { AppServiceClient, CommEventOps, CommOpQueue } from "../sigs/exported.ts";
 
 
-/**
- * Temporarily `any` until we find a suitable wrapper
- */
-export type ArchitectureProjectForm = any;
+import { ServicesHolder } from '../sigs/ServicesHolder.ts';
+import { ArchActionTracker } from "./ArchActionTracker.ts";
+import { ArchCapabilitiesObject } from "./ArchContext.ts";
+import { ArchWorkspaceGroup } from "./ArchWorkspace.ts";
+
+
+
 
 /**
  * Strictly the data interface for the ArchitectureProject
@@ -42,7 +40,6 @@ export interface ArchitectureFormatter {
   toFile(project: ArchitectureProject<any>): any; 
 }
 
-
 /**
  * Architecture Project that is used by
  * the serialiser
@@ -66,8 +63,9 @@ export interface ArchitectureProject<T> extends ArchitectureProjectData<T> {
 export interface ArchitectureSchema {
 
   name: string
+
   
-  createArchitecture<T=any, E=any>(services: Services, args?: Map<string, string | number>): ArchitectureObject<T, E>; 
+  createArchitecture<T=any, E=any>(services: ServicesHolder, args?: Map<string, string | number>): ArchitectureObject<T, E>; 
 }
 
 /**
@@ -147,8 +145,6 @@ export interface ArchitectureObject<T=any, E=any> {
   // Holds the project information
   getProject(): ArchitectureProject<T>;
 
-  getProjectSettingsForm(): ArchitectureProjectForm;
-
   // Creates a default project
   makeProject(): ArchitectureProject<T>;
 
@@ -180,7 +176,7 @@ export interface ArchitectureObject<T=any, E=any> {
   getExtensions(): ArchitectureExtensions<E>;
 
   // Services
-  getServices(): Services;
+  getServices(): ServicesHolder;
 }
 
 
@@ -205,6 +201,8 @@ export interface ArchitectureConnectionManager extends ArchCapabilitiesObject {
   onLoadEvents(): CommOpQueue<ArchitectureObject>;
 
   // Gets the network service
+  // TODO: Remove this as this will be extracted
+  //       from the services
   getNetworkService(): AppServiceClient;
 }
 

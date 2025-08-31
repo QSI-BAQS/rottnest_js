@@ -13,7 +13,6 @@ import { ArchPluginState } from "./modules/ArchPlugin";
 import { ErrorState } from "./modules/ErrorState";
 import { PluginRepresetationState } from "./modules/PluginRepState";
 import { ProgramPluginState } from "./modules/ProgramPlugin";
-import { ProjectSettingsState } from "./modules/SettingsState";
 import { ZoomState } from "./modules/ZoomState";
 import AppServiceModule from "../../../net/AppServiceModule";
 import RottnestApplication from "../../container/RottnestApplication";
@@ -22,6 +21,7 @@ import { NoArchSchema } from "../arch/noarch/NoArch";
 import { StyleService } from "../../../service/StyleService";
 import { RTACommActions } from "./net/GlobalNetOperations";
 import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
+import { ProjectSettingsState } from "../arch/ArchProjectState";
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
 
@@ -204,7 +204,8 @@ export class RottnestApplicationComponentStates {
 		this.archState = new ArchPluginState(refresh, this.pluginsState, services.getArchPluginService());
 		this.programState = new ProgramPluginState(refresh, this.pluginsState);
 		this.errorState = new ErrorState();
-		this.projectState = new ProjectSettingsState(appState, refresh);
+		this.projectState = new ProjectSettingsState(appState.getArchitectureObject(),
+			() => { refresh.triggerRefresh(); });
 	}
 
 	/**

@@ -17,6 +17,7 @@ import { NoArchExtensions } from './NoArchExtensions.ts';
 import { NoArchNetManager } from './NoArchNetwork.ts';
 import { NoArchSerializer } from './NoArchSerializer.ts';
 import { NoArchVisualiser } from './NoArchVisualiser.ts';
+import { NoArchProjectForm } from './ui/ProjectForm.tsx';
 
 
 /**
@@ -47,6 +48,10 @@ export class NoArchSchema implements ArchitectureSchema {
 export class NoArchObject implements ArchitectureObject<any, any> {
 
   services: Services;  
+
+  getProjectSettingsForm() {
+    return NoArchProjectForm;
+  }
 
 
   meta: ArchitectureModulesMeta = new ArchitectureModulesMeta(
