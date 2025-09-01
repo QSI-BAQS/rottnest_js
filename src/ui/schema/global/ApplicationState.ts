@@ -22,6 +22,8 @@ import { StyleService } from "../../../service/StyleService";
 import { RTACommActions } from "./net/GlobalNetOperations";
 import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
 import { ProjectSettingsState } from "../arch/ArchProjectState";
+import { ZoomService } from "../../../service/ZoomService";
+import { IconService } from "../../../service/IconService";
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
 
@@ -49,7 +51,6 @@ export type RottnestProperties = {
  */
 export type RottnestState = {
 	appState: RottnestApplicationState,
-	appContext: ArchitectureUIContext,
 }
 
 /**
@@ -61,7 +62,8 @@ export class RottnestApplicationState {
 	modstate: RottnestApplicationModulesState;
 	architectureSchema: ArchitectureSchema;
 	architectureObject: ArchitectureObject;
-
+	appContext: ArchitectureUIContext;
+	
 	/**
 	 * Initialises the architecture state to a default
 	 */
@@ -78,6 +80,7 @@ export class RottnestApplicationState {
 		this.architectureObject = architectureSchema.createArchitecture(services
 			.getServices());
 		this.modstate = new RottnestApplicationModulesState(services, this);
+		this.appContext = new ArchitectureUIContext(this.architectureObject)
 	}
 
 	/**
@@ -118,9 +121,14 @@ export class RottnestApplicationState {
 	 * given
 	 */
 	swapArchitecture(schema: ArchitectureSchema): boolean {
+
+		const refresh = this.modstate.getServices().getRefreshService();
 		this.architectureSchema = schema;
 		this.architectureObject = schema.createArchitecture(this
 			.modstate.getServices())
+		this.appContext = new ArchitectureUIContext(this.architectureObject);
+		this.modstate.states.projectState = new ProjectSettingsState(this.getArchitectureObject(),
+			() => { refresh.triggerRefresh(); });
 		return true;
 	}
 }
@@ -199,8 +207,9 @@ export class RottnestApplicationComponentStates {
 	constructor(appState: RottnestApplicationState, services: Services) {
 		
 		const refresh = services.refresh;
+		const zoomService = services.zoomService;
 		this.pluginsState = new PluginRepresetationState();
-		this.zoomState = new ZoomState(100, refresh);
+		this.zoomState = new ZoomState(100, refresh, zoomService);
 		this.archState = new ArchPluginState(refresh, this.pluginsState, services.getArchPluginService());
 		this.programState = new ProgramPluginState(refresh, this.pluginsState);
 		this.errorState = new ErrorState();
@@ -363,11 +372,17 @@ export class RottnestApplicationServices implements ServicesHolder {
 		return this.services.valservice;
 	}
 
+	getZoomService(): ZoomService {
+		return this.services.zoomService
+	}
 
 	getStyleService(): StyleService {
 		return StyleService.GetInstance(this.getRefreshService())
 	}
 
+  getIconService() {
+    return IconService.GetInstance()
+  }
 	/**
 	 * Returns the whole services group
 	 */

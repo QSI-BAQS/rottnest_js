@@ -15,7 +15,7 @@ const leftClick = (rott: RottnestApplication) => {
 	const notify = rott.getServices().getNotifyService();
 	const refserv = rott.getServices().getRefreshService();
 
-	if(ctx.queryCapability(ArchCapabilityQuery.MakeQuery("CanSend")).Yes()) {
+	if(ctx.queryCapability(ArchCapabilityQuery.MakeQuery("CanSave")).Yes()) {
 
 		const proj = rott.getAppState()
 			.getArchitectureObject()

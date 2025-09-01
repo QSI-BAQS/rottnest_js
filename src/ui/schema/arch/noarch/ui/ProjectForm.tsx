@@ -101,7 +101,7 @@ export class NoArchProjectForm extends React.Component<SettingsProps, SettingsSt
 		}
 
 		// Changes for the body elements
-		const inputChangeFn = (
+		/*const inputChangeFn = (
 			e: React.FormEvent<HTMLInputElement>,
 			key: string, kind: keyof InputTransformerMap) => {
 
@@ -113,9 +113,8 @@ export class NoArchProjectForm extends React.Component<SettingsProps, SettingsSt
 			newProject.project.header = this.state.project.header;
 			newProject.project.body = newBody;			
 			sref.setState(newProject);
-		}
+		}*/
 
-		const bodyData: any = this.state.project.body.object;
 
 		return (
 			<div className={styles.parentContainer} 
@@ -142,19 +141,6 @@ export class NoArchProjectForm extends React.Component<SettingsProps, SettingsSt
 					onChange={(e) => 
 						{inputChangeHeaderFn(e, 
 						'author', 'string')}}/>
-				<label>Width & Height</label>
-				<input type="number" name="width"
-					className={styles.inputMult}
-					value={bodyData.width} 
-					onChange={(e) => 
-						{inputChangeFn(e, 
-						'width', 'number')}}/>x 
-				<input type="number" name="height"
-					className={styles.inputMult}	
-					value={bodyData.height} 
-					onChange={(e) => 
-						{inputChangeFn(e, 
-						'height', 'number')}}/>
 
 				
 				<label>Short Description</label>

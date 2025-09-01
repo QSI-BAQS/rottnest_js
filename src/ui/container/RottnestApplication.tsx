@@ -4,7 +4,6 @@ import ErrorDisplay from './ErrorDisplay.tsx';
 import { HelpContainer } from './HelpContainer.tsx';
 import { NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
 import { UpdateTrigger } from '../../service/RefreshService.ts';
-import { ArchitectureUIContext } from '../schema/arch/ArchContext.ts';
 import { ArchWorkspaceContainer } from './WorkspaceContainer.tsx'
 import { RottnestApplicationState, RottnestProperties, RottnestState }
 	from '../schema/global/ApplicationState.ts'
@@ -24,7 +23,6 @@ export default class RottnestApplication
 	// State object for rottnest
 	state: RottnestState = {
 		appState: new RottnestApplicationState(this),
-		appContext: new ArchitectureUIContext()
 	}
 
 	/**
@@ -32,10 +30,6 @@ export default class RottnestApplication
 	 */
 	constructor(props: RottnestProperties) {
 		super(props);
-		this.state.appContext = new ArchitectureUIContext(
-			this.state.appState
-			.getArchitectureObject()
-		);
 	}
 
 	/**
@@ -73,7 +67,7 @@ export default class RottnestApplication
 	 * Gets the UI context of the application
 	 */
 	getUIContext() {
-		return this.state.appContext;
+		return this.state.appState.appContext;
 	}
 
 	/**
@@ -120,7 +114,7 @@ export default class RottnestApplication
 		const notifyService = this.getServices().notify;
 		const helpService = this.getServices().help;
 		const refservice = this.getServices().refresh;
-		const archcontext = this.state.appContext;
+		const archcontext = this.getUIContext();
 		
 		const isProjectUsable = projectRet.isReady;
 		const isProjVisible = projectRet.visible;

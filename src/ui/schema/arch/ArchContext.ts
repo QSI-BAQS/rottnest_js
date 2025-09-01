@@ -252,6 +252,7 @@ export class ArchitectureUIContext {
 	  return this.switches;
 	}
 
+
   /**
    * Goes to the default position/home
    */

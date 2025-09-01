@@ -1,4 +1,5 @@
 import { RefreshService } from "../../../../service/RefreshService";
+import { ZoomService } from "../../../../service/ZoomService";
 
 
 /**
@@ -11,10 +12,13 @@ export class ZoomState {
   zoomValue: number = 100;
   enabled: boolean = true;
   refservice: RefreshService;
+  zoomService:ZoomService;
 
-  constructor(initialValue: number, refservice: RefreshService) {
+  constructor(initialValue: number, refservice: RefreshService,
+    zoomService: ZoomService) {
     this.zoomValue = initialValue;
     this.refservice = refservice;
+    this.zoomService = zoomService;
   }
 
   /**
@@ -59,7 +63,8 @@ export class ZoomState {
 	 */
 	zoomIn(perc: number) {
 		if((this.zoomValue + perc) <= 400) {
-			this.zoomValue += perc;	
+			this.zoomValue += perc;
+			this.zoomService.updateZoomValue(this.zoomValue);
 			this.refservice.triggerRefresh();
 		}
 	}
@@ -70,6 +75,7 @@ export class ZoomState {
 	zoomOut(perc: number) {
 		if((this.zoomValue - perc) > 0) {
 			this.zoomValue -= perc;	
+			this.zoomService.updateZoomValue(this.zoomValue);
 			this.refservice.triggerRefresh();
 		}
 	}

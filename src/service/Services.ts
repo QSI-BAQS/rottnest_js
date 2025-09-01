@@ -10,6 +10,8 @@ import { ValidationService } from "./ValidatorService";
 import { RunResultService } from "./RunResultService";
 import { StyleService } from "./StyleService";
 import { ArchStorageEntry } from "../obj/plugin/Architecture";
+import { ZoomService } from "./ZoomService";
+import { IconService } from "./IconService";
 
 /**
  * ServicesHolder is the container that will
@@ -39,6 +41,10 @@ export interface ServicesHolder {
 
   getStyleService(): StyleService;
 
+  getZoomService(): ZoomService;
+
+  getIconService(): IconService;
+
   getServices(): Services;
 
 }
@@ -59,6 +65,7 @@ export class Services implements ServicesHolder {
   programplugins: ProgramPluginService;
   archplugins: ArchPluginService;
   rrservice: RunResultService;
+  zoomService: ZoomService;
   help: HelpService;
 
   constructor(refreshTarget: UpdateTrigger, _container: ServicesHolder,
@@ -75,6 +82,7 @@ export class Services implements ServicesHolder {
       this.refresh, this.network);
     this.help = new HelpService(this.refresh, this.inputs);
     this.rrservice = new RunResultService();
+    this.zoomService = new ZoomService();
   }
 
   /**
@@ -152,6 +160,17 @@ export class Services implements ServicesHolder {
 	 */
   getRunResultService(): RunResultService {
     return this.rrservice;
+  }
+
+  getIconService() {
+    return IconService.GetInstance()
+  }
+
+  /**
+   * Gets the zoom service
+   */
+  getZoomService(): ZoomService {
+    return this.zoomService;
   }
 
   getStyleService(): StyleService {
@@ -249,6 +268,16 @@ export class NoServicesHolder implements ServicesHolder {
     return new HelpService(this.getRefreshService(), this.getInputService());
   }
 
+  /**
+   * Gets the zoomservice
+   */
+  getZoomService() {
+    return new ZoomService();
+  }
+
+  getIconService() {
+    return IconService.GetInstance()
+  }
   
   getStyleService(): StyleService {
     return StyleService.GetInstance(this.getRefreshService());
