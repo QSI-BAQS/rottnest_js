@@ -1,7 +1,7 @@
 import { ArchActionTracker } from "../ArchActionTracker";
-import {  ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
-import { ArchitectureDesigner } from "../ArchSchema";
-import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../ArchWorkspace";
+import {  ArchCapabilityQuery, ArchCapabilityResult } from "./sigs/ArchContext";
+import { ArchitectureDesigner } from "./sigs/ArchSchema";
+import { ArchWorkspaceGroup, ArchWorkspaceProps } from "./sigs/ArchWorkspace";
 import { ActiveVolumeDesignGroup } from "./groups/DesignerGroup";
 
 /**
@@ -53,7 +53,7 @@ export class ActiveVolumeDesigner implements ArchitectureDesigner {
       return ArchCapabilityResult.Deny();
     }
     if(query.capability === 'CanSave') {
-      return ArchCapabilityResult.Deny();
+      return ArchCapabilityResult.Confirm();
     }
     if(query.capability === 'CanLoad') {
       return ArchCapabilityResult.Confirm();

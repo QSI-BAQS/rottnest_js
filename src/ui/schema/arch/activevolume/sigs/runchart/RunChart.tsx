@@ -5,6 +5,7 @@ import {CallGraphStatsSpace} from "./CGChart.ts";
 import { ArchWorkspaceData } from "../ArchWorkspace.ts";
 import { CUVolume } from "../../obj/CallGraph.ts";
 import style from '../styles/CGChart.module.css';
+
 /*const PreMadeData = [
 	genData(20),
 	genData(20),
@@ -46,6 +47,11 @@ export function GenData(n: number): Array<CGSample> {
  * RunChartContainer, wraps the chart space
  */
 export class RunChartContainer extends React.Component<RunChartProps, {}> {
+
+	constructor(props: RunChartProps) {
+		super(props);
+	}
+
 	render() {
 		const props = this.props;	
 		return (

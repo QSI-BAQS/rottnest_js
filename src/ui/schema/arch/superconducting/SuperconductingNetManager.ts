@@ -18,6 +18,20 @@ export class SuperconductingNetManager implements ArchitectureConnectionManager 
   actions: CommsActions<any>
   opqueue: CommOpQueue<any>
   
+  apimap = new Map([
+    	["subtype", "tscheduler.web.api.get_subtype"],
+    	["get_router", "tscheduler.web.api.get_router"],
+    	["use_arch", "tscheduler.web.api.use_arch"],
+    	["run_result", "tscheduler.web.api.run_result"],
+    	["get_args", "tscheduler.web.api.get_args"],
+    	["get_status", "tscheduler.web.api.get_status"],
+    	["err", "err"],
+    ] as Array<[string, string]>);
+
+  getNetworkMap(): Map<string, string> {
+    return this.apimap;
+  }
+
   constructor(object: ArchitectureObject) {
     this.events = RTCCommEvents;
     this.actions = RTCCommActions;

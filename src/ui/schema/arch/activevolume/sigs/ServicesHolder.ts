@@ -1,18 +1,43 @@
+
 import { CGResult, CUResultMixed } from "../obj/CallGraph.ts";
 import { AppServiceClient } from "./exported.ts";
 import { RunChartContainer } from "./runchart/RunChart.tsx";
+
+
+
+interface UpdateTrigger {
+  triggerUpdate(): void; 
+}
+
+declare class NotifyQueue{};
 
 /**
  * Service Declarations
  */
 declare class RefreshService{
+
+ updateObject: UpdateTrigger
+ 
  triggerRefresh(): void;
 };
-declare class NotifyService{};
-declare class NetworkService{
+
+declare class StyleService{};
+
+export declare class IconService{
+ getIcons(): any
+};
+
+export declare class NotifyService{
+  getNotifyQueue: NotifyQueue
+ 
+};
+export declare class NetworkService{
  getNetworkService(): AppServiceClient;
  
 };
+export declare class ZoomService{
+ getZoomValue(): number;
+}
 declare class InputHookService{};
 declare class HelpService{};
 declare class ProgramPluginService{};
@@ -60,6 +85,12 @@ export interface ServicesHolder {
   getValidationService(): ValidationService;
 
   getRunResultService(): RunResultService;
+
+  getZoomService(): ZoomService;
+
+  getIconService(): IconService;
+
+  getStyleService(): StyleService;
 
   getServices(): Services;
 

@@ -1,4 +1,4 @@
-import { NoServices, Services } from '../../../../service/Services.ts';
+import { NoServices, ServicesHolder } from '../../../../service/Services.ts';
 import { UnimplReturn } from '../../util/unimpl.ts';
 import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
@@ -34,7 +34,7 @@ export class NoArchSchema implements ArchitectureSchema {
    * Creates a noarch schema that can be style and outline when the application is
    * not ready
    */
-  createArchitecture(services: Services = new NoServices(), _args: Map<string, string | number>): ArchitectureObject {
+  createArchitecture(services: ServicesHolder = new NoServices(), _args?: Map<string, string | number>): ArchitectureObject<any, any> {
     let noarch = new NoArchObject(services);
     return noarch;
   }
@@ -47,7 +47,7 @@ export class NoArchSchema implements ArchitectureSchema {
  */
 export class NoArchObject implements ArchitectureObject<any, any> {
 
-  services: Services;  
+  services: ServicesHolder;  
 
   getProjectSettingsForm() {
     return NoArchProjectForm;
@@ -61,7 +61,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
     1
   )
 
-  constructor(services: Services) {
+  constructor(services: ServicesHolder) {
     this.services = services;
   }
 
@@ -168,7 +168,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
   /**
    * Gets access to the application's services
    */
-  getServices(): Services {
+  getServices(): ServicesHolder {
     return this.services;
   }
 }

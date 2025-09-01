@@ -9,7 +9,6 @@ import { AVDesignObject, AVDesignProps } from "./ActiveVolumeDesignObject";
 
 export type AVDesignSpaceProps = {
 	workspaceData: ArchWorkspaceData
-	designProps: AVDesignProps
 }
 
 // 
@@ -18,11 +17,13 @@ export class AVDesignSpace extends React.Component<AVDesignSpaceProps,
 
 
 	getProjectData(): AVDesignProps {
-		let obj = this.props.workspaceData.architecture.getProject().body
+		
+		let obj = this.props.workspaceData
+			.architecture.getProject().body
 		const retobj = {
-				nregisters: obj.object.nregisters,
-				nancilla: obj.object.nancilla,
-				nfactories: obj.object.nfactories
+				nregisters: obj.object.registers,
+				nancilla: obj.object.ancilla,
+				nfactories: obj.object.factories
 		}
 		return retobj;
 	}

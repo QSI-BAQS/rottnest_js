@@ -10,6 +10,19 @@ import { ArchitectureConnectionManager, ArchitectureObject } from "../ArchSchema
  * It will also have an initial set of callbacks it uses
  */
 export class NoArchNetManager implements ArchitectureConnectionManager {
+
+
+  apimap = new Map([
+    	["use_arch", "err"],
+    ] as Array<[string, string]>);
+
+  /**
+   * Retrieves the network map
+   */
+  getNetworkMap(): Map<string, string> {
+    return this.apimap;
+  }
+  
   constructor(_object: ArchitectureObject) {}
 
   /**

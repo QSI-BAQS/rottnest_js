@@ -8,7 +8,7 @@ const leftClick = (container: RottnestApplication) => {
 	const notify = rott.getServices().getNotifyService();
 	const refserv = rott.getServices().getRefreshService();
 
-	if(ctx.queryCapability(ArchCapabilityQuery.MakeQuery("CanSend")).Yes()) {
+	if(ctx.queryCapability(ArchCapabilityQuery.MakeQuery("CanNetwork")).Yes()) {
 		const projNet = rott.getAppState()
 			.getArchitectureObject()
 			.getProject()
@@ -22,7 +22,15 @@ const leftClick = (container: RottnestApplication) => {
 			.getConnectionManager()
 			.getNetworkService();
 
-		appnet.sendObject("use_arch", projNet.forNetwork(fmt));
+		const netmap = rott.getAppState()
+			.getArchitectureObject()
+			.getConnectionManager()
+			.getNetworkMap();
+
+		//TODO: Getting the remap
+		const archremap = netmap.get('use_arch')!;
+
+		appnet.sendObject(archremap, projNet.forNetwork(fmt));
 
 		notify.makeMessageWithId('send-arch-good', "Network Communications",
 			"Object has been sent to process-pool");

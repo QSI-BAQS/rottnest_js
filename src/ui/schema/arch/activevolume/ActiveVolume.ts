@@ -1,4 +1,4 @@
-import { NoServices, Services } from '../../../../service/Services.ts';
+import { ServicesHolder } from './sigs/ServicesHolder.ts';
 import { UnimplReturn } from '../../util/unimpl.ts';
 import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
@@ -11,7 +11,7 @@ import { ArchitectureCallGraph,
   ArchitectureProject,
   ArchitectureSchema,
   ArchitectureSerializer,
-  ArchitectureVisualiser } from '../ArchSchema.ts';
+  ArchitectureVisualiser } from './sigs/ArchSchema.ts';
 import { ActiveVolumeCallGraph } from './ActiveVolumeCallGraph.ts';
 import { ActiveVolumeDesigner } from './ActiveVolumeDesigner.ts';
 import { ActiveVolumeNetManager } from './ActiveVolumeNetwork.ts';
@@ -54,7 +54,7 @@ export class ActiveVolumeSchema implements ArchitectureSchema {
    * Creates a noarch schema that can be style and outline when the application is
    * not ready
    */
-  createArchitecture(services: Services, _args: Map<string, string | number>): ArchitectureObject {
+  createArchitecture(services: ServicesHolder, _args?: Map<string, string | number>): ArchitectureObject {
     return new ActiveVolumeObject(services);
   }
   
@@ -64,10 +64,10 @@ export class ActiveVolumeSchema implements ArchitectureSchema {
  * Inplace for when there is no architecture ready
  * to be used, this would be when the user is still selecting
  */
-export class ActiveVolumeObject implements ArchitectureObject<any, any> {
+export class ActiveVolumeObject implements ArchitectureObject {
 
-  services: Services;
-  project: ActiveVolumeProject = new ActiveVolumeProject();
+  services: ServicesHolder;
+  project: ActiveVolumeProject = ActiveVolumeProject.Default();
 
   getProjectSettingsForm() {
     return ActiveVolumeProjectForm;
@@ -80,7 +80,7 @@ export class ActiveVolumeObject implements ArchitectureObject<any, any> {
     2
   )
 
-  constructor(services: Services) {
+  constructor(services: ServicesHolder) {
     this.services = services;
   }
 
@@ -93,12 +93,15 @@ export class ActiveVolumeObject implements ArchitectureObject<any, any> {
   
   // Holds the project information
   getProject(): ArchitectureProject<any> {
+    console.log(this.project);
     return this.project.getProject()
   }
 
   // Sets the project information
-  setProject(_project: ArchitectureProject<any>): boolean {
-    return false;    
+  setProject(project: ArchitectureProject<any>): boolean {
+    this.project.header = project.header;
+    this.project.body = project.body;
+    return true;
   }
 
   /**
@@ -109,7 +112,6 @@ export class ActiveVolumeObject implements ArchitectureObject<any, any> {
   }
   
   // Get avaiable modules
-  // TODO: Finish this method
   getModulesMeta(): ArchitectureModulesMeta {
     return this.meta;
   }
@@ -169,7 +171,9 @@ export class ActiveVolumeObject implements ArchitectureObject<any, any> {
   /**
    * Gets access to the application's services
    */
-  getServices(): Services {
-    return new NoServices();
+  getServices(): ServicesHolder {
+    return this.services;
   }
 }
+
+export default ActiveVolumeSchema;

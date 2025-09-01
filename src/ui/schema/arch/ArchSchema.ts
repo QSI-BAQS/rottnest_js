@@ -1,5 +1,5 @@
 import { AppServiceClient } from "../../../net/AppService";
-import { Services } from "../../../service/Services";
+import { ServicesHolder } from "../../../service/Services";
 import { CommEventOps, CommOpQueue } from "../global/ops/CommsOps";
 import { ArchActionTracker } from "./ArchActionTracker";
 import { ArchCapabilitiesObject } from "./ArchContext";
@@ -67,7 +67,7 @@ export interface ArchitectureSchema {
 
   name: string
   
-  createArchitecture<T=any, E=any>(services: Services, args?: Map<string, string | number>): ArchitectureObject<T, E>; 
+  createArchitecture<T=any, E=any>(services: ServicesHolder, args?: Map<string, string | number>): ArchitectureObject<T, E>; 
 }
 
 /**
@@ -180,7 +180,7 @@ export interface ArchitectureObject<T=any, E=any> {
   getExtensions(): ArchitectureExtensions<E>;
 
   // Services
-  getServices(): Services;
+  getServices(): ServicesHolder;
 }
 
 
@@ -194,6 +194,8 @@ export interface ArchitectureObject<T=any, E=any> {
  *
  */
 export interface ArchitectureConnectionManager extends ArchCapabilitiesObject {
+
+  getNetworkMap(): Map<string, string>
 
   // Gets the communication events relevant to the architecture object
   getCommunicationEvents(): CommEventOps<ArchitectureObject>;

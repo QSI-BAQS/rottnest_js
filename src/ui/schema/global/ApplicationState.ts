@@ -24,6 +24,7 @@ import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
 import { ProjectSettingsState } from "../arch/ArchProjectState";
 import { ZoomService } from "../../../service/ZoomService";
 import { IconService } from "../../../service/IconService";
+import { ActiveVolumeSchema } from "../arch/activevolume/ActiveVolume";
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
 
@@ -68,8 +69,8 @@ export class RottnestApplicationState {
 	 * Initialises the architecture state to a default
 	 */
 	constructor(app: RottnestApplication,
-		architectureSchema: ArchitectureSchema = new NoArchSchema(),
-		coreSchemas: Array<ArchStorageEntry> = [{ schema: new NoArchSchema(),
+		architectureSchema: ArchitectureSchema = new ActiveVolumeSchema(),
+		coreSchemas: Array<ArchStorageEntry> = [{ schema: new ActiveVolumeSchema(),
 			apimap: { routes: [], mask: '' }}]) {
 
 		const services = 

@@ -1,8 +1,7 @@
-import { AppServiceClient } from "../../../../net/AppService";
-import { CommEventOps, CommOpQueue } from "../../global/ops/CommsOps";
 import { UnimplReturn } from "../../util/unimpl";
-import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
-import { ArchitectureConnectionManager, ArchitectureObject } from "../ArchSchema";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "./sigs/ArchContext";
+import { ArchitectureConnectionManager, ArchitectureObject } from "./sigs/ArchSchema";
+import { AppServiceClient, CommEventOps, CommOpQueue } from "./sigs/exported";
 
 /**
  * LatticeNetworkManager, it will manage the connection it receives
@@ -10,7 +9,21 @@ import { ArchitectureConnectionManager, ArchitectureObject } from "../ArchSchema
  * It will also have an initial set of callbacks it uses
  */
 export class ActiveVolumeNetManager implements ArchitectureConnectionManager {
-  constructor(_object: ArchitectureObject) {}
+
+  object: ArchitectureObject;
+
+  apimap = new Map([
+      ['use_arch', 'activevolume.web.api.use_arch'],
+      ['get_status', 'activevolume.web.api.get_status']
+    ] as Array<[string, string]>);
+
+  getNetworkMap(): Map<string, string> {
+    return this.apimap;
+  }
+  
+  constructor(object: ArchitectureObject) {
+    this.object = object;
+  }
 
   /**
    * Sets new communication events, useful when switching between contexts
@@ -40,9 +53,8 @@ export class ActiveVolumeNetManager implements ArchitectureConnectionManager {
    * send messages
    */
   getNetworkService(): AppServiceClient {
-    return UnimplReturn<AppServiceClient>();
-  }
-
+    return this.object.getServices().getNetworkService().getNetworkService();
+  }  
   
   /**
    * Queries the capabiliteies of the designer

@@ -1,6 +1,6 @@
-import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
-import { ArchitectureCallGraph } from "../ArchSchema";
-import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../ArchWorkspace";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "./sigs/ArchContext";
+import { ArchitectureCallGraph } from "./sigs/ArchSchema";
+import { ArchWorkspaceGroup, ArchWorkspaceProps } from "./sigs/ArchWorkspace";
 
 /**
  * Constructs the workspace group that will be used by the workspace component

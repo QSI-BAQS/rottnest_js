@@ -1,6 +1,6 @@
-import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
-import { ArchitecturePlayerState, ArchitectureVisualiser, ArchitectureVisualiserPlayer } from "../ArchSchema";
-import { ArchWorkspaceGroup } from "../ArchWorkspace";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "./sigs/ArchContext";
+import { ArchitecturePlayerState, ArchitectureVisualiser, ArchitectureVisualiserPlayer } from "./sigs/ArchSchema";
+import { ArchWorkspaceGroup } from "./sigs/ArchWorkspace";
 import { ActiveVolumeVisualiserGroup } from "./groups/VisualiserGroup";
 
 /**
@@ -20,11 +20,11 @@ import { ActiveVolumeVisualiserGroup } from "./groups/VisualiserGroup";
 export class ActiveVolumeVisualiser implements ArchitectureVisualiser {
 
   makeWorkspaceGroup(): ArchWorkspaceGroup {
-      return new ActiveVolumeVisualiserGroup();
+    return new ActiveVolumeVisualiserGroup();
   }
 
   makePlayer(): ArchitectureVisualiserPlayer {
-      return new ActiveVolumeVisualiserPlayer();
+    return new ActiveVolumeVisualiserPlayer();
   }
 
   
@@ -33,7 +33,7 @@ export class ActiveVolumeVisualiser implements ArchitectureVisualiser {
    */
   queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
     if(query.capability === 'CanZoom') {
-      return ArchCapabilityResult.Confirm();
+      return ArchCapabilityResult.Deny();
     }
     if(query.capability === 'CanLoad') {
       return ArchCapabilityResult.Confirm();

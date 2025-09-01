@@ -1,10 +1,10 @@
-import { NoArchSpace } from "../ui/NoArchSpace.tsx";
-import { NoArchColumn } from "../ui/NoArchColumn.tsx";
 import { ReactElement } from "react";
 import { ArchWorkspaceGroup, ArchWorkspaceProps }
-  from "../../ArchWorkspace";
-import { ArchWorkspaceZone }
-  from "../../../../workspace/WorkspaceZone.tsx";
+  from "../sigs/ArchWorkspace";
+import { AVDesignSpace } from "../ui/ActiveVolumeDesignSpace.tsx";
+import { ArchWorkspaceZone } from "../sigs/ArchWorkspaceZone.tsx";
+import { AVDesignColumn } from "../ui/AVArchColumnDesigner.tsx";
+import { AVStatsColumn } from "../ui/AVArchColumnStats.tsx";
 
 /**
  * Constructs the workspace group that will be used by the workspace component
@@ -17,22 +17,23 @@ export class ActiveVolumeDesignGroup implements ArchWorkspaceGroup {
 	*/
 	makeGroup(data: ArchWorkspaceProps): Array<ReactElement> {
 
-		const desSpace = <NoArchSpace {...data} />;
+		const desSpace = <AVDesignSpace key={"av_despace"}
+			 {...data} />;
 
 		const group = [
-			<NoArchColumn key={"noarch_column_1"} 
-				{...data} disptext={"Not Selected"}/>,
+			<AVDesignColumn key={"activevolume_column_1"} 
+				workspaceData={data.workspaceData}/>,
 			<ArchWorkspaceZone
-				key={"arch_wz_design_space"}
+				key={"arch_av_design_space"}
 				wsComponent={desSpace}
 				workspaceData={{
 					architecture: data.workspaceData.architecture,
 					archcontext: data.workspaceData.archcontext,
 					stash: data.workspaceData.stash
 				}} />,
-			<NoArchColumn
-				key={"noarch_column_2"}
-				{...data} disptext="" />,
+			<AVStatsColumn
+				key={"activevolume_column_2"}
+				workspaceData={data.workspaceData} />,
 		];	
 
 		return group;

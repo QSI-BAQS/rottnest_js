@@ -1,19 +1,19 @@
 
 import React, { MouseEvent } from "react";
-
 import { DownloadFile } from "./util/FileDownload.ts";
-import { OnRangeChange, OnVisualiserFrameNext, OnVisualiserFramePrev, OnVisualiserPlay, OnVisualiserReset } from "./ActiveVolumeVisualiserEvents.ts";
-
-import style from "./styles/AVSchedulerVisualiser.module.css"
 import { VisualiserFrame } from "./ActiveVolumeFrame.tsx";
-
-export const FRAMERATE: number = 60;
-
-import { ArchWorkspace, ArchWorkspaceData } from "../sigs/ArchWorkspace.ts";
+import { ArchWorkspace, ArchWorkspaceData }
+	from "../sigs/ArchWorkspace.ts";
+import { OnRangeChange, OnVisualiserFrameNext, OnVisualiserFramePrev, OnVisualiserPlay, OnVisualiserReset }
+	from "./ActiveVolumeVisualiserEvents.ts";
+	
+import style from "./styles/AVSchedulerVisualiser.module.css"
 
 //
 // Utilising the tickmarks from previous visualiser
 // 
+export const FRAMERATE: number = 60;
+
 export function ConstructTickmarks(layerN: number) {
 	
 	let increment = 1000;

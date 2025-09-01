@@ -1,7 +1,4 @@
-
- 
 import React from "react";
-
 
 export type AVDesignProps = {
   nregisters: number
@@ -435,9 +432,10 @@ export function DrawActiveNode(vp: VisUsedNode) {
 export function DrawNode(vp: VisPosition, textrepr: string) {
 
   const node_circ = <circle cx={vp.x} cy={vp.y} r={vp.radius}
-    stroke={"black"} strokeWidth={2} fill="white" />
-  const node_text = <text x={vp.x} y={vp.y+(vp.radius/2)} textAnchor="middle"
-      >
+    stroke={"black"} strokeWidth={2} fill="white"
+    key={`node_crc_passve_${textrepr}`} />
+  const node_text = <text x={vp.x} y={vp.y+(vp.radius/2)}
+    textAnchor="middle" key={`node_txt_circ_${textrepr}`}>
       {textrepr}
       </text>
 
@@ -453,7 +451,9 @@ export function DrawNode(vp: VisPosition, textrepr: string) {
 // that are part of an svg
 // 
 export function DrawLineFromPositions(vp1: VisPosition, vp2: VisPosition, stroke_col: string) {
-  const node_line = <line x1={vp1.x} y1={vp1.y} x2={vp2.x} y2={vp2.y} stroke={stroke_col} strokeWidth={2} />
+  const pStr = `${vp1.x},${vp1.y},${vp2.x},${vp2.y}`;
+  const node_line = <line x1={vp1.x} y1={vp1.y} x2={vp2.x} y2={vp2.y} stroke={stroke_col} strokeWidth={2} key={`line_psv_${pStr}`}
+    />
 
   return <>{node_line}</>;
   
@@ -463,7 +463,8 @@ export function DrawLineFromPositions(vp1: VisPosition, vp2: VisPosition, stroke
 // that are part of an svg
 // 
 export function DrawLine(vl: VisLine, stroke_col: string) {
-  const node_line = <line x1={vl.x1} y1={vl.y1} x2={vl.x2} y2={vl.y2} stroke={stroke_col} strokeWidth={2} />
+  const pStr = `line_${vl.x1},${vl.y1},${vl.x2},${vl.y2}`;
+  const node_line = <line x1={vl.x1} y1={vl.y1} x2={vl.x2} y2={vl.y2} stroke={stroke_col} strokeWidth={2} key={pStr} />
 
   return <>{node_line}</>;
   
@@ -551,8 +552,6 @@ export class AVDesignObject extends
           }
         }
       }
-    } else {
-      console.warn("No Active Nodes Here");
     }
     return nodes;
   }
@@ -575,8 +574,6 @@ export class AVDesignObject extends
           
         }
       }
-    } else {
-      console.warn("No Active Edges Here");
     }
 
     return lines;
@@ -595,11 +592,13 @@ export class AVDesignObject extends
     const oy = 20;
     const vwidth = 500;
     const vheight = 500; 
+    console.log(this.props);
+    console.log(nodes);
 
     return (
       <>
         <svg viewBox={`${-100-ox} ${-100-oy} ${vwidth} ${vheight}`} width={'100%'} height={720}
-          style={{backgroundColor: '#dddddd'}}>
+          style={{backgroundColor: '#aaaaaa'}}>
         {lines}
         {activeLines}
         {nodes}
