@@ -14,8 +14,8 @@ const leftClick = (rott: RottnestApplication) => {
 			aobj.getDesigner().getActionTracker().performRedo();
 		} else {
 			notify.makeMessageWithId("undo-on", "Redo", "Unable to apply it to object");
-			refserv.triggerRefresh();
 		}
+		refserv.triggerRefresh();
 	} else {
 		
 			notify.makeMessageWithId("undo-on", "Redo", "You can not use redo here");

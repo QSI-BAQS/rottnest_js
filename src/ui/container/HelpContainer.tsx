@@ -179,8 +179,8 @@ export const HelpContainer: React.FC<HelpContainerProps> = ({ toggleOff, helpDat
           //TODO: I am not sure i like this?
       		document.querySelectorAll('input[type="file"]').forEach(input => {
         		if (input instanceof HTMLElement) {
-          			input.style.display = '';
-          			input.style.visibility = '';
+          			input.style.display = 'none';
+          			input.style.visibility = 'hidden';
           			input.style.opacity = '';
           			input.style.position = '';
           			input.style.pointerEvents = '';
