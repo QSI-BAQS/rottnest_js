@@ -17,14 +17,13 @@ import { ZoomState } from "./modules/ZoomState";
 import AppServiceModule from "../../../net/AppServiceModule";
 import RottnestApplication from "../../container/RottnestApplication";
 import { RunResultService } from "../../../service/RunResultService";
-//import { NoArchSchema } from "../arch/noarch/NoArch";
+import { NoArchSchema } from "../arch/noarch/NoArch";
 import { StyleService } from "../../../service/StyleService";
 import { RTACommActions } from "./net/GlobalNetOperations";
 import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
 import { ProjectSettingsState } from "../arch/ArchProjectState";
 import { ZoomService } from "../../../service/ZoomService";
 import { IconService } from "../../../service/IconService";
-import { ActiveVolumeSchema } from "../arch/activevolume/ActiveVolume";
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
 
@@ -54,6 +53,8 @@ export type RottnestState = {
 	appState: RottnestApplicationState,
 }
 
+const NOARCH_SCHEMA = new NoArchSchema();
+
 /**
  * RottnestApplicationState that will hold onto
  * the schema and object currently selected
@@ -71,9 +72,9 @@ export class RottnestApplicationState {
 	constructor(app: RottnestApplication,
 
 		 //@ts-ignore error - TODO: Need to check this
-		architectureSchema: ArchitectureSchema = new ActiveVolumeSchema(),
+		architectureSchema: ArchitectureSchema = NOARCH_SCHEMA,
 		 //@ts-ignore error - TODO: Need to check this
-		coreSchemas: Array<ArchStorageEntry> = [{ schema: new ActiveVolumeSchema(),
+		coreSchemas: Array<ArchStorageEntry> = [{ schema: NOARCH_SCHEMA,
 			apimap: { routes: [], mask: '' }}]) {
 
 		const services = 
