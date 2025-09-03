@@ -29,8 +29,9 @@ const leftClick = (container: RottnestApplication) => {
 
 		//TODO: Getting the remap
 		const archremap = netmap.get('use_arch')!;
-
-		appnet.sendObject(archremap, projNet.forNetwork(fmt));
+		const obj = projNet.forNetwork(fmt);
+		console.log(obj, projNet)
+		appnet.sendObject(archremap, obj);
 
 		notify.makeMessageWithId('send-arch-good', "Network Communications",
 			"Object has been sent to process-pool");

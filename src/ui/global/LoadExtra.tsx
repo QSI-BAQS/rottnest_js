@@ -11,7 +11,7 @@ export function LoadComponent({ rott }: {rott: RottnestApplication}) {
       height: "inherit" }}
 			type="file" 
 			onChange={(e) => {
-			  hiddenInputProc(e.target.value, rott)
+			  hiddenInputProc(e, rott)
 			}} />
 	);
 

@@ -37,8 +37,10 @@ function DeserialFailMarkerCheck(data: any): boolean {
  */
 function CheckedDeserialize(data: FileReaderRetType): string  {
 	let output = 'false';
-	if(data instanceof String) {
-		output = String(data);
+	let loadedVal = String(data);
+	console.log(data);
+	if(loadedVal.length > 4) {
+		output = loadedVal;
 	}
 	return output;
 }
@@ -48,7 +50,7 @@ function CheckedDeserialize(data: FileReaderRetType): string  {
  */
 export const hiddenInputProc = (e: any, rott: RottnestApplication) => {
 	const reader = new FileReader();
-	let toLoad = e.target.files.item(0);
+	let toLoad = e.target.files[0];
 	
 	const notify = rott.getServices().getNotifyService();
 	const refserv = rott.getServices().getRefreshService();
@@ -58,10 +60,9 @@ export const hiddenInputProc = (e: any, rott: RottnestApplication) => {
 
 	
 			if(serialiser) {	
-			reader.addEventListener('load', () => {
+				reader.addEventListener('load', () => {
 				let result = serialiser.deserialize(CheckedDeserialize(reader.result));
 
-				
 				if(DeserialFailMarkerCheck(result)) {
 					//Attach to the object
 					currentArchObj.setProject(result);
