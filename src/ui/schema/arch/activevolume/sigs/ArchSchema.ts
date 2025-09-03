@@ -2,7 +2,7 @@ import { AppServiceClient, CommEventOps, CommOpQueue } from "../sigs/exported.ts
 
 import { ServicesHolder } from '../sigs/ServicesHolder.ts';
 import { ArchActionTracker } from "./ArchActionTracker.ts";
-import { ArchCapabilitiesObject } from "./ArchContext.ts";
+import { ArchCapabilitiesObject, ArchCapabilityQuery } from "./ArchContext.ts";
 import { ArchWorkspaceGroup } from "./ArchWorkspace.ts";
 
 
@@ -171,6 +171,8 @@ export interface ArchitectureObject<T=any, E=any> {
   // ConnectionManager
   getConnectionManager(): ArchitectureConnectionManager;
 
+  getRunChart(): ArchitectureRunChart;
+
   // Extensions 
   getExtensions(): ArchitectureExtensions<E>;
 
@@ -178,7 +180,9 @@ export interface ArchitectureObject<T=any, E=any> {
   getServices(): ServicesHolder;
 }
 
-
+export interface ArchitectureRunChart extends ArchCapabilityQuery, ArchCapabilitiesObject {
+  
+}
 
 /**
  * Connection Manager will have some ability to manage the websocket

@@ -1,4 +1,3 @@
-import { PluginEntry } from "../../ui/global/settings/GeneralSettings"
 
 
 /**
@@ -17,13 +16,11 @@ export type ProgramPluginConfig = {
   contents: string
 }
 
+
 /**
- * Parameter type that gives name and the type
+ * Parameter entry
  */
-export type ProgramParam = {
-  param: string,
-  kind: string
-}
+export type ProgramParam = [string, string, any]
 
 
 /**
@@ -40,7 +37,7 @@ export type ProgramPlugin = {
  * Translate a program plugin to an entry to be used
  * within the application
  */
-export function ProgramPluginToEntry(prog: ProgramPlugin): PluginEntry {
+export function ProgramPluginToEntry(prog: ProgramPlugin) {
   return {
     keyName: prog.name,
     plgName: prog.name,
@@ -70,7 +67,7 @@ export function ProgramPluginDefault(): ProgramPlugin {
  */
 export function ProgramPluginSetDefault(): ProgramPluginSet {
   return {
-    programs: [ProgramPluginDefault()],
+    programs: [],
     config: { contents: '[]' }
   }
 }

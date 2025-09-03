@@ -46,7 +46,8 @@ export const GlobalProtocolSet: AppProtocolSet<RottnestApplication> = {
 			let prgservice = obj.getServices().getProgramPluginService();
 			prgservice.saveProgramData({
 				plgKey: newProg.name,
-				plgValue: newProg.name
+				plgValue: newProg.name,
+				params: []
 			})
 			
     	//obj.state.appStateData.progData.current = newProg;

@@ -197,10 +197,10 @@ export class ArchPluginService {
 	 */
 	saveArchData(data: PluginData) {
 		const archMap = this.storage.core.get(data.plgKey);
-		console.log(data.plgKey);
 		if(archMap) {
 			let arch = {
-				name: archMap.schema.name, //TODO: Will need to figure out the prototype fix...
+				name: archMap.schema.name,
+				//TODO: Will need to figure out the prototype fix...
 				createArchitecture: (services: Services) => {
 					return archMap.schema.createArchitecture(services)
 				}

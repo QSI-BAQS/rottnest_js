@@ -1,5 +1,4 @@
 import { ServicesHolder } from './sigs/ServicesHolder.ts';
-import { UnimplReturn } from '../../util/unimpl.ts';
 import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
   ArchitectureDesigner,
@@ -9,6 +8,7 @@ import { ArchitectureCallGraph,
   ArchitectureModulesMeta,
   ArchitectureObject,
   ArchitectureProject,
+  ArchitectureRunChart,
   ArchitectureSchema,
   ArchitectureSerializer,
   ArchitectureVisualiser } from './sigs/ArchSchema.ts';
@@ -19,6 +19,8 @@ import { ActiveVolumeSerializer } from './ActiveVolumeSerializer.ts';
 import { ActiveVolumeVisualiser } from './ActiveVolumeVisualiser.ts';
 import { ActiveVolumeProject } from './obj/Project.ts';
 import { ActiveVolumeProjectForm } from './ui/ProjectForm.tsx';
+import { ActiveVolumeFormatter } from './ActiveVolumeFormatter.ts';
+import { ActiveVolumeRunChart } from './ActiveVolumeRunChart.ts';
 
 
 /**
@@ -66,6 +68,10 @@ export class ActiveVolumeSchema implements ArchitectureSchema {
  */
 export class ActiveVolumeObject implements ArchitectureObject {
 
+  getName(): string {
+    return 'ActiveVolume';
+  }
+
   services: ServicesHolder;
   project: ActiveVolumeProject = ActiveVolumeProject.Default();
 
@@ -88,7 +94,11 @@ export class ActiveVolumeObject implements ArchitectureObject {
    * Will return an error
    */
   getFormatter(): ArchitectureFormatter {
-    return UnimplReturn<ArchitectureFormatter>();
+    return new ActiveVolumeFormatter(this);
+  }
+
+  getRunChart(): ArchitectureRunChart {
+    return new ActiveVolumeRunChart();
   }
   
   // Holds the project information

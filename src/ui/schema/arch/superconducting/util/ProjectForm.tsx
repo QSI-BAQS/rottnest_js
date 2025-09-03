@@ -76,8 +76,8 @@ export class SuperconductingProjectForm extends React.Component<SettingsProps, S
 	 * root container will likely consider if it needs
 	 * to flush the changes to other components
 	 */
-	settingsApply() {
-		this.callbacks.applySettings();
+	settingsApply(data: any) {
+		this.callbacks.applySettings(data);
 	}
 
 
@@ -177,7 +177,7 @@ export class SuperconductingProjectForm extends React.Component<SettingsProps, S
 					<button className={styles.settingsApply}
 						onClick={(_) => 
 						sref
-						.settingsApply()
+						.settingsApply(sref.state.project)
 						} type="submit">
 						Apply
 					</button>

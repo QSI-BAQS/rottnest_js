@@ -8,7 +8,7 @@ export type RefreshFunction = () => void;
  * Set of callbacks that we can use for forms
  */
 export type ProjectSettingsCallbacks = {
-	applySettings: () => void;
+	applySettings: (data: any) => void;
 	cancelSettings: () => void;
 	projectFill: () => ArchitectureProject<any>
 	newProject: () => ArchitectureProject<any>
@@ -84,10 +84,10 @@ export class ProjectSettingsState<T=any> {
 	 * Applies the project with what was stored
 	 * to the current designer
 	 */
-	applySettings() {
+	applySettings(data: any) {
 		this.showProjectNew = false;
 		this.showProjectSettings = false;
-		this.archobject.setProject(this.project);
+		this.archobject.setProject(data);
 		this.refservice();
 	}
 	
@@ -123,7 +123,7 @@ export class ProjectSettingsState<T=any> {
 	callbacksForCurrent(): ProjectSettingsCallbacks {
 		const ref = this;
 		return {
-			applySettings: () => ref.applySettings(),
+			applySettings: (data: any) => ref.applySettings(data),
 			cancelSettings: () => ref.cancelSettings(),
 			projectFill: () => ref.project,
 			newProject: () => ref.archobject.makeProject(),
@@ -136,7 +136,7 @@ export class ProjectSettingsState<T=any> {
 	callbacksForNew(): ProjectSettingsCallbacks {
 		const ref = this;
 		return {
-			applySettings: () => ref.applySettings(),
+			applySettings: (data: any) => ref.applySettings(data),
 			cancelSettings: () => ref.cancelNewProject(),
 			projectFill: () => ref.archobject.makeProject(),
 			newProject: () => ref.archobject.makeProject(),

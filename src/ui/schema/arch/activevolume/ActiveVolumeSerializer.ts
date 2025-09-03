@@ -8,18 +8,18 @@ import { ArchitectureSerializer } from "../ArchSchema";
  */
 export class ActiveVolumeSerializer implements ArchitectureSerializer<any> {
 
-  serialize(_obj: any): string {
-    return '';
+  serialize(obj: any): string {
+    return JSON.stringify(obj);
   }
 
-  deserialize(_data: string): any {
-    return {};
+  deserialize(data: string): any {
+    return JSON.parse(data);
   }
 
   /**
    * Queries the capabiliteies of the designer
    */
   queryCapability(_query: ArchCapabilityQuery): ArchCapabilityResult {
-    return ArchCapabilityResult.Deny();
+    return ArchCapabilityResult.Confirm();
   }
 }

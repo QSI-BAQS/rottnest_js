@@ -1,10 +1,10 @@
 import React, {ReactElement, useRef, useState, useEffect} from "react";
 import {CallGraphSpaceData, CGChartDimensions, CGSample, CUDataKey, DataAggregate, DataAggrMap, RunChartProps} from "./ChartData.ts";
-import {CallGraphStatsSpace} from "./CGChart.ts";
+import {CallGraphStatsSpace} from "./CGChart.tsx";
 
-import { ArchWorkspaceData } from "../ArchWorkspace.ts";
+import { ArchWorkspace, ArchWorkspaceData } from "../ArchWorkspace.ts";
 import { CUVolume } from "../../obj/CallGraph.ts";
-import style from '../styles/CGChart.module.css';
+import style from '../../styles/CGChart.module.css';
 
 /*const PreMadeData = [
 	genData(20),
@@ -46,7 +46,7 @@ export function GenData(n: number): Array<CGSample> {
 /**
  * RunChartContainer, wraps the chart space
  */
-export class RunChartContainer extends React.Component<RunChartProps, {}> {
+export class RunChartContainer extends React.Component<RunChartProps, {}> implements ArchWorkspace {
 
 	constructor(props: RunChartProps) {
 		super(props);
@@ -54,10 +54,7 @@ export class RunChartContainer extends React.Component<RunChartProps, {}> {
 
 	render() {
 		const props = this.props;	
-		return (
-			<RunChartSpace workspaceData={props.workspaceData} 
-				selKey={"ALL"} />
-		)
+		return (<RunChartSpace workspaceData={props.workspaceData} selKey={"ALL"} />)
 	}
 }
 

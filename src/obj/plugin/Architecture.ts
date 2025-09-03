@@ -61,6 +61,7 @@ export function ArchitecturesToEntry(prog: ArchitecturePlugin): PluginEntry {
   return {
     keyName: prog.identifier,
     plgName: prog.identifier,
+    params: []
   }
 }
 

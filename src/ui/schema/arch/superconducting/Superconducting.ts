@@ -23,6 +23,7 @@ import { RegionDataList } from './obj/RegionDataList.ts';
 import { ProjectDetailsDefaultData, ProjectDump } from './obj/Project.ts';
 import { SuperconductingState } from './state/ArchState.ts';
 import { SuperconductingProjectForm } from './util/ProjectForm.tsx';
+import { SuperconductingRunChart } from './SuperconductingRunChart.ts';
 
 /**
  * Schema object, typically only one instance which is used to
@@ -63,6 +64,10 @@ type SuperconductingComponents = {
  */
 export class Superconducting2DArchitecture implements ArchitectureObject<RegionDataList, any> {
 
+  getName(): string {
+    return 'Superconducting';
+  }
+
   services: Services;
 
   components: SuperconductingComponents;
@@ -98,6 +103,10 @@ export class Superconducting2DArchitecture implements ArchitectureObject<RegionD
       designer,
       statedata
     }
+  }
+
+  getRunChart() {
+    return new SuperconductingRunChart();
   }
 
   /**

@@ -51,6 +51,8 @@ export const ArchUIContextDefaults: ArchUIContextMapping = {
     .getVisualiser(data)),
   "callgraph"  : (obj: ArchitectureObject, data: any) => (obj
     .getCallGraph(data)),
+  "runchart"  : (obj: ArchitectureObject, data: any) => (obj
+    .getRunChart(data)),
 }
 
 /**

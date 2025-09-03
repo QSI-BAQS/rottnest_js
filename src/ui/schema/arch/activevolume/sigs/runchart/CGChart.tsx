@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import style from '../styles/CGChart.module.css';
+import style from '../../styles/CGChart.module.css';
 import * as d3 from "d3";
 import {ArchStashMap} from "../ArchWorkspace.ts";
 import { CallGraphStatsData, CUAggrKey, CUDataKeyRef, CUScaleKeyRef, 

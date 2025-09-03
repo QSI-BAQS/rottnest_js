@@ -5,6 +5,7 @@ import styles from '../../styles/PluginSettingsForm.module.css';
 import { CloseOutlined, ProfileOutlined } from "@ant-design/icons";
 import { PluginData } from "../../../obj/plugin/Generic";
 import RottnestApplication from "../../container/RottnestApplication";
+import { ProgramParam } from "../../../obj/plugin/Program";
 
 
 /**
@@ -34,7 +35,8 @@ export interface ProgramPluginSettingsProps {
   saveDataFn: (data: PluginPackage) => void;
   saveConfigFn: (data: PluginPackage) => void;
   cancelFn:(data:PluginPackage) => void;
-  getParams:(rott:RottnestApplication, ident: string) => ProgramPluginParams;
+  getParams:(rott:RottnestApplication, ident: string)
+    => Array<ProgramParam> | null;
 }
 
 /**
@@ -42,22 +44,15 @@ export interface ProgramPluginSettingsProps {
  * Used for maintaining settings for the pluggable elements
  */
 export interface PluginSettingsData {
-  index: number;
-  selected: string | null;
-  config: string;
+  index: number
+  selected: string | null
+  prevselected: string | null
+  config: string
   configActive: boolean
   params: ProgramPluginParams | null
+  plgArgs: any,
 }
 
-/**
- * Parameter entry
- */
-export type ProgramParam = {
-  name: string
-  type: string
-  value: number | string
-  default?: number | string
-}
 
 /**
  * Parameters and their bindings
@@ -74,9 +69,12 @@ export class ProgramPluginSettings
 
   state: PluginSettingsData = {
     index: this.props.index,
-    selected: null,
+    selected: this.props.getSelected(this.props.container),
+    prevselected: null,
     configActive: false,
     config: this.props.getConfig(this.props.container),
+    plgArgs: this.props.getParams(this.props.container,
+      this.props.getSelected(this.props.container)),
     params: null,
   }
 
@@ -116,10 +114,10 @@ export class ProgramPluginSettings
       pluginData: {
         plgKey: this.state.selected || '',
         plgValue: this.state.selected || '',
+        params: []
       },
       container: this.props.container
     }
-    console.log(sdata);
     savfn(sdata);
   }
 
@@ -132,8 +130,9 @@ export class ProgramPluginSettings
 
     const sdata = {
       pluginData: {
-        plgKey: 'config',
-        plgValue: this.state.config,
+        plgKey: 'params',
+        plgValue: JSON.stringify(this.state.plgArgs),
+        params: []
       },
       container: this.props.container
     }
@@ -152,6 +151,7 @@ export class ProgramPluginSettings
       pluginData: {
         plgKey: '',
         plgValue: '',
+        params: []
       },
       container: this.props.container
     }
@@ -165,16 +165,32 @@ export class ProgramPluginSettings
    */
   render() {
 
-    console.log(this.props);
     const container = this.props.container;
-    const selectedKey = this.props.getSelected(container);
     const plglabel = this.props.plgname;
-    const plgOptions = this.props.plgItemsGetter(container);
-    const plgConfig = this.state.config;
+    const plgIsSet = container.getServices()
+      .getProgramPluginService()
+      .isCurrentSet();
 
+    const plgOptions = this.props.plgItemsGetter(container);
+    let selectedKey = this.props.getSelected(container);
+
+    if(!plgIsSet) {
+      if(plgOptions.length > 0) {
+        selectedKey = this.state.selected = plgOptions[0].keyName;
+        this.state.plgArgs = this.props.getParams(container, selectedKey);
+      }
+    } 
     if(this.state.selected === null) {
       this.state.selected = selectedKey;
+    } else if(this.state.selected !== this.state.prevselected) {
+
+      this.state.prevselected = this.state.selected;
+      selectedKey = this.state.selected;
+    } else {
+      selectedKey = this.state.selected;
     }
+    
+    const plgArgs = JSON.stringify(this.state.plgArgs);
     
     const ref = this;
     const saveDataOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
@@ -193,7 +209,7 @@ export class ProgramPluginSettings
     const configOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
       let textCfg = e.target.value;
       let data = {...ref.state};
-      data.config = textCfg;
+      data.plgArgs = JSON.parse(textCfg);
       ref.setState(data);
     }
 
@@ -210,9 +226,8 @@ export class ProgramPluginSettings
     const configEnabled = this.state.configActive;
     const configSpace = configEnabled ? (
       <div className={styles.pluginConfigTextSpace}>
-        <textarea className={styles.pluginTextArea} value={plgConfig}
-          onChange={configOnChange}>
-          
+        <textarea className={styles.pluginTextArea}
+          value={plgArgs} onChange={configOnChange}>
         </textarea>
         <button className={styles.savePluginConfig}
           onClick={saveConfigOnClick}>
@@ -258,6 +273,7 @@ export class ProgramPluginSettings
 export type PluginEntry = {
   keyName: string
   plgName: string
+  params: Array<[string, string, any]>
 }
 
 /**
@@ -274,7 +290,9 @@ export type PluginOptionsData = {
  */
 function PluginSettingsList(props: PluginOptionsData) {
   const entries = props.plgItems.map((e) => {
-    return <option key={`arch_${e.keyName}`} className={styles.plgOption} value={e.keyName}>{e.keyName}</option>
+    return <option key={`program_${e.keyName}`} className={styles.plgOption}
+      value={e.keyName}>{e.keyName}
+      </option>
     
   });
   return (<>{entries}</>)
@@ -307,7 +325,8 @@ export function ProgramPluginObject(props: ProgramPluginObjectProps) {
   const rott = props.settings.container;
   const issued = issueFn(rott);
 
-    
+  console.log(props);
+  
   const evfn = (e: MouseEvent<HTMLButtonElement>) => {
     responseFn(e, rott)
   }

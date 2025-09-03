@@ -59,10 +59,7 @@ export class ActiveVolumeNetManager implements ArchitectureConnectionManager {
   /**
    * Queries the capabiliteies of the designer
    */
-  queryCapability(query: ArchCapabilityQuery): ArchCapabilityResult {
-    if(query.capability === 'CanNetwork') {
-      return ArchCapabilityResult.Confirm();
-    }
-    return ArchCapabilityResult.Deny();
+  queryCapability(_query: ArchCapabilityQuery): ArchCapabilityResult {
+    return ArchCapabilityResult.Confirm();
   }
 }

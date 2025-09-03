@@ -77,8 +77,8 @@ export class ActiveVolumeProjectForm extends React.Component<SettingsProps, Sett
 	 * root container will likely consider if it needs
 	 * to flush the changes to other components
 	 */
-	settingsApply() {
-		this.callbacks.applySettings();
+	settingsApply(data: any) {
+		this.callbacks.applySettings(data);
 	}
 
 
@@ -109,7 +109,7 @@ export class ActiveVolumeProjectForm extends React.Component<SettingsProps, Sett
 			const inpfn = InputTransformer[kind];
 			const v: string | number = inpfn(e.currentTarget.value);
 			const oldBody = { ...this.state.project.body };
-			const newBody = { object: { [key]: v, ...oldBody } };
+			const newBody = { object: { ...oldBody.object, [key]: v } };
 			const newProject: SettingsState = { project: this.callbacks.newProject() };
 			newProject.project.header = this.state.project.header;
 			newProject.project.body = newBody;			
@@ -149,7 +149,7 @@ export class ActiveVolumeProjectForm extends React.Component<SettingsProps, Sett
 					value={bodyData.registers} 
 					onChange={(e) => 
 						{inputChangeFn(e, 
-						'ancilla', 'number')}}/>
+						'registers', 'number')}}/>
 				<input type="number" name="ancilla"
 					className={styles.inputMult}
 					value={bodyData.ancilla} 
@@ -184,7 +184,7 @@ export class ActiveVolumeProjectForm extends React.Component<SettingsProps, Sett
 					<button className={styles.settingsApply}
 						onClick={(_) => 
 						sref
-						.settingsApply()
+						.settingsApply(this.state.project)
 						} type="submit">
 						Apply
 					</button>

@@ -57,7 +57,8 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 			let prgservice = obj.getServices().getProgramPluginService();
 			prgservice.saveProgramData({
 				plgKey: newProg.name,
-				plgValue: newProg.name
+				plgValue: newProg.name,
+				params: []
 			})
 			
     	//obj.state.appStateData.progData.current = newProg;
@@ -71,18 +72,23 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvProgramList: {
     evkey: MSG_GLOBAL_MAP['program_list'],
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-			const plist = m.getJSON().payload.prg_list;
+			const plist = m.getJSON().payload.prglist;
 			let newProgData: Array<ProgramPlugin> = [];
 			for(const prg of plist) {
+				const params = prg['prgparams'].map((p: any) => {
+					const [name, kind, arg]: [string, string, any] = p;
+					return [name, kind, arg];
+				});
 				newProgData.push({
-					name: prg['name'],
-					params: prg['params'].map((p: any) =>
-						{ return{ param: p.name, kind: 'any'}}) //TODO: Fix the kind
+					name: prg['prgname'],
+					params: params
 				})
 			}
-			let prgservice = obj.getServices().getProgramPluginService();
+			let prgservice = obj.getServices()
+				.getProgramPluginService();
+
 			prgservice.storePrograms(newProgData);
-    	//obj.state.appStateData.progData.programs = newProgData
+			
     	obj.triggerUpdate();
 			appService.consumeFromQueue();
 		}

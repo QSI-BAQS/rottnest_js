@@ -58,6 +58,9 @@ export class ActiveVolumeDesigner implements ArchitectureDesigner {
     if(query.capability === 'CanLoad') {
       return ArchCapabilityResult.Confirm();
     }
+    if(query.capability === 'CanNetwork') {
+      return ArchCapabilityResult.Confirm();
+    }
     return ArchCapabilityResult.NotKnown();
   }
 

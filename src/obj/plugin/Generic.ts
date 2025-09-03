@@ -3,5 +3,6 @@
  */
 export type PluginData = {
   plgKey: string
-  plgValue: string
+  plgValue: string,
+  params: Array<[string, string, any]>,
 }

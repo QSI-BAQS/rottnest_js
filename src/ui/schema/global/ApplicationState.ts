@@ -17,7 +17,7 @@ import { ZoomState } from "./modules/ZoomState";
 import AppServiceModule from "../../../net/AppServiceModule";
 import RottnestApplication from "../../container/RottnestApplication";
 import { RunResultService } from "../../../service/RunResultService";
-import { NoArchSchema } from "../arch/noarch/NoArch";
+//import { NoArchSchema } from "../arch/noarch/NoArch";
 import { StyleService } from "../../../service/StyleService";
 import { RTACommActions } from "./net/GlobalNetOperations";
 import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
@@ -69,7 +69,10 @@ export class RottnestApplicationState {
 	 * Initialises the architecture state to a default
 	 */
 	constructor(app: RottnestApplication,
+
+		 //@ts-ignore error - TODO: Need to check this
 		architectureSchema: ArchitectureSchema = new ActiveVolumeSchema(),
+		 //@ts-ignore error - TODO: Need to check this
 		coreSchemas: Array<ArchStorageEntry> = [{ schema: new ActiveVolumeSchema(),
 			apimap: { routes: [], mask: '' }}]) {
 
@@ -212,7 +215,8 @@ export class RottnestApplicationComponentStates {
 		this.pluginsState = new PluginRepresetationState();
 		this.zoomState = new ZoomState(100, refresh, zoomService);
 		this.archState = new ArchPluginState(refresh, this.pluginsState, services.getArchPluginService());
-		this.programState = new ProgramPluginState(refresh, this.pluginsState);
+		this.programState = new ProgramPluginState(refresh, this.pluginsState,
+			services.getProgramPluginService());
 		this.errorState = new ErrorState();
 		this.projectState = new ProjectSettingsState(appState.getArchitectureObject(),
 			() => { refresh.triggerRefresh(); });
@@ -362,7 +366,6 @@ export class RottnestApplicationServices implements ServicesHolder {
 	 * Gets the program plugin service
 	 */
 	getProgramPluginService(): ProgramPluginService {
-			
 		return this.services.programplugins;
 	}
 

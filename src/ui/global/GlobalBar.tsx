@@ -31,7 +31,6 @@ import {
 
 
 import { ArchitectureProject } from '../schema/arch/ArchSchema.ts';
-import { ArchitecturePluginGetName } from '../../obj/plugin/Architecture.ts';
 import { ProgramPluginGetName } from '../../obj/plugin/Program.ts';
 import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings }
 	from './settings/GeneralSettings.tsx';
@@ -39,7 +38,7 @@ import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings }
 import RottnestApplication from '../container/RottnestApplication.tsx';
 import styles from '../styles/GlobalBar.module.css';
 import { LoadComponent } from './LoadExtra.tsx';
-import { ProgramPluginObjectProps } from './settings/ProgramSettings.tsx';
+import { ProgramPluginObjectProps, ProgramPluginSettings } from './settings/ProgramSettings.tsx';
 /**
  * GlobalBarProps, has a reference to
  * its container and a component map of values
@@ -140,8 +139,8 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 		archData: {
 			title: 'Arch',
 			issueFn: (rott: RottnestApplication) => {
-				const currentArch = rott.getServices().archplugins.getCurrentArch();
-				return ArchitecturePluginGetName(currentArch);
+				const currentArch = rott.getAppState().getArchitectureObject().getName();
+				return currentArch;
 			},
 			styleName: 'pluginArch',
 			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => {
@@ -157,8 +156,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				index: 0,
 				plgname: 'Architecture',
 				getSelected: (rott: RottnestApplication) => {
-					return rott.getServices().getArchPluginService()
-						.getCurrentArch().identifier;
+					return rott.getAppState().getArchitectureObject().getName();
 				},
 				getConfig: (rott: RottnestApplication) => {
 					return rott.getServices().archplugins.getArchConfig().contents;
@@ -190,8 +188,12 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			styleName: 'pluginProgram',
 			container: this.props.container,
 			issueFn: (rott:RottnestApplication) => {
-				const exe = rott.getServices().programplugins.getCurrentExe();
-				return ProgramPluginGetName(exe); },
+				const exe = rott.getServices()
+					.getProgramPluginService()
+					.getCurrentExe();
+
+				return ProgramPluginGetName(exe);
+			},
 			response: (_e: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => {
 				const progState = rott.getModuleStates().getProgramState();
 				if(progState.areSettingsActive()) {
@@ -204,29 +206,49 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 				plgname: 'Program',
 				index: 0,
 				getParams: (rott: RottnestApplication, ident: string) => {
-						return rott.getServices().getProgramPluginService()
-							.getParameters(ident)
+						const plgService = rott.getServices().getProgramPluginService()
+						const current = plgService
+							.getCurrentExe();
+
+						if(current.name === ident) {
+							return current.params;
+						} else {
+							return plgService.getParameters(ident);
+						}
 				},
 				getSelected: (rott: RottnestApplication) => {
-					return rott.getServices().getProgramPluginService()
+					const e = rott.getServices().getProgramPluginService()
 						.getCurrentExe().name;
+					return e;
 				},
 				getConfig: (rott: RottnestApplication) => {
-					return rott.getServices().programplugins.getProgramConfig();
+					return rott.getServices().getProgramPluginService().getProgramConfig();
 				},
 				plgItemsGetter: (rott: RottnestApplication) => {
-					return rott.getServices().programplugins.getProgramList();
+					return rott.getServices().getProgramPluginService().getProgramList()
+						.map((e => {
+							return {
+								keyName: e.name,
+								plgName: e.name,
+								params: e.params
+							}
+						}));
 				},
 				container: this.props.container,
 				saveDataFn: (data: PluginPackage) => {
 					const rott = data.container;
-					rott.getServices().programplugins.saveProgramData(data.pluginData);
+					rott.getServices().getProgramPluginService()
+						.setCurrentExecutable(data.pluginData.plgKey);
+					rott.getServices().getProgramPluginService().saveProgramData(data.pluginData);
 					rott.getModuleStates().getProgramState().closeProgramSettings();
 				},
-				saveConfigFn: (data: PluginPackage) => {
-					const rott = data.container;
-					rott.getServices().programplugins.saveProgramConfig(data.pluginData);
-					rott.getModuleStates().getProgramState().closeProgramSettings();					
+				saveConfigFn: (_data: PluginPackage) => {
+					
+					//const rott = data.container;
+					
+
+					// rott.getServices().programplugins.saveProgramConfig(data.pluginData);
+					// rott.getModuleStates().getProgramState().closeProgramSettings();					
 				},
 				cancelFn: (data: PluginPackage) => {
 					const rott = data.container;
@@ -324,7 +346,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			events: NullEvents,
 			helpId: "program_help",
 			style: styles.reconnect,
-			iconComponent: <PluginObject {...this.state.progData} />
+			iconComponent: <></>
 		},
 		{ 
 			id: 200, 
@@ -455,7 +477,8 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			<PluginSettings {...archSettings} /> : <></>);
 		
 		const programPluginMenu = (programPluginActive ?
-			<PluginSettings {...programSettings} /> : <></>);
+			<ProgramPluginSettings {...programSettings} /> : <></>);
+		
 
 		// For some reason they are not change...
 		return (

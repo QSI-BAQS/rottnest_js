@@ -27,9 +27,8 @@ export type PluginPackage = {
 export interface PluginSettingsProps {
   plgname: string;
   index: number;
-  plgItemsGetter: (rott: RottnestApplication) => Array<PluginEntry>
   container: RottnestApplication;
-  // callbacks on plugin data
+  plgItemsGetter: (rott: RottnestApplication) => Array<PluginEntry>
   getSelected: (rott: RottnestApplication) => string;
   getConfig: (rott: RottnestApplication) => string;
   saveDataFn: (data: PluginPackage) => void;
@@ -57,7 +56,7 @@ export class PluginSettings
 
   state: PluginSettingsData = {
     index: this.props.index,
-    selected: null,
+    selected: this.props.getSelected(this.props.container),
     configActive: false,
     config: this.props.getConfig(this.props.container)     
   }
@@ -89,6 +88,7 @@ export class PluginSettings
       pluginData: {
         plgKey: this.state.selected || '',
         plgValue: this.state.selected || '',
+        params: []
       },
       container: this.props.container
     }
@@ -106,6 +106,7 @@ export class PluginSettings
       pluginData: {
         plgKey: 'config',
         plgValue: this.state.config,
+        params: []
       },
       container: this.props.container
     }
@@ -124,6 +125,7 @@ export class PluginSettings
       pluginData: {
         plgKey: '',
         plgValue: '',
+        params: []
       },
       container: this.props.container
     }
@@ -136,9 +138,9 @@ export class PluginSettings
    * Renders the component
    */
   render() {
-
+    
     const container = this.props.container;
-    const selectedKey = this.props.getSelected(container);
+    let selectedKey = this.props.getSelected(container);
     const plglabel = this.props.plgname;
     const plgOptions = this.props.plgItemsGetter(container);
     const plgConfig = this.state.config;
@@ -146,6 +148,8 @@ export class PluginSettings
 
     if(this.state.selected === null) {
       this.state.selected = selectedKey;
+    } else {
+      selectedKey = this.state.selected;
     }
     
     const ref = this;
@@ -230,6 +234,7 @@ export class PluginSettings
 export type PluginEntry = {
   keyName: string
   plgName: string
+  params: Array<[string, string, any]>
 }
 
 /**
@@ -258,8 +263,9 @@ function PluginSettingsList(props: PluginOptionsData) {
 export type PluginObjectProps = {
   title: string
   issueFn: (rott:RottnestApplication) => string
+  response: (data: MouseEvent<HTMLButtonElement>,
+    rott: RottnestApplication) => void
   styleName: string
-  response: (data: MouseEvent<HTMLButtonElement>, rott: RottnestApplication) => void
   settings: PluginSettingsProps
   container: RottnestApplication
   

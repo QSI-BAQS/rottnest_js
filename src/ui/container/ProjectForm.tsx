@@ -78,8 +78,8 @@ class ProjectSettingsForm extends React.Component<SettingsProps,
 	 * root container will likely consider if it needs
 	 * to flush the changes to other components
 	 */
-	settingsApply() {
-		this.callbacks.applySettings();
+	settingsApply(data: any) {
+		this.callbacks.applySettings(data);
 	}
 
 
@@ -183,7 +183,7 @@ class ProjectSettingsForm extends React.Component<SettingsProps,
 						.settingsApply}
 						onClick={(_) => 
 						sref
-						.settingsApply()
+						.settingsApply(sref.state.project)
 						} type="submit">
 						Apply
 					</button>

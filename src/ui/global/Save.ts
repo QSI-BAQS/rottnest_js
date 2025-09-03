@@ -29,6 +29,7 @@ const leftClick = (rott: RottnestApplication) => {
 			.getArchitectureObject()
 			.getFormatter();
 
+
 		const projserialized = serialiser.serialize(proj.forFile(fmt));
 		const projname = proj.header.name;
 

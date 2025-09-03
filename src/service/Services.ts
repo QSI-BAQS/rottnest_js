@@ -76,7 +76,7 @@ export class Services implements ServicesHolder {
     this.network = new NetworkService();
     this.inputs = new InputHookService();
     this.valservice = new ValidationService();
-    this.programplugins = new ProgramPluginService(this.refresh,
+    this.programplugins = ProgramPluginService.GetPluginService(this.refresh,
       this.network);
     this.archplugins = ArchPluginService.GetPluginService(schemas, archUpdate,
       this.refresh, this.network);

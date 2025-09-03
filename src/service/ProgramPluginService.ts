@@ -1,8 +1,11 @@
 import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
 import { PluginData } from "../obj/plugin/Generic";
-import { ProgramPlugin, ProgramPluginDefault, ProgramPluginSet,
-	ProgramPluginToEntry, ProgramPluginSetDefault } from "../obj/plugin/Program";
-import { PluginEntry,  } from "../ui/global/settings/GeneralSettings";
+import {
+    ProgramParam,
+	ProgramPlugin,
+	ProgramPluginDefault,
+	ProgramPluginSet,
+	ProgramPluginSetDefault } from "../obj/plugin/Program";
 import { NetworkService } from "./NetworkService";
 import { RefreshService } from "./RefreshService";
 
@@ -16,15 +19,44 @@ import { RefreshService } from "./RefreshService";
 export class ProgramPluginService {
 
   stored: ProgramPluginSet = ProgramPluginSetDefault();
-  current: ProgramPlugin = ProgramPluginDefault();
+  current: ProgramPlugin | null = null;
   netservice: NetworkService;
   refservice: RefreshService;
+
+  static plgservice: ProgramPluginService | null = null;
 
   constructor(upservice: RefreshService, netservice: NetworkService) {
     this.netservice = netservice;
     this.refservice = upservice;
   }
 
+	static GetPluginService(
+		upservice: RefreshService,
+		netservice: NetworkService
+	): ProgramPluginService {
+		if(ProgramPluginService.plgservice === null) {
+			ProgramPluginService.plgservice = new ProgramPluginService(upservice, netservice);
+		} else {
+			const plgs = ProgramPluginService.plgservice;
+			plgs.setNetworkService(netservice);
+			plgs.setRefreshService(upservice);
+		}
+		return ProgramPluginService.plgservice;
+	}
+
+	/**
+	 * Sets the refresh service
+	 */
+	setRefreshService(refservice: RefreshService) {
+		this.refservice = refservice;
+	}
+
+	/**
+	 * Sets the Network Service
+	 */
+	setNetworkService(netservice: NetworkService) {
+		this.netservice = netservice;
+	}
 
 	/**
 	 * Stores programs into the service
@@ -40,15 +72,42 @@ export class ProgramPluginService {
   	this.stored.config.contents = config;
   }
 
+	/**
+	 * Requests the program list
+	 */
+	requestProgramList() {
+		const netserv = this.netservice.getNetworkService();
+		netserv.sendMessage(MSG_GLOBAL_MAP['program_list']);
+	}
+
   /**
    * Saves the program data
    */  
 	saveProgramData(data: PluginData) {
-		const prog = this.stored.programs.find((e: ProgramPlugin) => e.name === data.plgKey);
+		const netserv = this.netservice.getNetworkService();
+		const prog = this.stored.programs
+			.find((e: ProgramPlugin) => e.name === data.plgKey);
+
+		const pdata = {
+			prgname: prog?.name,
+			prgargs: prog?.params
+		};
+		
 		if(prog) {
 			this.current = prog;
 			this.refservice.triggerRefresh();
+			netserv.sendObj(MSG_GLOBAL_MAP['program_set_current'], pdata);
 		} 
+	}
+
+	/**
+	 * Sets the current executable
+	 */
+	setCurrentExecutable(exe: string) {
+		const prog = this.stored.programs.find((e) => e.name === exe);
+		if(prog) {
+			this.current = prog;
+		}
 	}
 
   /**
@@ -61,9 +120,17 @@ export class ProgramPluginService {
 			{ config: data.plgValue });
 	}
 
-	//TODO: Finish this
-	getParameters(_ident: string) {
-		return { parameters: [] }
+	/**
+	 * Getting parameters
+	 * TODO: Not ready
+	 */
+	getParameters(ident: string): Array<ProgramParam> | null {
+		const thing = this.stored.programs.find((e) => e.name === ident);
+		if(thing) {
+			return thing.params;
+		} else {
+			return null;
+		}
 	}
 
   /**
@@ -77,9 +144,12 @@ export class ProgramPluginService {
   /**
    * Retrieves the program list from the backend
    */
-	getProgramList(): Array<PluginEntry> {
+	getProgramList() {
 		return this.stored.programs.map((p) => {
-			return ProgramPluginToEntry(p);
+			return {
+				name: p.name,
+				params: p.params
+			}
 		});
 	}
 
@@ -89,6 +159,14 @@ export class ProgramPluginService {
    * selected
    */
 	getCurrentExe(): ProgramPlugin {
-		return this.current;
+		if(this.current) {
+			return this.current;
+		} else {
+			return ProgramPluginDefault();
+		}
+	}
+
+	isCurrentSet(): boolean {
+		return this.current !== null;
 	}
 }

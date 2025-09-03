@@ -8,6 +8,7 @@ import { ArchitectureCallGraph,
   ArchitectureModulesMeta,
   ArchitectureObject,
   ArchitectureProject,
+  ArchitectureRunChart,
   ArchitectureSchema,
   ArchitectureSerializer,
   ArchitectureVisualiser } from '../ArchSchema.ts';
@@ -15,6 +16,7 @@ import { NoArchCallGraph } from './NoArchCallGraph.ts';
 import { NoArchDesigner } from './NoArchDesigner.ts';
 import { NoArchExtensions } from './NoArchExtensions.ts';
 import { NoArchNetManager } from './NoArchNetwork.ts';
+import { NoArchRunChart } from './NoArchRunChart.ts';
 import { NoArchSerializer } from './NoArchSerializer.ts';
 import { NoArchVisualiser } from './NoArchVisualiser.ts';
 import { NoArchProjectForm } from './ui/ProjectForm.tsx';
@@ -47,6 +49,9 @@ export class NoArchSchema implements ArchitectureSchema {
  */
 export class NoArchObject implements ArchitectureObject<any, any> {
 
+  getName(): string {
+    return 'NoArch';
+  }
   services: ServicesHolder;  
 
   getProjectSettingsForm() {
@@ -163,6 +168,10 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    */
   getConnectionManager(): ArchitectureConnectionManager {
     return new NoArchNetManager(this);
+  }
+
+  getRunChart(): ArchitectureRunChart {
+    return new NoArchRunChart()
   }
 
   /**

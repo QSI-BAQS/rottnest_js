@@ -144,6 +144,8 @@ export class ArchitectureModulesMeta {
  */
 export interface ArchitectureObject<T=any, E=any> {
 
+  getName(): string
+
   // Holds the project information
   getProject(): ArchitectureProject<T>;
 
@@ -175,6 +177,8 @@ export interface ArchitectureObject<T=any, E=any> {
 
   // ConnectionManager
   getConnectionManager(): ArchitectureConnectionManager;
+
+  getRunChart(data?: any): ArchitectureRunChart;
 
   // Extensions 
   getExtensions(): ArchitectureExtensions<E>;
@@ -257,6 +261,11 @@ export interface ArchitectureDesigner extends ArchitectureWorkspaceFactory,
   // Returns the action tracker for the designer
   getActionTracker<T=any>(): ArchActionTracker<T>;
     
+}
+
+
+export interface ArchitectureRunChart extends ArchitectureWorkspaceFactory, ArchCapabilitiesObject {
+
 }
 
 /**
