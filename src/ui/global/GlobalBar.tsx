@@ -101,11 +101,10 @@ const BarItem: React.FC<BarItemData> = (props) => {
 	const extraProps = { rott: props.containerRef };
 	const extraComponent = extra ? extra(extraProps) : <></>;
 	
-	
+	//TODO: Something is triggering this twice
 	return (
 		<li 
 			key={ident}
-			onClick={() => events.leftClick(containerRef)}
 			className={`${styles.barItem} ${description.style || ''}`}
 			title={tooltip}
 		>

@@ -12,6 +12,8 @@ export function LoadComponent({ rott }: {rott: RottnestApplication}) {
 			type="file" 
 			onChange={(e) => {
 			  hiddenInputProc(e, rott)
+			  hiddenInputProc(e, rott) //TODO: Remove this, should be unnecessary
+			  //e.preventDefault();
 			}} />
 	);
 

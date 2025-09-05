@@ -2,15 +2,13 @@ import RottnestApplication from "../container/RottnestApplication"
 import { ArchCapabilityQuery } from "../schema/arch/ArchContext";
 
 
-const leftClick = (rott: RottnestApplication) => {
+const leftClick = (rott: RottnestApplication, e?: any) => {
 	const aobj = rott.getAppState().getArchitectureObject();
 	const notify = rott.getServices().getNotifyService();
 	const refserv = rott.getServices().getRefreshService();
 	const ctxobj = rott.getUIContext().getCurrentContext();
 	if(ctxobj.queryCapability(ArchCapabilityQuery.MakeQuery("CanUndo")).Yes()) {
 		if(aobj) {
-			debugger;
-			console.log('undoing')
 			aobj.getDesigner().getActionTracker().performUndo();
 		} else {
 			notify.makeMessageWithId("undo-on",
