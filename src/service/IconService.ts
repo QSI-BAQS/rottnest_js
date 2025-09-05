@@ -11,6 +11,7 @@ import {
 	ArrowDownOutlined,
 	ArrowRightOutlined
 } from '@ant-design/icons'
+import { useEffect, useRef, useState } from 'react';
 /**
  * IconService to expose certain assets over
  * to the plugins themselves
@@ -31,6 +32,10 @@ export class IconService {
   	SelectOutlined
   }
 
+  reactRefs = {
+    useRef, useState, useEffect
+  }
+
   static instance: IconService | null = null;
 
   static GetInstance() {
@@ -38,6 +43,10 @@ export class IconService {
       this.instance = new IconService();
     }
     return this.instance;
+  }
+
+  getReactExports() {
+    return this.reactRefs
   }
 
   /**

@@ -196,6 +196,7 @@ export class ArchPluginService {
 	 * if not found, it will not save
 	 */
 	saveArchData(data: PluginData) {
+		const archKey = data.plgKey;
 		const archMap = this.storage.core.get(data.plgKey);
 		if(archMap) {
 			let arch = {
@@ -215,8 +216,12 @@ export class ArchPluginService {
 			} else {
 				console.error("Unable to swap architecture, metadata listed, plugin missing");
 			}
+			this.netservice.getNetworkService().sendObj('arch_meta_arch_set', {
+				'arch_name': archKey
+			})
 			//this.update()
 			this.refservice.triggerRefresh();
+			
 		} else {
 			console.error("Unable to save architecture")
 		}

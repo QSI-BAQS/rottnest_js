@@ -50,6 +50,7 @@ export interface PluginSettingsData {
   config: string
   configActive: boolean
   params: ProgramPluginParams | null
+  hasBeenModified: boolean,
   plgArgs: any,
 }
 
@@ -73,9 +74,10 @@ export class ProgramPluginSettings
     prevselected: null,
     configActive: false,
     config: this.props.getConfig(this.props.container),
-    plgArgs: this.props.getParams(this.props.container,
-      this.props.getSelected(this.props.container)),
+    plgArgs: JSON.stringify(this.props.getParams(this.props.container,
+      this.props.getSelected(this.props.container))),
     params: null,
+    hasBeenModified: false
   }
 
   /**
@@ -114,7 +116,7 @@ export class ProgramPluginSettings
       pluginData: {
         plgKey: this.state.selected || '',
         plgValue: this.state.selected || '',
-        params: []
+        params: JSON.parse(this.state.plgArgs)
       },
       container: this.props.container
     }
@@ -170,14 +172,14 @@ export class ProgramPluginSettings
     const plgIsSet = container.getServices()
       .getProgramPluginService()
       .isCurrentSet();
-
+    const hasBeenModified = this.state.hasBeenModified;
     const plgOptions = this.props.plgItemsGetter(container);
     let selectedKey = this.props.getSelected(container);
 
-    if(!plgIsSet) {
+    if(!plgIsSet && !hasBeenModified) {
       if(plgOptions.length > 0) {
         selectedKey = this.state.selected = plgOptions[0].keyName;
-        this.state.plgArgs = this.props.getParams(container, selectedKey);
+        this.state.plgArgs = JSON.stringify(this.props.getParams(container, selectedKey));
       }
     } 
     if(this.state.selected === null) {
@@ -190,8 +192,7 @@ export class ProgramPluginSettings
       selectedKey = this.state.selected;
     }
     
-    const plgArgs = JSON.stringify(this.state.plgArgs);
-    
+    const plgArgs = this.state.plgArgs;
     const ref = this;
     const saveDataOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
       ref.saveData();
@@ -208,8 +209,11 @@ export class ProgramPluginSettings
 
     const configOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
       let textCfg = e.target.value;
+      console.log(textCfg);
       let data = {...ref.state};
-      data.plgArgs = JSON.parse(textCfg);
+      data.hasBeenModified = true;
+      data.plgArgs = textCfg;
+      //data.plgArgs = JSON.parse(textCfg);
       ref.setState(data);
     }
 
@@ -224,15 +228,22 @@ export class ProgramPluginSettings
       ref.setState(nstate);
     }
     const configEnabled = this.state.configActive;
+    
+    //Config space with current config and executable information
+    const currentExe = this.props.getSelected(container);
+    const statement = "Currently Selected Program Parameters";
     const configSpace = configEnabled ? (
       <div className={styles.pluginConfigTextSpace}>
+
+        <div className={styles.pluginHeader}>
+          <label className={styles.pluginHeaderLabel}>Current Program: {currentExe}</label>
+        </div>
+        <div className={styles.pluginHeader}>
+          <label className={styles.pluginHeaderLabel}>{statement}</label>
+        </div>
         <textarea className={styles.pluginTextArea}
           value={plgArgs} onChange={configOnChange}>
         </textarea>
-        <button className={styles.savePluginConfig}
-          onClick={saveConfigOnClick}>
-          Save Configuration
-        </button>
       </div>) : <></>;
 
     return (

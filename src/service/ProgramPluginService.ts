@@ -84,14 +84,17 @@ export class ProgramPluginService {
    * Saves the program data
    */  
 	saveProgramData(data: PluginData) {
+		console.log(data);
 		const netserv = this.netservice.getNetworkService();
 		const prog = this.stored.programs
 			.find((e: ProgramPlugin) => e.name === data.plgKey);
 
 		const pdata = {
 			prgname: prog?.name,
-			prgargs: prog?.params
+			prgargs: data.params
 		};
+		console.log(data);
+		console.log(pdata)
 		
 		if(prog) {
 			this.current = prog;
