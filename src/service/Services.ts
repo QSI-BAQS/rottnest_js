@@ -11,7 +11,7 @@ import { RunResultService } from "./RunResultService";
 import { StyleService } from "./StyleService";
 import { ArchStorageEntry } from "../obj/plugin/Architecture";
 import { ZoomService } from "./ZoomService";
-import { IconService } from "./IconService";
+import { ComponentService } from "./ComponentService";
 
 /**
  * ServicesHolder is the container that will
@@ -43,7 +43,7 @@ export interface ServicesHolder {
 
   getZoomService(): ZoomService;
 
-  getIconService(): IconService;
+  getComponentService(): ComponentService;
 
   getServices(): Services;
 
@@ -162,8 +162,8 @@ export class Services implements ServicesHolder {
     return this.rrservice;
   }
 
-  getIconService() {
-    return IconService.GetInstance()
+  getComponentService() {
+    return ComponentService.GetInstance()
   }
 
   /**
@@ -275,8 +275,8 @@ export class NoServicesHolder implements ServicesHolder {
     return new ZoomService();
   }
 
-  getIconService() {
-    return IconService.GetInstance()
+  getComponentService() {
+    return ComponentService.GetInstance()
   }
   
   getStyleService(): StyleService {

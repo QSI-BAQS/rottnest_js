@@ -23,7 +23,7 @@ import { RTACommActions } from "./net/GlobalNetOperations";
 import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
 import { ProjectSettingsState } from "../arch/ArchProjectState";
 import { ZoomService } from "../../../service/ZoomService";
-import { IconService } from "../../../service/IconService";
+import { ComponentService } from "../../../service/ComponentService";
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
 
@@ -386,7 +386,7 @@ export class RottnestApplicationServices implements ServicesHolder {
 	}
 
   getIconService() {
-    return IconService.GetInstance()
+    return ComponentService.GetInstance()
   }
 	/**
 	 * Returns the whole services group

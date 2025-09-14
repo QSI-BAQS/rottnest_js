@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from 'react';
  * IconService to expose certain assets over
  * to the plugins themselves
  */
-export class IconService {
+export class ComponentService {
 
   icons = {
     CloseOutlined,
@@ -36,15 +36,18 @@ export class IconService {
     useRef, useState, useEffect
   }
 
-  static instance: IconService | null = null;
+  static instance: ComponentService | null = null;
 
   static GetInstance() {
     if(this.instance === null) {
-      this.instance = new IconService();
+      this.instance = new ComponentService();
     }
     return this.instance;
   }
 
+  /**
+   * Returns the react components
+   */
   getReactExports() {
     return this.reactRefs
   }
