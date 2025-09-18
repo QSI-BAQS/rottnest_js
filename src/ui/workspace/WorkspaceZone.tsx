@@ -1,5 +1,4 @@
 import React, {ReactElement} from 'react';
-import { Workspace } from './Workspace';
 import { ArchitectureUIContext } from '../schema/arch/ArchContext';
 import { ArchWorkspaceData } from '../schema/arch/ArchWorkspace';
 import { ArchitectureObject } from '../schema/arch/ArchSchema';
@@ -82,9 +81,9 @@ class WorkspaceTabBar extends React
 }
 
 
+
 export class ArchWorkspaceZone 
-	extends React.Component<ArchWorkspaceZoneData, {}> 
-	implements Workspace {
+	extends React.Component<ArchWorkspaceZoneData, {}> {
 
 	render() {
 

@@ -12,6 +12,7 @@ import {
 	ArrowRightOutlined
 } from '@ant-design/icons'
 import { useEffect, useRef, useState } from 'react';
+import { ArchWorkspaceZone } from '../ui/workspace/WorkspaceZone';
 /**
  * IconService to expose certain assets over
  * to the plugins themselves
@@ -33,7 +34,7 @@ export class ComponentService {
   }
 
   reactRefs = {
-    useRef, useState, useEffect
+    useRef, useState, useEffect, ArchWorkspaceZone
   }
 
   static instance: ComponentService | null = null;
