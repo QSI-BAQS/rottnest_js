@@ -1,7 +1,7 @@
 import React from "react";
 import {WorkspaceBufferMap} from "./WorkspaceBufferMap";
-import { ArchitectureObject } from "../schema/arch/ArchSchema";
-import { ArchWorkspaceData } from "../schema/arch/ArchWorkspace";
+import { ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
+import { ArchitectureObject } from "rottnest-plugin/schema/ArchSchema";
 
 /**
  * Workspace Properties, used to create a clear

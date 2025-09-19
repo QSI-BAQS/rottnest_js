@@ -1,4 +1,4 @@
-import { ArchitectureExtensions, ArchitectureExtObj } from "../ArchSchema";
+import { ArchitectureExtensions, ArchitectureExtObj } from "rottnest-plugin/schema/ArchSchema";
 
 /**
  * No ArchDesigner, it is used as a placeholder for when

@@ -1,5 +1,5 @@
+import { ArchitectureConnectionManager } from "rottnest-plugin/schema/ArchSchema";
 
-import { ArchitectureConnectionManager } from "../../ArchSchema";
 
 export class RottArchMSG {
 	

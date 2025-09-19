@@ -1,8 +1,8 @@
 import React, {ReactElement} from 'react';
-import { ArchitectureUIContext } from '../schema/arch/ArchContext';
-import { ArchWorkspaceData } from '../schema/arch/ArchWorkspace';
-import { ArchitectureObject } from '../schema/arch/ArchSchema';
 import styles from '../styles/WorkspaceContainer.module.css';
+import { ArchitectureUIContext } from 'rottnest-plugin/schema/ArchContext';
+import { ArchitectureObject } from 'rottnest-plugin/schema/ArchSchema';
+import { ArchWorkspaceData } from 'rottnest-plugin/schema/ArchWorkspace';
 
 
 /**

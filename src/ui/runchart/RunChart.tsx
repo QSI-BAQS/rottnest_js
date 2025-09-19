@@ -4,7 +4,7 @@ import {CallGraphStatsSpace} from "./CGChart";
 
 import style from '../styles/CGChart.module.css';
 import {CUVolume} from "../../obj/chart/Metrics.ts";
-import { ArchWorkspaceData } from "../schema/arch/ArchWorkspace.ts";
+import { ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
 /*const PreMadeData = [
 	genData(20),
 	genData(20),

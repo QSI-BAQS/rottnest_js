@@ -9,9 +9,9 @@ import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
 import { PluginEntry } from "../ui/global/settings/GeneralSettings";
 
 ///TODO: Move the interfaces into a separate module
-import { ArchitectureSchema } from "../ui/schema/arch/ArchSchema";
-import { ArchPluginLoader } from "../ui/schema/arch/ArchPlugin";
 import { Services } from "./Services";
+import { ArchitectureSchema } from "rottnest-plugin/schema/ArchSchema";
+import { ArchPluginLoader } from "rottnest-plugin/schema/ArchPlugin";
 
 //import StorageDB from "../db/StorageDB";
 // Temporary callbacks

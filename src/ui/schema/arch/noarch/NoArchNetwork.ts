@@ -1,8 +1,8 @@
+import { ArchitectureConnectionManager, ArchitectureObject } from "rottnest-plugin/schema/ArchSchema";
 import { AppServiceClient } from "../../../../net/AppService";
-import { CommEventOps, CommOpQueue } from "../../global/ops/CommsOps";
 import { UnimplReturn } from "../../util/unimpl";
-import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
-import { ArchitectureConnectionManager, ArchitectureObject } from "../ArchSchema";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "rottnest-plugin/schema/ArchContext";
+import { CommEventOps, CommOpQueue } from "rottnest-plugin/schema/ArchDecls";
 
 /**
  * LatticeNetworkManager, it will manage the connection it receives

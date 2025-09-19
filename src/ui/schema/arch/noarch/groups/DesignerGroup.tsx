@@ -1,10 +1,9 @@
 import { NoArchSpace } from "../ui/NoArchSpace.tsx";
 import { NoArchColumn } from "../ui/NoArchColumn.tsx";
 import { ReactElement } from "react";
-import { ArchWorkspaceGroup, ArchWorkspaceProps }
-  from "../../ArchWorkspace";
 import { ArchWorkspaceZone }
   from "../../../../workspace/WorkspaceZone.tsx";
+import { ArchWorkspaceGroup, ArchWorkspaceProps } from "rottnest-plugin/schema/ArchWorkspace";
 
 /**
  * Constructs the workspace group that will be used by the workspace component

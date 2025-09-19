@@ -1,4 +1,4 @@
-import { NoServices, ServicesHolder } from '../../../../service/Services.ts';
+import { NoServices } from '../../../../service/Services.ts';
 import { UnimplReturn } from '../../util/unimpl.ts';
 import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
@@ -11,7 +11,7 @@ import { ArchitectureCallGraph,
   ArchitectureRunChart,
   ArchitectureSchema,
   ArchitectureSerializer,
-  ArchitectureVisualiser } from '../ArchSchema.ts';
+  ArchitectureVisualiser } from 'rottnest-plugin/schema/ArchSchema';
 import { NoArchCallGraph } from './NoArchCallGraph.ts';
 import { NoArchDesigner } from './NoArchDesigner.ts';
 import { NoArchExtensions } from './NoArchExtensions.ts';
@@ -20,6 +20,7 @@ import { NoArchRunChart } from './NoArchRunChart.ts';
 import { NoArchSerializer } from './NoArchSerializer.ts';
 import { NoArchVisualiser } from './NoArchVisualiser.ts';
 import { NoArchProjectForm } from './ui/ProjectForm.tsx';
+import { ServicesHolder } from 'rottnest-plugin/schema/ServicesHolder';
 
 
 /**

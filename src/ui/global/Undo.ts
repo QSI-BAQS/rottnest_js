@@ -1,8 +1,8 @@
+import { ArchCapabilityQuery } from "rottnest-plugin/schema/ArchContext";
 import RottnestApplication from "../container/RottnestApplication"
-import { ArchCapabilityQuery } from "../schema/arch/ArchContext";
 
 
-const leftClick = (rott: RottnestApplication, e?: any) => {
+const leftClick = (rott: RottnestApplication, _e?: any) => {
 	const aobj = rott.getAppState().getArchitectureObject();
 	const notify = rott.getServices().getNotifyService();
 	const refserv = rott.getServices().getRefreshService();

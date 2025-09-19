@@ -5,10 +5,8 @@ import { NetworkService } from "../../../service/NetworkService";
 import { NotifyService } from "../../../service/NotifyService";
 import { ProgramPluginService } from "../../../service/ProgramPluginService";
 import { RefreshService } from "../../../service/RefreshService";
-import { Services, ServicesHolder } from "../../../service/Services";
+import { Services } from "../../../service/Services";
 import { ValidationService } from "../../../service/ValidatorService";
-import { ArchitectureUIContext } from "../arch/ArchContext";
-import { ArchitectureObject, ArchitectureSchema } from "../arch/ArchSchema";
 import { ArchPluginState } from "./modules/ArchPlugin";
 import { ErrorState } from "./modules/ErrorState";
 import { PluginRepresetationState } from "./modules/PluginRepState";
@@ -21,9 +19,12 @@ import { NoArchSchema } from "../arch/noarch/NoArch";
 import { StyleService } from "../../../service/StyleService";
 import { RTACommActions } from "./net/GlobalNetOperations";
 import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
-import { ProjectSettingsState } from "../arch/ArchProjectState";
 import { ZoomService } from "../../../service/ZoomService";
 import { ComponentService } from "../../../service/ComponentService";
+import { ArchitectureObject, ArchitectureSchema } from "rottnest-plugin/schema/ArchSchema";
+import { ProjectSettingsState } from "rottnest-plugin/schema/ArchProjectState";
+import { ArchitectureUIContext } from "rottnest-plugin/schema/ArchContext";
+import { ServicesHolder } from "rottnest-plugin/schema/ServicesHolder";
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
 
@@ -385,7 +386,7 @@ export class RottnestApplicationServices implements ServicesHolder {
 		return StyleService.GetInstance(this.getRefreshService())
 	}
 
-  getIconService() {
+  getComponentService() {
     return ComponentService.GetInstance()
   }
 	/**

@@ -12,42 +12,7 @@ import { StyleService } from "./StyleService";
 import { ArchStorageEntry } from "../obj/plugin/Architecture";
 import { ZoomService } from "./ZoomService";
 import { ComponentService } from "./ComponentService";
-
-/**
- * ServicesHolder is the container that will
- * hold a reference to all the services, this is to also
- * produce individual components but also produce a `Services`
- * object
- */
-export interface ServicesHolder {
-
-  getRefreshService(): RefreshService;
-
-  getNotifyService(): NotifyService;
-
-  getNetworkService(): NetworkService;
-
-  getInputService(): InputHookService;
-
-  getHelpService(): HelpService;
-
-  getProgramPluginService(): ProgramPluginService;
-
-  getArchPluginService(): ArchPluginService
-
-  getValidationService(): ValidationService;
-
-  getRunResultService(): RunResultService;
-
-  getStyleService(): StyleService;
-
-  getZoomService(): ZoomService;
-
-  getComponentService(): ComponentService;
-
-  getServices(): Services;
-
-}
+import { ServicesHolder } from "rottnest-plugin/schema/ServicesHolder";
 
 
 /**

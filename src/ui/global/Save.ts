@@ -1,7 +1,7 @@
 
 import RottnestApplication from "../container/RottnestApplication"
-import { ArchCapabilityQuery } from "../schema/arch/ArchContext";
 import { SaveProject } from "../../util/FileDownload";
+import { ArchCapabilityQuery } from "rottnest-plugin/schema/ArchContext";
 
 
 /**

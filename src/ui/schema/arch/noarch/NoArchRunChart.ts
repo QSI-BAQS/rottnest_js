@@ -1,8 +1,8 @@
 
-import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
-import { ArchitectureRunChart } from "../ArchSchema";
-import { ArchWorkspaceGroup } from "../ArchWorkspace";
+import { ArchitectureRunChart } from "rottnest-plugin/schema/ArchSchema";
 import { RunChartGroup } from "./groups/RunChartGroup";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "rottnest-plugin/schema/ArchContext";
+import { ArchWorkspaceGroup } from "rottnest-plugin/schema/ArchWorkspace";
 
 
 

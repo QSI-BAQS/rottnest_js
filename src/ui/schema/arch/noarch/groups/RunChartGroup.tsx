@@ -1,10 +1,10 @@
 
 
 import {ReactElement} from "react";
-import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../../ArchWorkspace";
 import { RunChartContainer } from "../../../../runchart/RunChart";
 import { CGGraphColumn, CGNodeColumn } from "./CallGraphColumn";
 import { ArchWorkspaceZone } from "../../../../workspace/WorkspaceZone";
+import { ArchWorkspaceGroup, ArchWorkspaceProps } from "rottnest-plugin/schema/ArchWorkspace";
 
 
 /**

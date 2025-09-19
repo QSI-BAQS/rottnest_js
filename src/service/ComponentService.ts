@@ -13,6 +13,10 @@ import {
 } from '@ant-design/icons'
 import { useEffect, useRef, useState } from 'react';
 import { ArchWorkspaceZone } from '../ui/workspace/WorkspaceZone';
+import { ReactComponentExports } from 'rottnest-plugin/schema/ServicesHolder';
+
+const AWZ = ArchWorkspaceZone as any;
+
 /**
  * IconService to expose certain assets over
  * to the plugins themselves
@@ -33,8 +37,8 @@ export class ComponentService {
   	SelectOutlined
   }
 
-  reactRefs = {
-    useRef, useState, useEffect, ArchWorkspaceZone
+  reactRefs: ReactComponentExports = {
+    useRef, useState, useEffect, ArchWorkspaceZone: AWZ
   }
 
   static instance: ComponentService | null = null;
@@ -49,7 +53,7 @@ export class ComponentService {
   /**
    * Returns the react components
    */
-  getReactExports() {
+  getReactExports(): ReactComponentExports {
     return this.reactRefs
   }
 

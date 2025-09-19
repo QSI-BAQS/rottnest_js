@@ -1,7 +1,7 @@
 import React from "react";
-import { ArchitectureProject } from "../../ArchSchema";
-import { ProjectSettingsCallbacks, ProjectSettingsState } from "../../ArchProjectState";
 import styles from './NoArchForm.module.css';
+import { ProjectSettingsCallbacks, ProjectSettingsState } from "rottnest-plugin/schema/ArchProjectState";
+import { ArchitectureProject } from "rottnest-plugin/schema/ArchSchema";
 
 /**
  * Allows us to map to a transformer when we want

@@ -1,5 +1,5 @@
+import { ArchitectureObject } from "rottnest-plugin/schema/ArchSchema";
 import RottnestApplication from "../ui/container/RottnestApplication";
-import { ArchitectureObject } from "../ui/schema/arch/ArchSchema";
 import { GlobalProtocolSet } from "./GlobalMessageMap";
 import { AppProtocolSet, ProtocolOperation } from "./ProtocolTypes";
 

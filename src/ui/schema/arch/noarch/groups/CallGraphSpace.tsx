@@ -10,9 +10,8 @@ import {AppServiceMessage} from "../../../../../net/AppServiceMessage.ts";
 
 
 import styles from '../styles/CGSpace.module.css';
-import { ArchStashMap, ArchWorkspaceData } from "../../ArchWorkspace.ts";
-import { NetParserOperations } from "../../activevolume/net/NetParserOps.ts";
-import { RottStatusResponseMSG } from "../net/NetParserOps.ts";
+import { NetParserOperations, RottStatusResponseMSG } from "../net/NetParserOps.ts";
+import { ArchStashMap, ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
 
 interface CGUpdateableContext {	
 	pushPositionUpdate(pdata: CGLinePositionData): void

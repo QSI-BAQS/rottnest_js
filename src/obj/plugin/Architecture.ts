@@ -1,5 +1,5 @@
+import { ArchitectureSchema } from "rottnest-plugin/schema/ArchSchema"
 import { PluginEntry } from "../../ui/global/settings/GeneralSettings"
-import { ArchitectureSchema } from "../../ui/schema/arch/ArchSchema"
 
 export type ArchPackageType = "Serialised" | "PathedLocal"
 

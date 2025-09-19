@@ -1,5 +1,5 @@
+import { ArchCapabilityQuery } from "rottnest-plugin/schema/ArchContext";
 import RottnestApplication from "../container/RottnestApplication"
-import { ArchCapabilityQuery } from "../schema/arch/ArchContext";
 
 
 const leftClick = (rott: RottnestApplication) => {

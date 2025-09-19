@@ -1,5 +1,5 @@
+import { ArchCapabilityQuery } from "rottnest-plugin/schema/ArchContext";
 import RottnestApplication from "../container/RottnestApplication";
-import { ArchCapabilityQuery } from "../schema/arch/ArchContext";
 
 const leftClick = (container: RottnestApplication) => {
 
@@ -9,6 +9,7 @@ const leftClick = (container: RottnestApplication) => {
 	const refserv = rott.getServices().getRefreshService();
 
 	if(ctx.queryCapability(ArchCapabilityQuery.MakeQuery("CanNetwork")).Yes()) {
+
 		const projNet = rott.getAppState()
 			.getArchitectureObject()
 			.getProject()
@@ -31,7 +32,7 @@ const leftClick = (container: RottnestApplication) => {
 		const archremap = netmap.get('use_arch')!;
 		const obj = projNet.forNetwork(fmt);
 		console.log(obj, projNet)
-		appnet.sendObject(archremap, obj);
+		appnet.sendObj(archremap, obj);
 
 		notify.makeMessageWithId('send-arch-good', "Network Communications",
 			"Object has been sent to process-pool");

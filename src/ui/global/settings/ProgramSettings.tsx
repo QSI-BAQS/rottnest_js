@@ -198,9 +198,10 @@ export class ProgramPluginSettings
       ref.saveData();
     };
 
-    const saveConfigOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
-      ref.saveConfig();
-    };
+    //TODO: Possibly remove this
+    // const saveConfigOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
+    //   ref.saveConfig();
+    // };
 
     const configOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
       // Opens the config data

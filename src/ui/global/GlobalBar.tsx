@@ -30,7 +30,6 @@ import {
 } from '@ant-design/icons';
 
 
-import { ArchitectureProject } from '../schema/arch/ArchSchema.ts';
 import { ProgramPluginGetName } from '../../obj/plugin/Program.ts';
 import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings }
 	from './settings/GeneralSettings.tsx';
@@ -39,6 +38,7 @@ import RottnestApplication from '../container/RottnestApplication.tsx';
 import styles from '../styles/GlobalBar.module.css';
 import { LoadComponent } from './LoadExtra.tsx';
 import { ProgramPluginObjectProps, ProgramPluginSettings } from './settings/ProgramSettings.tsx';
+import { ArchitectureProject } from 'rottnest-plugin/schema/ArchSchema';
 /**
  * GlobalBarProps, has a reference to
  * its container and a component map of values

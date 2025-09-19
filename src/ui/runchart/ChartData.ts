@@ -1,5 +1,5 @@
+import { ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
 import {CUVolume} from "../../obj/chart/Metrics.ts";
-import { ArchWorkspaceData } from "../schema/arch/ArchWorkspace.ts";
 export type CUDataKey = keyof CUVolume;
 export type CUAggrKey = keyof DataAggrMap;
 
@@ -57,7 +57,7 @@ export type CGChartDimensions = {
 }
 
 export type RunChartProps = {
-	workspaceData: ArchWorkspaceData 
+	workspaceData: ArchWorkspaceData
 
 }
 

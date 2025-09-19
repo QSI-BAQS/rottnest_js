@@ -1,7 +1,7 @@
 import React from "react";
 import { NullObject } from "../../../../../util/NullObject";
-import { ArchWorkspace, ArchWorkspaceData } from "../../ArchWorkspace";
 import styles from "../styles/NoArchSpace.module.css";
+import { ArchWorkspace, ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
 
 /**
  * Workspace properties that expose

@@ -1,5 +1,5 @@
-import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
-import { ArchitectureSerializer } from "../ArchSchema";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "rottnest-plugin/schema/ArchContext";
+import { ArchitectureSerializer } from "rottnest-plugin/schema/ArchSchema";
 
 
 /**

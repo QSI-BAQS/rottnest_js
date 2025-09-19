@@ -4,7 +4,7 @@ import {
 	ArchStashMap,
 	ArchStashMapTrigger,
 	ArchWorkspaceProps }
-from "../schema/arch/ArchWorkspace";
+from "rottnest-plugin/schema/ArchWorkspace";
 
 import styles from '../styles/WorkspaceContainer.module.css';
 

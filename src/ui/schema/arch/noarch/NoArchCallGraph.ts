@@ -1,6 +1,6 @@
-import { ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
-import { ArchitectureCallGraph } from "../ArchSchema";
-import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../ArchWorkspace";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "rottnest-plugin/schema/ArchContext";
+import { ArchitectureCallGraph } from "rottnest-plugin/schema/ArchSchema";
+import { ArchWorkspaceGroup, ArchWorkspaceProps } from "rottnest-plugin/schema/ArchWorkspace";
 
 /**
  * Constructs the workspace group that will be used by the workspace component

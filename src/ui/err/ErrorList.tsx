@@ -2,7 +2,7 @@ import React from "react";
 import styles from '../styles/ErrorList.module.css';
 import { RuleResult } from "../../vald/Validator";
 import { ValidationService } from "../../service/ValidatorService";
-import { ArchitectureObject } from "../schema/arch/ArchSchema";
+import { ArchitectureObject } from "rottnest-plugin/schema/ArchSchema";
 
 /**
  * The error data will provide a

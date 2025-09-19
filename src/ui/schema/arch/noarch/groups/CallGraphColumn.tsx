@@ -4,9 +4,8 @@ import styles from '../styles/CGSpace.module.css'
 
 import {CGResult, CGResultDummy, CUReqResult, CUReqResultDummy} 
 	from "../obj/CallGraph.ts"
-import { ArchStashMap, ArchWorkspace, ArchWorkspaceData }
-	from "../../ArchWorkspace.ts"; 
-import { ArchitectureObject } from "../../ArchSchema.ts";
+import { ArchStashMap, ArchWorkspace, ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
+import { ArchitectureObject } from "rottnest-plugin/schema/ArchSchema";
 
 type NodeData = {
 	idx: string 
@@ -14,7 +13,7 @@ type NodeData = {
 }
 
 type CGNodeColumnData = {
-	workspaceData: ArchWorkspaceData 
+	workspaceData: ArchWorkspaceData
 }
 
 
@@ -444,7 +443,7 @@ class RootListItem
 	}
 
 	render() {
-		const iconService = this.props.container.getServices().getIconService();
+		const iconService = this.props.container.getServices().getComponentService();
 		const { ArrowLeftOutlined } = iconService.getIcons();
 		const { RollbackOutlined } = iconService.getIcons();
 		const isFirst = this.props.isFirst;

@@ -1,4 +1,4 @@
-import { ArchitectureObject } from "../ui/schema/arch/ArchSchema";
+import { ArchitectureObject } from "rottnest-plugin/schema/ArchSchema";
 import { ValidationExecutor } from "../vald/Validation";
 
 

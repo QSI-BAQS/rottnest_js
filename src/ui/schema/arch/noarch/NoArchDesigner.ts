@@ -1,8 +1,8 @@
-import { ArchActionTracker } from "../ArchActionTracker";
-import {  ArchCapabilityQuery, ArchCapabilityResult } from "../ArchContext";
-import { ArchitectureDesigner } from "../ArchSchema";
-import { ArchWorkspaceGroup, ArchWorkspaceProps } from "../ArchWorkspace";
+import { ArchActionTracker } from "rottnest-plugin/schema/ArchActionTracker";
 import { NoArchDesignGroup } from "./groups/DesignerGroup";
+import { ArchWorkspaceGroup, ArchWorkspaceProps } from "rottnest-plugin/schema/ArchWorkspace";
+import { ArchitectureDesigner } from "rottnest-plugin/schema/ArchSchema";
+import { ArchCapabilityQuery, ArchCapabilityResult } from "rottnest-plugin/schema/ArchContext";
 
 /**
  * This action does nothing as it is realistically just

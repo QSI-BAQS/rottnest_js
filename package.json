@@ -16,7 +16,8 @@
     "d3": "^7.9.0",
     "localforage": "^1.10.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "rottnest-plugin": "git://github.com:quollnest/rottnest-plugin-ts.git#dist"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
