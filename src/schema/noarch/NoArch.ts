@@ -1,5 +1,4 @@
-import { NoServices } from '../../../../service/Services.ts';
-import { UnimplReturn } from '../../util/unimpl.ts';
+import { NoServices } from '../../service/Services.ts';
 import { ArchitectureCallGraph,
   ArchitectureConnectionManager,
   ArchitectureDesigner,
@@ -75,7 +74,7 @@ export class NoArchObject implements ArchitectureObject<any, any> {
    * Will return an error
    */
   getFormatter(): ArchitectureFormatter {
-    return UnimplReturn<ArchitectureFormatter>();
+    throw new Error("No Formatter specified for NoArch");
   }
   
   // Holds the project information

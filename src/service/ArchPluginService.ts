@@ -111,6 +111,9 @@ export class ArchPluginService {
 
   }
 
+	/**
+	 * Gets the plugin service instance
+	 */
 	static GetPluginService(
 		defaultSchemas: Array<ArchStorageEntry>,
 		update: ArchUpdateTrigger,
@@ -201,7 +204,6 @@ export class ArchPluginService {
 		if(archMap) {
 			let arch = {
 				name: archMap.schema.name,
-				//TODO: Will need to figure out the prototype fix...
 				createArchitecture: (services: Services) => {
 					return archMap.schema.createArchitecture(services)
 				}
@@ -216,7 +218,7 @@ export class ArchPluginService {
 			} else {
 				console.error("Unable to swap architecture, metadata listed, plugin missing");
 			}
-			this.netservice.getNetworkService().sendObj('arch_meta_arch_set', {
+			this.netservice.getNetworkService().sendObj(MSG_GLOBAL_MAP['arch_set'], {
 				'arch_name': archKey
 			})
 			//this.update()

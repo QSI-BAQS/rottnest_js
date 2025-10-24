@@ -18,7 +18,7 @@
 	justify-content: flex-end;
 	margin-left: 1em;
 	margin-right: 1em;
-	margin-top: 1em;
+	margin-top: 0.5em;
 	height: 20px;
 	font-size: 7pt;
 	color: #888682;
@@ -27,7 +27,7 @@
 
 .pluginDropDown {
 	width: calc(100% - 2em);
-	margin-top: 1em;
+	margin-top: 0.5em;
 	margin-bottom: 1em;
 	margin-left: 1em;
 	margin-right: 1em;
@@ -41,12 +41,11 @@
 
 .pluginTextArea {
 	width: 90%;
-	height: 300px;
 	margin-left: 1em;
 	margin-right: 1em;
 	margin-bottom: 1em;
 	overflow-y: scroll;
-	overflow-x: scroll;
+	overflow-x: scroll
 }
 
 .savePluginConfig {
@@ -64,7 +63,7 @@
 }
 
 .pluginConfigTextSpace {
-	padding-top: 1em;
+	padding-top: 0.5em;
 }
 
 .pluginExit {

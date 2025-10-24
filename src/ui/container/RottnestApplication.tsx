@@ -6,7 +6,7 @@ import { NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
 import { UpdateTrigger } from '../../service/RefreshService.ts';
 import { ArchWorkspaceContainer } from './WorkspaceContainer.tsx'
 import { RottnestApplicationState, RottnestProperties, RottnestState }
-	from '../schema/global/ApplicationState.ts'
+	from '../context/global/ApplicationState.ts'
 
 import styles from '../styles/RottnestContainer.module.css';
 

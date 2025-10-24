@@ -1,6 +1,5 @@
 import React from "react";
-import { NullObject } from "../../../../../util/NullObject";
-import styles from "../styles/NoArchColumn.module.css";
+import styles from "../styles/NoArchSpace.module.css";
 import { ArchWorkspace, ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
 
 /**
@@ -8,15 +7,15 @@ import { ArchWorkspace, ArchWorkspaceData } from "rottnest-plugin/schema/ArchWor
  * the required stuff related to the architecture object
  * as well as the UI context grouping
  */
-export type NoArchColumnProps = {
+export type NoArchWorkspaceProps = {
   workspaceData: ArchWorkspaceData,
-  disptext: string
 }
 
 /**
- * NoArchColumn, it is just a foller component
+ * NoArchitecture space, it is a blank canvas with
+ * simple words indicating that the user has no architecture selected
  */
-export class NoArchColumn extends React.Component<NoArchColumnProps, NullObject> 
+export class NoArchSpace extends React.Component<NoArchWorkspaceProps,{}> 
 	implements ArchWorkspace {
 		
   /**
@@ -24,11 +23,9 @@ export class NoArchColumn extends React.Component<NoArchColumnProps, NullObject>
    * the results as defined by the class
    */
   render() {
-
-    const displayText = this.props.disptext;
     
-    return (<div className={styles.noarchColumn}>
-      <header className={styles.noarchName}>{displayText}</header>
+    return (<div className={styles.noarchSpaceContainer}>
+        <header className={styles.noarchNoSelectHeader}>No Architecture Selected</header>
     </div>)
   }
 

@@ -1,6 +1,5 @@
 import { ArchitectureConnectionManager, ArchitectureObject } from "rottnest-plugin/schema/ArchSchema";
-import { AppServiceClient } from "../../../../net/AppService";
-import { UnimplReturn } from "../../util/unimpl";
+import { AppServiceClient } from "../../net/AppService";
 import { ArchCapabilityQuery, ArchCapabilityResult } from "rottnest-plugin/schema/ArchContext";
 import { CommEventOps, CommOpQueue } from "rottnest-plugin/schema/ArchDecls";
 
@@ -29,7 +28,7 @@ export class NoArchNetManager implements ArchitectureConnectionManager {
    * Sets new communication events, useful when switching between contexts
    */
   setCommunicationEvents(_events: CommEventOps<ArchitectureObject>): void {
-    UnimplReturn<void>();
+    throw new Error("Method is not implemented");
   }
 
   /**
@@ -37,7 +36,7 @@ export class NoArchNetManager implements ArchitectureConnectionManager {
    * for the websocket to respond to
    */
   getCommunicationEvents(): CommEventOps<ArchitectureObject> {
-    return UnimplReturn<CommEventOps<ArchitectureObject>>();
+    throw new Error("Method is not implemented");
   }
 
   /**
@@ -45,7 +44,7 @@ export class NoArchNetManager implements ArchitectureConnectionManager {
    * construction and opening of the websocket
    */
   onLoadEvents(): CommOpQueue<ArchitectureObject> {
-    return UnimplReturn<CommOpQueue<ArchitectureObject>>();
+    throw new Error("Method is not implemented");
   }
 
   /**
@@ -53,7 +52,7 @@ export class NoArchNetManager implements ArchitectureConnectionManager {
    * send messages
    */
   getNetworkService(): AppServiceClient {
-    return UnimplReturn<AppServiceClient>();
+    throw new Error("Method is not implemented");
   }
 
   

@@ -1,0 +1,33 @@
+.numericContainer {
+  margin-top: 0.25em;
+  margin-left: 1em;
+  margin-right: 1em;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-content: flex-end;
+  justify-content: end;
+  overflow: scroll;
+  font-size: 9pt;
+  flex: 1;
+
+}
+
+.numericContainer label {
+  display: grid;
+  justify-content: start;
+  align-self: center;
+  min-width: 15%;
+  max-width: 30%;
+}
+
+.numericContainer input {
+  border-radius: 5px;
+  margin-right: 1em;
+  margin-left: 0.25em;
+  width: 50%;
+}
+
+.paramContainer {
+  padding-bottom: 1em;
+}

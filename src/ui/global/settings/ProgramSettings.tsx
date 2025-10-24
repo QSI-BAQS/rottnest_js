@@ -6,6 +6,7 @@ import { CloseOutlined, ProfileOutlined } from "@ant-design/icons";
 import { PluginData } from "../../../obj/plugin/Generic";
 import RottnestApplication from "../../container/RottnestApplication";
 import { ProgramParam } from "../../../obj/plugin/Program";
+import { ProgramParametersContainer } from "./ProgramParameterSettings";
 
 
 /**
@@ -51,6 +52,7 @@ export interface PluginSettingsData {
   configActive: boolean
   params: ProgramPluginParams | null
   hasBeenModified: boolean,
+  plgArgsData: Array<ProgramParam>,
   plgArgs: any,
 }
 
@@ -74,6 +76,8 @@ export class ProgramPluginSettings
     prevselected: null,
     configActive: false,
     config: this.props.getConfig(this.props.container),
+    plgArgsData: this.props.getParams(this.props.container,
+      this.props.getSelected(this.props.container))!,
     plgArgs: JSON.stringify(this.props.getParams(this.props.container,
       this.props.getSelected(this.props.container))),
     params: null,
@@ -116,7 +120,7 @@ export class ProgramPluginSettings
       pluginData: {
         plgKey: this.state.selected || '',
         plgValue: this.state.selected || '',
-        params: JSON.parse(this.state.plgArgs)
+        params: JSON.parse(JSON.stringify(this.state.plgArgsData))
       },
       container: this.props.container
     }
@@ -133,7 +137,7 @@ export class ProgramPluginSettings
     const sdata = {
       pluginData: {
         plgKey: 'params',
-        plgValue: JSON.stringify(this.state.plgArgs),
+        plgValue: JSON.stringify(this.state.plgArgsData),
         params: []
       },
       container: this.props.container
@@ -167,6 +171,9 @@ export class ProgramPluginSettings
    */
   render() {
 
+    const things = this.props.getParams(this.props.container,
+      this.props.getSelected(this.props.container))
+    console.log(things);
     const container = this.props.container;
     const plglabel = this.props.plgname;
     const plgIsSet = container.getServices()
@@ -192,7 +199,7 @@ export class ProgramPluginSettings
       selectedKey = this.state.selected;
     }
     
-    const plgArgs = this.state.plgArgs;
+    const plgArgs = this.state.plgArgsData;
     const ref = this;
     const saveDataOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
       ref.saveData();
@@ -208,15 +215,15 @@ export class ProgramPluginSettings
       ref.toggleConfig();
     };
 
-    const configOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-      let textCfg = e.target.value;
-      console.log(textCfg);
-      let data = {...ref.state};
-      data.hasBeenModified = true;
-      data.plgArgs = textCfg;
-      //data.plgArgs = JSON.parse(textCfg);
-      ref.setState(data);
-    }
+    // const configOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    //   let textCfg = e.target.value;
+    //   console.log(textCfg);
+    //   let data = {...ref.state};
+    //   data.hasBeenModified = true;
+    //   data.plgArgs = textCfg;
+    //   //data.plgArgs = JSON.parse(textCfg);
+    //   ref.setState(data);
+    // }
 
     const cancelFn = (_e: MouseEvent<HTMLButtonElement>) => {
       ref.cancelConfig();
@@ -229,10 +236,25 @@ export class ProgramPluginSettings
       ref.setState(nstate);
     }
     const configEnabled = this.state.configActive;
-    
     //Config space with current config and executable information
     const currentExe = this.props.getSelected(container);
     const statement = "Currently Selected Program Parameters";
+
+    console.log(plgArgs)
+    const configContainer = configEnabled ? (
+      <div className={styles.pluginConfigTextSpace}>
+        <ProgramParametersContainer services={this.props.container.getServices()}
+            params={plgArgs}  />
+      </div>
+    ) : <></>
+    //
+    // Removed: Adjusting the settings
+    // <textarea className={styles.pluginTextArea}
+    //   value={plgArgs} onChange={configOnChange}>
+    // </textarea>
+    //
+    //
+    
     const configSpace = configEnabled ? (
       <div className={styles.pluginConfigTextSpace}>
 
@@ -242,9 +264,6 @@ export class ProgramPluginSettings
         <div className={styles.pluginHeader}>
           <label className={styles.pluginHeaderLabel}>{statement}</label>
         </div>
-        <textarea className={styles.pluginTextArea}
-          value={plgArgs} onChange={configOnChange}>
-        </textarea>
       </div>) : <></>;
 
     return (
@@ -273,6 +292,7 @@ export class ProgramPluginSettings
             </div>
           </div>
           {configSpace}
+          {configContainer}
         </div>
       </>
     )

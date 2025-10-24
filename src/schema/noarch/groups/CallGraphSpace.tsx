@@ -6,7 +6,7 @@ import {CUReqResult,
 	} from "../obj/CallGraph.ts";
 
 
-import {AppServiceMessage} from "../../../../../net/AppServiceMessage.ts";
+import {AppServiceMessage} from "../../../net/AppServiceMessage.ts";
 
 
 import styles from '../styles/CGSpace.module.css';

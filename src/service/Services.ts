@@ -5,7 +5,6 @@ import { NotifyService } from "./NotifyService"
 import { RefreshService, UpdateTrigger } from "./RefreshService"
 import { ProgramPluginService } from "./ProgramPluginService";
 import { ArchPluginService, ArchUpdateTrigger } from "./ArchPluginService";
-import { UnimplReturn } from "../ui/schema/util/unimpl";
 import { ValidationService } from "./ValidatorService";
 import { RunResultService } from "./RunResultService";
 import { StyleService } from "./StyleService";
@@ -207,7 +206,7 @@ export class NoServicesHolder implements ServicesHolder {
    * Returns the program plugin service
    */
   getProgramPluginService(): ProgramPluginService {
-    return UnimplReturn<ProgramPluginService>();
+    throw new Error("Program Plugin Service is not Implemented")
   }
 
 
@@ -215,7 +214,7 @@ export class NoServicesHolder implements ServicesHolder {
    * Returns the arch plugin service
    */
   getArchPluginService(): ArchPluginService {
-    return UnimplReturn<ArchPluginService>();
+    throw new Error("Arch Plugin Service is not Implemented")
   }
 
   /**

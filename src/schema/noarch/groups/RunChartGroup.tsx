@@ -1,10 +1,10 @@
 
 
 import {ReactElement} from "react";
-import { RunChartContainer } from "../../../../runchart/RunChart";
 import { CGGraphColumn, CGNodeColumn } from "./CallGraphColumn";
-import { ArchWorkspaceZone } from "../../../../workspace/WorkspaceZone";
 import { ArchWorkspaceGroup, ArchWorkspaceProps } from "rottnest-plugin/schema/ArchWorkspace";
+import { RunChartContainer } from "../../../ui/runchart/RunChart";
+import { ArchWorkspaceZone } from "../../../ui/workspace/WorkspaceZone";
 
 
 /**
@@ -22,7 +22,7 @@ export class RunChartGroup implements ArchWorkspaceGroup {
 			<CGGraphColumn
 			key={"widget_graph_column"} 
 				{...data} />,
-			<ArchWorkspaceZone 	
+			<ArchWorkspaceZone
 				key={"widget_wz_design_space"}
 				wsComponent={wspace}
 				workspaceData={{

@@ -1,8 +1,8 @@
 import React from 'react';
-import { ErrorState } from '../schema/global/modules/ErrorState.ts';
 import { NullObject } from '../../util/NullObject.ts';
 import styles from '../styles/ErrorDisplay.module.css';
 import { RefreshService } from '../../service/RefreshService.ts';
+import { ErrorState } from '../context/global/modules/ErrorState.ts';
 
 /**
  * Settings Properties, initialises
