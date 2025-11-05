@@ -11,7 +11,9 @@ import {
 	ArrowDownOutlined,
 	ArrowRightOutlined
 } from '@ant-design/icons'
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo,
+  useCallback, useContext, useId, useTransition
+} from 'react';
 import { ArchWorkspaceZone } from '../ui/workspace/WorkspaceZone';
 import { ReactComponentExports } from 'rottnest-plugin/schema/ServicesHolder';
 
@@ -38,7 +40,9 @@ export class ComponentService {
   }
 
   reactRefs: ReactComponentExports = {
-    useRef, useState, useEffect, ArchWorkspaceZone: AWZ
+    useRef, useState, useEffect, useMemo, useCallback,
+    useId, useContext, useTransition,
+    ArchWorkspaceZone: AWZ
   }
 
   static instance: ComponentService | null = null;
