@@ -132,7 +132,21 @@ export class PluginSettings
     const cancelfn = this.props.cancelFn;
     cancelfn(sdata);
   }
-  
+
+  legacyRemap(kind: string) {
+    const kindMap: { [key: string]: string } = {
+      'Superconducting': 'Four Stage Superconducting',
+      
+    }
+
+    const res = kindMap[kind];
+    if(res) {
+      return res;
+    } else {
+      return kind;
+    }
+    
+  }
 
   /**
    * Renders the component
@@ -145,12 +159,13 @@ export class PluginSettings
     const plgOptions = this.props.plgItemsGetter(container);
     const plgConfig = this.state.config;
 
-
     if(this.state.selected === null) {
       this.state.selected = selectedKey;
     } else {
       selectedKey = this.state.selected;
     }
+
+    selectedKey = this.legacyRemap(selectedKey);
     
     const ref = this;
     const saveDataOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
@@ -195,7 +210,6 @@ export class PluginSettings
           Save Configuration
         </button>
       </div>) : <></>;
-
     return (
       <>
         <div className={styles.pluginSettings}>
