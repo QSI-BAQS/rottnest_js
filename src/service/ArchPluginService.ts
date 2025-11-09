@@ -155,7 +155,10 @@ export class ArchPluginService {
 	 */
 	async mapArch(name: string, archpkg: ArchPackage) {
 		if(archpkg.kind === "Serialised") {
-	    const modtext = btoa(archpkg.data)
+			const byteData = new TextEncoder().encode(archpkg.data);
+			//WARN: toBase64 is a 2025 feature, but the following helps stabilise module switching
+	    const modtext = (Uint8Array.from(byteData) as any).toBase64();
+	    
 	    const module = await import('data:text/javascript;base64,' + modtext);
 			this.storage.addPlugin({
 				archname: name,
