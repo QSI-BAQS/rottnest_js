@@ -44,6 +44,21 @@
   overflow: hidden;
 }
 
+.barItemDark {
+  display: flex;
+  padding: 0;
+  min-width: 20px;
+  /* Reduced from 60px to allow more space */
+  color: #535353;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s, color 0.2s;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 1;
+  overflow: hidden;
+}
+
 .barItem:hover {
   background-color: #35332f;
   color: #ffffff;

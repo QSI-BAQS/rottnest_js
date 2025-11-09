@@ -39,6 +39,7 @@ import styles from '../styles/GlobalBar.module.css';
 import { LoadComponent } from './LoadExtra.tsx';
 import { ProgramPluginObjectProps, ProgramPluginSettings } from './settings/ProgramSettings.tsx';
 import { ArchitectureProject } from 'rottnest-plugin/schema/ArchSchema';
+import { ArchCapabilityQuery } from 'rottnest-plugin/schema/ArchContext';
 /**
  * GlobalBarProps, has a reference to
  * its container and a component map of values
@@ -67,6 +68,7 @@ type BarItemDescription = {
 	name: string
 	toolTip: string
 	image: string
+	capabilityKey?: string
 	style?: string
 	events: BarItemEvents
 	extra?: React.FC<{ rott: RottnestApplication}>
@@ -96,20 +98,29 @@ const BarItem: React.FC<BarItemData> = (props) => {
 	const ico = description.iconComponent;
 	const name = description.name;
 	const ident = description.id;
+	const capabilityKey = description.capabilityKey;
+	
 	const tooltip = description.toolTip;
 	const extra = props.description.extra;
 	const extraProps = { rott: props.containerRef };
 	const extraComponent = extra ? extra(extraProps) : <></>;
+
+	const usableKey = capabilityKey ? capabilityKey : 'Allowed';
+
+	const ctx = props.containerRef.getUIContext().getCurrentContext()
+	
+	const usable = ctx.queryCapability(ArchCapabilityQuery.MakeQuery(usableKey)).Yes()
+		|| usableKey === 'Allowed';
 	
 	//TODO: Something is triggering this twice
 	return (
 		<li 
 			key={ident}
-			className={`${styles.barItem} ${description.style || ''}`}
+			className={`${usable ? styles.barItem : styles.barItemDark } ${description.style || ''}`}
 			title={tooltip}
 		>
 			<div className={styles.barItemContent}
-				onClick={() => events.leftClick(containerRef)}>
+				onClick={() => { if(usable) { events.leftClick(containerRef) } }}>
 				<span className={styles.barItemIcon}>{ico}</span>
 				{(val || name) && (
 					<span className={styles.barItemText}>{val || name}</span>
@@ -276,6 +287,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			image: "MagnifyPlus",
 			events: ZoomInEvent,
 			style: styles.zoomIn,
+			capabilityKey:"CanZoom",
 			iconComponent: <ZoomInOutlined />,
 			helpId: "zoom_controls"
 		},
@@ -285,6 +297,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			toolTip: "Zoom Value", 
 			image: "",
 			events: NullEvents,
+			capabilityKey:"CanZoom",
 			style: styles.zoomValue,
 			iconComponent: <></>,
 			helpId: "zoom_controls"
@@ -293,6 +306,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			id: 1, 
 			name: "", 
 			toolTip: "Zoom Out", 
+			capabilityKey:"CanZoom",
 			image: "MagnifyNegative",
 			events: ZoomOutEvent,
 			style: styles.zoomOut,
@@ -303,6 +317,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			id: 2, 
 			name: "Undo", 
 			toolTip: "Undo", 
+			capabilityKey:"CanUndo",
 			image: "UndoArrow",
 			events: UndoEvent,
 			style: styles.undo,
@@ -314,6 +329,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			name: "Redo", 
 			toolTip: "Redo", 
 			image: "RedoArrow",
+			capabilityKey:"CanRedo",
 			events: RedoEvent,
 			style: styles.redo,
 			iconComponent: <RedoOutlined />,
@@ -364,6 +380,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			toolTip: "Run App (Experiment)", 
 			image: "Run",
 			events: RunEvents,
+			capabilityKey:"CanRun",
 			style: styles.run,
 			iconComponent: <PlaySquareOutlined />,
 			helpId: "compile_button"
@@ -375,6 +392,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			image: "SaveImage",
 			events: SaveEvent,
 			style: styles.save,
+			capabilityKey:"CanSave",
 			iconComponent: <SaveOutlined />,
 			helpId: "save",
 		},
@@ -399,6 +417,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			image: "NewProjectImage",
 			events: NewProjectEvent,
 			style: styles.newProject,
+			capabilityKey:"CanNewProject",
 			iconComponent: <PlusSquareOutlined />,
 			helpId: "new",
 		},
@@ -409,6 +428,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			image: "SettingsImage",
 			events: SettingsEvent,
 			style: styles.settings,
+			capabilityKey:"CanUseSettings",
 			iconComponent: <SettingOutlined />,
 			helpId: "settings",
 		},
