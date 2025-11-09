@@ -407,7 +407,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			helpId: "load",
 			iconComponent: 
 				<>
-				<UploadOutlined />
+				<UploadOutlined style={{cursor:'pointer'}}/>
 				</>
 		},
 		{ 
