@@ -41,7 +41,7 @@ export class NumericParameterContainer
     }
 
     return (
-      <div className={paramStyle.numericContainer}>
+      <div key={`param_${name}`} className={paramStyle.numericContainer}>
         <label htmlFor={name}>{`${name} - ${kind}`}</label>
         <input onChange={inputUpdateFn} name={name} type="text" value={value}></input>
       </div>
@@ -107,7 +107,7 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
         }
         
         return <NumericParameterContainer
-          name={e[0]} kind={e[1]} value={Number(e[2])}
+          key={`numparam_${e[0]}`} name={e[0]} kind={e[1]} value={Number(e[2])}
           isFloat={e[1] === 'float'}
           updateFn={updateFn}
           />

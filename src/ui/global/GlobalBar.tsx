@@ -240,7 +240,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 						.setCurrentExecutable(data.pluginData.plgKey);
 					rott.getServices().getProgramPluginService()
 						.saveProgramData(data.pluginData);
-					rott.getModuleStates().getProgramState().closeProgramSettings();
+					//rott.getModuleStates().getProgramState().closeProgramSettings();
 				},
 				saveConfigFn: (_data: PluginPackage) => {
 					

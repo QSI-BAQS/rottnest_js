@@ -12,8 +12,8 @@ export class NoArchSerializer implements ArchitectureSerializer<any> {
     return '';
   }
 
-  deserialize(_data: string): any {
-    return {};
+  deserialize(data: string): any {
+    return JSON.parse(data);
   }
 
   /**

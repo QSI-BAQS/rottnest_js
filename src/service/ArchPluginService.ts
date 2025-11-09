@@ -230,6 +230,8 @@ export class ArchPluginService {
 			
 	}
 
+
+
 	/**
 	 * Uses the network service to request all
 	 * the architectures on the backend
@@ -237,6 +239,13 @@ export class ArchPluginService {
 	requestArchitectures() {
 		this.netservice.getNetworkService()
 			.sendMessage(MSG_GLOBAL_MAP['arch_list']);
+	}
+
+	requestWithHook(hook: () => void) {
+		this.netservice.getNetworkService()
+			.sendMessageWithHookOnce(
+			MSG_GLOBAL_MAP['arch_list'], hook
+		);
 	}
 
 	/**

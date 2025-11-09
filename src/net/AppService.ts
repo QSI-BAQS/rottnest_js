@@ -39,6 +39,8 @@ export class AppServiceClient {
 	receiveTriggers: Map<string, 
 		ASRecvCallback> = new Map();
 
+	receiveOnceMap: Map<string, ASRecvCallback> = new Map();
+
 	onOpenTrigger: ASOpenCallback | null = null;
 	
 	onDisconnectTrigger: ASDisconnectCallback | null = null;
@@ -161,6 +163,13 @@ export class AppServiceClient {
   		this.onDisconnectTrigger = disconnectFn;
 	}
 
+	sendMessageWithHookOnce(msg: string, hook: () => void) {
+		this.receiveOnceMap.set(msg, (_asm) => {
+			hook();
+		})
+		this.sendMessage(msg);
+	}
+
 	/**
 	 * Will attempt to connect to the
 	 * application service process,
@@ -181,10 +190,18 @@ export class AppServiceClient {
 			const jsmsg = asm.getJSON();
 			if(jsmsg) {
 				let mtype = jsmsg['message'];
+				
 				let fn = this.receiveTriggers
 					.get(mtype);
+
 				if(fn) {
 					fn(asm);
+				}
+				let fnOnce = this.receiveOnceMap.get(mtype);
+				if(fnOnce) {
+					this.receiveOnceMap.delete(mtype);
+					console.log(mtype + ' has finished')
+					fnOnce(asm);	
 				}
 			}
 		}

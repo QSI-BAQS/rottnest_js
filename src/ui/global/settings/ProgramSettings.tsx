@@ -74,7 +74,7 @@ export class ProgramPluginSettings
     index: this.props.index,
     selected: this.props.getSelected(this.props.container),
     prevselected: null,
-    configActive: false,
+    configActive: true,
     config: this.props.getConfig(this.props.container),
     plgArgsData: this.props.getParams(this.props.container,
       this.props.getSelected(this.props.container))!,
@@ -124,7 +124,17 @@ export class ProgramPluginSettings
       },
       container: this.props.container
     }
+    
     savfn(sdata);
+    
+    const params = this.props.getParams(this.props.container,
+        this.props.getSelected(this.props.container));
+    const nstate = {...this.state };
+    nstate.params = {
+      parameters: params!,
+    }
+    console.log(params);
+    console.log("On a save")
   }
 
   /**
@@ -171,9 +181,12 @@ export class ProgramPluginSettings
    */
   render() {
 
-    const things = this.props.getParams(this.props.container,
+    const tryParams = this.props.getParams(this.props.container,
       this.props.getSelected(this.props.container))
-    console.log(things);
+
+    const params = tryParams ? tryParams : [];
+
+
     const container = this.props.container;
     const plglabel = this.props.plgname;
     const plgIsSet = container.getServices()
@@ -199,7 +212,7 @@ export class ProgramPluginSettings
       selectedKey = this.state.selected;
     }
     
-    const plgArgs = this.state.plgArgsData;
+    //const plgArgs = this.state.plgArgsData;
     const ref = this;
     const saveDataOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
       ref.saveData();
@@ -240,12 +253,16 @@ export class ProgramPluginSettings
     const currentExe = this.props.getSelected(container);
     const statement = "Currently Selected Program Parameters";
 
-    console.log(plgArgs)
-    const configContainer = configEnabled ? (
+    const configContainer = configEnabled && currentExe !== 'NoPrg' ? (
+      <>
+      <div className={styles.pluginHeader}>
+        <label className={styles.pluginHeaderLabel}>{statement}</label>
+      </div>
       <div className={styles.pluginConfigTextSpace}>
         <ProgramParametersContainer services={this.props.container.getServices()}
-            params={plgArgs}  />
+            params={params}  />
       </div>
+      </>
     ) : <></>
     //
     // Removed: Adjusting the settings
@@ -260,9 +277,6 @@ export class ProgramPluginSettings
 
         <div className={styles.pluginHeader}>
           <label className={styles.pluginHeaderLabel}>Current Program: {currentExe}</label>
-        </div>
-        <div className={styles.pluginHeader}>
-          <label className={styles.pluginHeaderLabel}>{statement}</label>
         </div>
       </div>) : <></>;
 
@@ -282,8 +296,9 @@ export class ProgramPluginSettings
             <div className={styles.pluginMid}>
               <button className={styles.pluginApply}
                 onClick={saveDataOnClick}>
-                Apply Selection
+                Set Program
               </button>
+
               <div className={styles.pluginSep}></div>
               <button className={styles.pluginConfig}
                 onClick={configOnClick}>
