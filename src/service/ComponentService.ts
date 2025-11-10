@@ -16,6 +16,7 @@ import { useEffect, useRef, useState, useMemo,
 } from 'react';
 import { ArchWorkspaceZone } from '../ui/workspace/WorkspaceZone';
 import { ReactComponentExports } from 'rottnest-plugin/schema/ServicesHolder';
+import { MessageType } from '../net/Protocol';
 
 const AWZ = ArchWorkspaceZone as any;
 
@@ -67,5 +68,11 @@ export class ComponentService {
   getIcons() {
     return this.icons;
   }
-  
+
+  /**
+   * MessageTypes type that is exported
+   */
+  getMessageTypes() {
+    return MessageType;
+  }
 }

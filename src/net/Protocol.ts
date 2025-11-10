@@ -22,9 +22,11 @@ export const MSG_GLOBAL_MAP = {
 	"get_root_graph" : "rottnest.callgraph.get_root_graph",
 	"get_graph" : "rottnest.callgraph.get_graph",
 	"run_result": "rottnest.data.run_result",
-	
 }
 
+/**
+ * MessageType which lists the symbol to string
+ */
 export class MessageType {
 
   // Arch Symbol list
@@ -36,31 +38,37 @@ export class MessageType {
 		SetConfig: "rottnest.arch.set_config",
 		SaveConfig: "rottnest.arch.save_config",
 		LoadConfig: "rottnest.arch.load_config",
-	}
-	 // Executable Symbol list
+	};
+
+	// Executable Symbol list
 	static Executable = {
 		GetList: "rottnest.executable.get_list",
 		GetCurrent: "rottnest.executable.get_current",
-		SetCurrent : "rottnest.executable.setcurrent",
-		GetConfig: "rottnest.executable.getconfig",
-		SetConfig: "rottnest.executable.setconfig",
-		SaveConfig: "rottnest.executable.saveconfig",
-		LoadConfig: "rottnest.executable.loadconfig",
-	}
-	 // Callgraph Symbol list
+		SetCurrent : "rottnest.executable.set_current",
+		GetConfig: "rottnest.executable.get_config",
+		SetConfig: "rottnest.executable.set_config",
+		SaveConfig: "rottnest.executable.save_config",
+		LoadConfig: "rottnest.executable.load_config",
+	};
+
+	// Callgraph Symbol list
 	static CallGraph = {
 		GetRootGraph : "rottnest.callgraph.get_root_graph",
 		GetGraph: "rottnest.callgraph.get_graph",
 		RunGraphNode: "rottnest.callgraph.run_graph_node",
-	}
+		GetStatus: "rottnest.callgraph.get_status",
+	};
+
 	// Data Symbol list
 	static Data = {
 		RunResult: "rottnest.data.run_result",
-	}
+	};
+
   // Layout Symbol list
   static Layout = {
-  	Use: "rottnest.layout.run",
-	}
+  	Run: "rottnest.layout.run",
+	};
+
   // Error Symbol list
   static Error: string = "rottnest.err";
 }

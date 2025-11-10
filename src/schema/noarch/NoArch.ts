@@ -29,8 +29,6 @@ import { ServicesHolder } from 'rottnest-plugin/schema/ServicesHolder';
 export class NoArchSchema implements ArchitectureSchema {
 
   name: string = "NoArch";
-
-
   
   /**
    * Creates a noarch schema that can be style and outline when the application is

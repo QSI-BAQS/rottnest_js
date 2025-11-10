@@ -6,6 +6,7 @@ import {CGResult, CGResultDummy, CUReqResult, CUReqResultDummy}
 	from "../obj/CallGraph.ts"
 import { ArchStashMap, ArchWorkspace, ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
 import { ArchitectureObject } from "rottnest-plugin/schema/ArchSchema";
+import { MessageType } from "../../../net/Protocol.ts";
 
 type NodeData = {
 	idx: string 
@@ -48,7 +49,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 			.architecture as any;
 		
 		const appService = container.getConnectionManager().getNetworkService();
-		appService.sendObj('cg_lat2d_run_graph_node', {
+		appService.sendObj(MessageType.CallGraph.RunGraphNode, {
 				gid: data.idx
 			})
 	}
@@ -404,7 +405,7 @@ class RootListItem
 		const aps = this.container.getConnectionManager().getNetworkService();
 		if(this.rootIdx === 'root') {
 			this.rlist = new Set(['root']);	
-			aps.sendObj('cg_lat2d_get_root_graph', {});
+			aps.sendObj(MessageType.CallGraph.GetRootGraph, {});
 			let nnode = {
 				idx: this.rootIdx
 			};
@@ -436,7 +437,7 @@ class RootListItem
 
 			this.bufferMap
 				.insert('root_node',nstr);
-			aps.sendObj('cg_lat2d_get_graph',  {gid: this.rootIdx });
+			aps.sendObj(MessageType.CallGraph.GetGraph,  {gid: this.rootIdx });
 			//this.refresh(nSet);
 			this.bufferMap.commit();
 		}
