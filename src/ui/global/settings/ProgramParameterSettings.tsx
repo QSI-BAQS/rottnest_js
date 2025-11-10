@@ -173,7 +173,6 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
       <button className={style.pluginApply}
         onClick={argsUpdate}>Save</button>
       <div className={style.pluginSep}></div>
-      
       </div>
       </>
     )
