@@ -12,6 +12,7 @@ import {AppServiceMessage} from "../../../net/AppServiceMessage.ts";
 import styles from '../styles/CGSpace.module.css';
 import { NetParserOperations, RottStatusResponseMSG } from "../net/NetParserOps.ts";
 import { ArchStashMap, ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
+import { MessageType } from "../../../net/Protocol.ts";
 
 interface CGUpdateableContext {	
 	pushPositionUpdate(pdata: CGLinePositionData): void
@@ -286,7 +287,8 @@ class CGObject extends React.Component<CGDispData,
 				if(this.props.cuReqData === null ||
 				  this.props.cuReqData.status 
 					!== 'complete') {
-					this.apservice.sendObj('cg_lat2d_get_graph', {
+					this.apservice.sendObj(
+						MessageType.CallGraph.GetGraph, {
 						'gid': this.data.idx
 					});
 					this.state.cuReady = true;
@@ -1127,7 +1129,7 @@ export class CallGraphSpace extends
 
 						const aps = cgref.appService;
 						cgref.resetState();
-						aps.sendObj('cg_lat2d_get_root_graph', JSON.stringify(
+						aps.sendObj(MessageType.CallGraph.GetRootGraph, JSON.stringify(
 							{ gid: 0 }
 						));
 						

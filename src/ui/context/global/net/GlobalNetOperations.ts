@@ -5,12 +5,12 @@ import { ProgramPlugin } from '../../../../obj/plugin/Program.ts'
 //import { ArchitecturePlugin } from '../../../../obj/plugin/Architecture.ts'
 import { CommEventOps, CommOpQueue, CommsActions } from '../ops/CommsOps.ts';
 
-import { MSG_REMAP, MSG_GLOBAL_MAP } from "../../../../net/MessageRemap";
+import { MessageType } from '../../../../net/Protocol.ts';
 import RottnestApplication from "../../../container/RottnestApplication.tsx";
 
 export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvErr: {
-    evkey: MSG_REMAP['err'],
+    evkey: MessageType.Error,
     evtrigger: (_: AppServiceClient, obj: RottnestApplication, m: any) => {
     	let errState = obj.getModuleStates().getErrorState();
       let someMsg = JSON.stringify(m);
@@ -21,7 +21,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 		}
 	},
   recvArchList: {
-    evkey: MSG_GLOBAL_MAP['arch_list'],
+    evkey: MessageType.Arch.GetList,
     evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
 
 			const styService = obj.getServices().getStyleService();
@@ -44,7 +44,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 		}
   },
   recvProgramGetCurrent: {
-    evkey: 'program_get_current',
+    evkey: MessageType.Executable.GetCurrent,
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
 			const prg = m.getJSON().payload.prg;
 			let newProg: ProgramPlugin = {
@@ -70,7 +70,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 		}
   },
   recvProgramList: {
-    evkey: MSG_GLOBAL_MAP['program_list'],
+    evkey: MessageType.Executable.GetList,
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
 			const plist = m.getJSON().payload.prglist;
 			let newProgData: Array<ProgramPlugin> = [];
@@ -94,7 +94,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 		}
   },
   recvArchConfig: {
-    evkey: MSG_GLOBAL_MAP['arch_get_config'],
+    evkey: MessageType.Arch.GetConfig,
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
     	let archservice = obj.getServices().getArchPluginService();
     	archservice.storeConfig(m.getJSON().payload.config);
@@ -104,7 +104,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 		}
   },
   recvProgramConfig: {
-    evkey: MSG_GLOBAL_MAP['program_get_config'],
+    evkey: MessageType.Executable.GetConfig,
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
 			let prgservice = obj.getServices().getProgramPluginService();
 			prgservice.storeConfig(m.getJSON().payload.config);
@@ -125,11 +125,11 @@ const RTADispatchOperations = [
 		opkey: "initial",
 		operation: (appService: AppServiceClient, _obj: RottnestApplication) => {
 			if(appService.isConnected()) {	
-				appService.enqueueMessage(MSG_GLOBAL_MAP['arch_list']);
-				appService.enqueueMessage(MSG_GLOBAL_MAP['arch_get_config']);
-				appService.enqueueMessage(MSG_GLOBAL_MAP['program_list']);
-				appService.enqueueMessage(MSG_GLOBAL_MAP['program_get_config']);
-				appService.enqueueMessage(MSG_GLOBAL_MAP['program_get_current']);
+				appService.enqueueMessage(MessageType.Arch.GetList);
+				appService.enqueueMessage(MessageType.Arch.GetConfig);
+				appService.enqueueMessage(MessageType.Executable.GetList);
+				appService.enqueueMessage(MessageType.Executable.GetConfig);
+				appService.enqueueMessage(MessageType.Executable.GetCurrent);
 				appService.consumeFromQueue();
 			}
 		}

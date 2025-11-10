@@ -5,8 +5,9 @@ import { ArchAPIMap, ArchitecturePlugin, ArchitecturePluginConfig,
 	ArchitecturesToEntry, ArchPackage, ArchPluginDefault, ArchSet, ArchSetDefault, 
     ArchStorageEntry}
 	from "../obj/plugin/Architecture";
-import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
+// import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
 import { PluginEntry } from "../ui/global/settings/GeneralSettings";
+import { MessageType } from "../net/Protocol";
 
 ///TODO: Move the interfaces into a separate module
 import { Services } from "./Services";
@@ -221,7 +222,7 @@ export class ArchPluginService {
 			} else {
 				console.error("Unable to swap architecture, metadata listed, plugin missing");
 			}
-			this.netservice.getNetworkService().sendObj(MSG_GLOBAL_MAP['arch_set'], {
+			this.netservice.getNetworkService().sendObj(MessageType.Arch.SetCurrent, {
 				'arch_name': archKey
 			})
 			//this.update()
@@ -241,13 +242,13 @@ export class ArchPluginService {
 	 */
 	requestArchitectures() {
 		this.netservice.getNetworkService()
-			.sendMessage(MSG_GLOBAL_MAP['arch_list']);
+			.sendMessage(MessageType.Arch.GetList);
 	}
 
 	requestWithHook(hook: () => void) {
 		this.netservice.getNetworkService()
 			.sendMessageWithHookOnce(
-			MSG_GLOBAL_MAP['arch_list'], hook
+			MessageType.Arch.GetList, hook
 		);
 	}
 
@@ -258,7 +259,7 @@ export class ArchPluginService {
 	saveArchConfig(data: PluginData) {
 		
 		this.stored.config.contents = data.plgValue;
-		this.netservice.getNetworkService().sendObj(MSG_GLOBAL_MAP['arch_set_config'],
+		this.netservice.getNetworkService().sendObj(MessageType.Arch.SetConfig,
 			{ config: data.plgValue });
 		this.refservice.triggerRefresh();
 	}

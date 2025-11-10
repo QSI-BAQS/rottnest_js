@@ -1,4 +1,4 @@
-import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
+import { MessageType } from "../net/Protocol";
 import { PluginData } from "../obj/plugin/Generic";
 import {
     ProgramParam,
@@ -77,7 +77,7 @@ export class ProgramPluginService {
 	 */
 	requestProgramList() {
 		const netserv = this.netservice.getNetworkService();
-		netserv.sendMessage(MSG_GLOBAL_MAP['program_list']);
+		netserv.sendMessage(MessageType.Executable.GetList);
 	}
 
   /**
@@ -99,7 +99,7 @@ export class ProgramPluginService {
 		if(prog) {
 			this.current = prog;
 			this.refservice.triggerRefresh();
-			netserv.sendObj(MSG_GLOBAL_MAP['program_set_current'], pdata);
+			netserv.sendObj(MessageType.Executable.SetCurrent, pdata);
 		} 
 	}
 
@@ -119,7 +119,7 @@ export class ProgramPluginService {
 	saveProgramConfig(data: PluginData) {
 		this.stored.config.contents = data.plgValue;
 		this.refservice.triggerRefresh();
-		this.netservice.appService.sendObj(MSG_GLOBAL_MAP['program_set_config'],
+		this.netservice.appService.sendObj(MessageType.Executable.SetConfig,
 			{ config: data.plgValue });
 	}
 

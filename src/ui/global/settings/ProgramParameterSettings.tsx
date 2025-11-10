@@ -1,10 +1,9 @@
 import React, { ChangeEvent, MouseEvent } from "react"
 import { ProgramParam } from "../../../obj/plugin/Program"
-
 import { Services } from "../../../service/Services";
-import { MSG_GLOBAL_MAP } from "../../../net/MessageRemap";
 import style from '../../styles/PluginSettingsForm.module.css';
 import paramStyle from '../../styles/ProgramParameterSettings.module.css';
+import { MessageType } from "../../../net/Protocol";
 /**
  * Displays and allows the data to be edited
  */
@@ -115,7 +114,7 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
 
     const argsUpdate = (_: MouseEvent<HTMLButtonElement>) => {
       services.getNetworkService()
-        .getNetworkService().sendObj(MSG_GLOBAL_MAP['program_set_config'],
+        .getNetworkService().sendObj(MessageType.Executable.SetConfig,
           self.state.params.entries().map(kv => {
             const [_, v] = kv;
             return v;

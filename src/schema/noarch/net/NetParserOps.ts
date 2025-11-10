@@ -1,4 +1,5 @@
 import { ArchitectureConnectionManager } from "rottnest-plugin/schema/ArchSchema";
+import { MessageType } from "../../../net/Protocol";
 
 
 export class RottArchMSG {
@@ -11,7 +12,7 @@ export class RottArchMSG {
 
 	toJsonStr(): string {
 		return JSON.stringify({
-			message: "use",
+			message: MessageType.LayoutUse,
 			originator: "rottnest",
 			payload: this.tschedData,
 		});
