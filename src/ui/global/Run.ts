@@ -1,5 +1,6 @@
 import { ArchCapabilityQuery } from "rottnest-plugin/schema/ArchContext";
 import RottnestApplication from "../container/RottnestApplication";
+import { MessageType } from "../../net/Protocol";
 
 const leftClick = (container: RottnestApplication) => {
 
@@ -23,13 +24,12 @@ const leftClick = (container: RottnestApplication) => {
 			.getConnectionManager()
 			.getNetworkService();
 
-		const netmap = rott.getAppState()
-			.getArchitectureObject()
-			.getConnectionManager()
-			.getNetworkMap();
+		// const netmap = rott.getAppState()
+		// 	.getArchitectureObject()
+		// 	.getConnectionManager()
+		// 	.getNetworkMap();
 
-		//TODO: Getting the remap
-		const archremap = netmap.get('use_arch')!;
+		const archremap = MessageType.Layout.Run;
 		const obj = projNet.forNetwork(fmt);
 		console.log(obj, projNet)
 		appnet.sendObj(archremap, obj);

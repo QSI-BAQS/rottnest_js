@@ -13,6 +13,7 @@ export type NumericParamterData = {
   value: number
   isFloat: boolean
   updateFn: (n: number) => void;
+  hasChanged: boolean
 }
 
 /**
@@ -32,6 +33,7 @@ export class NumericParameterContainer
     const value = this.props.value;
     const updateFn = this.props.updateFn;
     const convertFn = isFloat ? Number.parseFloat : Number.parseInt;
+    const hasChanged = this.props.hasChanged;
     
     const inputUpdateFn = (e: ChangeEvent<HTMLInputElement>) => {
       
@@ -40,7 +42,9 @@ export class NumericParameterContainer
     }
 
     return (
-      <div key={`param_${name}`} className={paramStyle.numericContainer}>
+      <div key={`param_${name}`} className={paramStyle.numericContainer}
+          style={{backgroundColor: hasChanged ? '#ff000066' : '#00000000',
+            borderRadius: '5px'}}>
         <label htmlFor={name}>{`${name} - ${kind}`}</label>
         <input onChange={inputUpdateFn} name={name} type="text" value={value}></input>
       </div>
@@ -63,6 +67,7 @@ export type ProgramParameterData = {
  * ProgramParameterState, holds a map
  */
 export type ProgramParameterState = {
+  oldState: Map<string, ProgramParam>
   params: Map<string, ProgramParam>
 }
 
@@ -72,14 +77,19 @@ export type ProgramParameterState = {
  */
 export class ProgramParametersContainer extends React.Component<ProgramParameterData, ProgramParameterState> {
 
-  state: ProgramParameterState = {
-    params: (() => {
+  generateParamMap() {
+    return (() => {
         const map: Map<string, ProgramParam> = new Map();
         this.props.params.forEach(e => {
-          map.set(e[0], e);
+          map.set(e[0], [...e]);
         })
         return map; 
       })()
+  }
+
+  state: ProgramParameterState = {
+    oldState: this.generateParamMap(),
+    params: this.generateParamMap()
   }
 
   updateState() {
@@ -91,6 +101,26 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
 
     const self = this;
     const services = this.props.services;
+
+    const validateChanges = (): [Map<string, boolean>, boolean] => {
+      const params = new Array(...self.state.params.entries());
+      const oldParams = self.state.oldState;
+      const valMap = new Map();
+      let notSame = false;
+      for(let i = 0; i < params.length; i++) {
+        const pEntry = params[i];
+
+        const [ pKey, pValue ] = pEntry;
+        const oValue = oldParams.get(pKey);
+        notSame = notSame || (oValue ? oValue[2] !== pValue[2] : true);
+        valMap.set(pKey, oValue ? oValue[2] !== pValue[2] : true)
+      }
+
+      return [valMap, notSame];
+    }
+
+    const [valMap, notSame] = validateChanges();
+    console.log(notSame);
     const renderedContainers = new Array(...this.state
       .params.entries().map(entry => {
         const [k, e] = entry;
@@ -106,30 +136,45 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
         }
         
         return <NumericParameterContainer
-          key={`numparam_${e[0]}`} name={e[0]} kind={e[1]} value={Number(e[2])}
+          key={`numparam_${e[0]}`} name={e[0]} kind={e[1]}
+          hasChanged={valMap.get(e[0])!}
+          value={Number(e[2])}
           isFloat={e[1] === 'float'}
           updateFn={updateFn}
           />
       }));
 
+
     const argsUpdate = (_: MouseEvent<HTMLButtonElement>) => {
-      services.getNetworkService()
-        .getNetworkService().sendObj(MessageType.Executable.SetConfig,
-          self.state.params.entries().map(kv => {
+      const notifyserv = services.getNotifyService();
+      const refserv = services.getRefreshService();
+      const paramsGroup = self.state.params.entries().map(kv => {
             const [_, v] = kv;
             return v;
           })
-        );
+      services.getNetworkService()
+        .getNetworkService().sendObj(MessageType.Executable.SetConfig,
+          paramsGroup);
+      self.state.oldState = this.state.params;
+      notifyserv.makeMessageWithId('param-set-notify', "Program Parameters",
+        "Program parameters have been set");
+
+      refserv.triggerRefresh();
     }
 
-
-    console.log(renderedContainers);
     return (
       <>
       <div className={paramStyle.paramContainer}>
         {renderedContainers}
+        {notSame ? <div style={{textAlign: "center",
+          color: '#ff0000ff', paddingTop: '0.5em'}}>Changes are not saved</div> : <></>}
       </div>
-      <button className={style.pluginApply} onClick={argsUpdate}>Update</button>
+      <div style={{display: 'flex'}}>
+      <button className={style.pluginApply}
+        onClick={argsUpdate}>Save</button>
+      <div className={style.pluginSep}></div>
+      
+      </div>
       </>
     )
   }

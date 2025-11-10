@@ -15,7 +15,8 @@
 	padding-bottom: 1em;
 	filter: drop-shadow(0 0 1.75rem #111111);
 	opacity: 0;
-	animation: onEnter 100ms linear forwards
+	animation: onEnter 100ms linear forwards;
+	z-index: 100;
 }
 
 .messageView:hover {

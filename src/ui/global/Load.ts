@@ -55,10 +55,28 @@ function getArchitectureList(rott: RottnestApplication) {
 	return archs;
 }
 
+function findInRemap(name: string) {
+	
+	const archMap: { [key:string]: string } = {
+		'lat2d': 'Four Stage Superconducting',
+		'Superconducting': 'Four Stage Superconducting',
+		'Four Stage Superconducting': 'Four Staged Superconducting',
+		'Active Volume': 'Active Volume'
+	}
+
+	const result = archMap[name];
+	if(result) {
+		return result;
+	} else {
+		return name;
+	}
+}
+
 function findSuitableArchitecture(name: string, archList: Array<PluginEntry>) {
 	//TODO: Make this mapping dynamic
 	const archMap: { [key:string]: string } = {
 		'lat2d': 'Four Stage Superconducting',
+		'Superconducting': 'Four Stage Superconducting',
 		'Four Stage Superconducting': 'Four Staged Superconducting',
 		'Active Volume': 'Active Volume'
 	}
@@ -96,19 +114,16 @@ export const hiddenInputProc = async(e: any, rott: RottnestApplication) => {
 			const serialiser = currentArchObj.getSerializer();
  
 			const currentArchName = currentArchObj.getName();
-	
 				if(serialiser) {	
 					reader.addEventListener('load', () => {
-					let result = serialiser.deserialize(CheckedDeserialize(reader.result));
+					let result = serialiser
+						.deserialize(CheckedDeserialize(reader.result));
 
 					if(DeserialFailMarkerCheck(result)) {
 						const projectArch = result.header.architecture;
-						console.log('Attempting to swap, checking')
-						if(currentArchName !== projectArch) {
+						if(findInRemap(currentArchName) !== findInRemap(projectArch)) {
 							const archList = getArchitectureList(rott);
 							const suitable = findSuitableArchitecture(projectArch, archList);
-							console.log(suitable, archList, projectArch);
-							console.log('Attempting to swap, getting suitable');
 							if(suitable !== undefined) {
 								//Trigger a move to a new arch and with the project associated.
 								// Get arch schema
@@ -119,23 +134,21 @@ export const hiddenInputProc = async(e: any, rott: RottnestApplication) => {
 									plgValue: suitable.plgName,
 									params: suitable.params
 								})
-								console.log('Attempting to swap, swapping')
 								const newArchObj = rott.getAppState().getArchitectureObject();
 								//Needs to be re-interpreted!
 								const newSerializer = newArchObj.getSerializer();
 								if(newSerializer) {
 									
 									const newObj = newSerializer.deserialize(CheckedDeserialize(reader.result));
-									console.log(newObj);
 									if(newObj) {
 										newArchObj.setProject(newObj);
 										
 									}
 								} 
+							}						
+						} else {
+							currentArchObj.setProject(result as any);
 							
-							}
-
-						
 						}
 										
 					} else {

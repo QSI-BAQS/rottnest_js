@@ -259,8 +259,9 @@ export class ProgramPluginSettings
         <label className={styles.pluginHeaderLabel}>{statement}</label>
       </div>
       <div className={styles.pluginConfigTextSpace}>
-        <ProgramParametersContainer services={this.props.container.getServices()}
-            params={params}  />
+        <ProgramParametersContainer
+          services={this.props.container.getServices()}
+            params={params} />
       </div>
       </>
     ) : <></>

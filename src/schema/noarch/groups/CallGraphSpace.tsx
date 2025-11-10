@@ -537,11 +537,11 @@ export class CallGraphSpace extends
 		super(props);
 		const container = this.props.architecture;
 		const aService = container.getConnectionManager().getNetworkService();
-		aService.hookContext(this,'cg_lat2d_status_response');
-		aService.hookContext(this,'cg_lat2d_get_graph');
-		aService.hookContext(this,'cg_lat2d_get_root_graph');
-		aService.hookContext(this,'cg_lat2d_run_graph_node');
-		aService.hookContext(this,'arch_lat2d_run_result');
+		aService.hookContext(this, MessageType.CallGraph.GetStatus);
+		aService.hookContext(this, MessageType.CallGraph.GetGraph);
+		aService.hookContext(this, MessageType.CallGraph.GetRootGraph);
+		aService.hookContext(this, MessageType.CallGraph.RunGraphNode);
+		aService.hookContext(this, MessageType.Layout.Run);
 	}
 	
 	serviceHook(asm: AppServiceMessage): void {
@@ -570,7 +570,7 @@ export class CallGraphSpace extends
 						= {...this.state}
 					this.setState(nState);
 				}
-			} else if(jsonObj.message === 'cg_lat2d_get_graph') {
+			} else if(jsonObj.message === MessageType.CallGraph.GetGraph) {
 				//let gid = jsonObj.gid;
 				let parserOps = new NetParserOperations();
 				let graph = parserOps.decodeGraph(asm); //TODO
@@ -618,7 +618,7 @@ export class CallGraphSpace extends
 				nState.refresh = true;
 				cgspace.setState(nState);
 
-			} else if(jsonObj.message === 'cg_lat2d_get_root_graph') {
+			} else if(jsonObj.message === MessageType.CallGraph.GetRootGraph) {
 				let parserOps = new NetParserOperations();
 				let graph = parserOps.decodeGraph(asm);
 				let expands = true;
@@ -642,8 +642,8 @@ export class CallGraphSpace extends
 				nState.refresh = true;
 				cgspace.setState(nState);
 
-			} else if(jsonObj.message === 'arch_lat2d_run_result' ||
-				jsonObj.message === 'cg_lat2d_run_graph_node') {
+			} else if(jsonObj.message === MessageType.Layout.Run ||
+				jsonObj.message === MessageType.CallGraph.RunGraphNode) {
 			
 				//TODO Set the graph id for
 				//the msg to be sent for
