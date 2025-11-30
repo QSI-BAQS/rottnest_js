@@ -377,7 +377,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 		{ 
 			id: 10, 
 			name: "Run", 
-			toolTip: "Run App (Experiment)", 
+			toolTip: "Run", 
 			image: "Run",
 			events: RunEvents,
 			capabilityKey:"CanRun",
