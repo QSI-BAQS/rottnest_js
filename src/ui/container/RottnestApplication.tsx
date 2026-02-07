@@ -91,6 +91,9 @@ export default class RottnestApplication
 		return this.state.appState.modstate.getStates();
 	}
 
+	/**
+	 * Gets the settings form for the project
+	 */
 	getSettingsForm() {
 		return this.state.appState
 			.getArchitectureObject()

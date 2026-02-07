@@ -9,10 +9,11 @@ import { ValidationService } from "./ValidatorService";
 import { RunResultService } from "./RunResultService";
 import { StyleService } from "./StyleService";
 import { ArchStorageEntry } from "../obj/plugin/Architecture";
-import { ZoomService } from "./ZoomService";
+import { ZoomModuleParent, ZoomService } from "./ZoomService";
 import { ComponentService } from "./ComponentService";
 import { ServicesHolder } from "rottnest-plugin/schema/ServicesHolder";
 
+type AppTarget = UpdateTrigger & ZoomModuleParent;
 
 /**
  * This is a set of services that have been
@@ -32,7 +33,7 @@ export class Services implements ServicesHolder {
   zoomService: ZoomService;
   help: HelpService;
 
-  constructor(refreshTarget: UpdateTrigger, _container: ServicesHolder,
+  constructor(refreshTarget: AppTarget, _container: ServicesHolder,
     archUpdate: ArchUpdateTrigger, schemas: Array<ArchStorageEntry>) {
     
     this.refresh = new RefreshService(refreshTarget);
@@ -46,7 +47,7 @@ export class Services implements ServicesHolder {
       this.refresh, this.network);
     this.help = new HelpService(this.refresh, this.inputs);
     this.rrservice = new RunResultService();
-    this.zoomService = new ZoomService();
+    this.zoomService = new ZoomService(100, refreshTarget);
   }
 
   /**
@@ -148,7 +149,9 @@ export class Services implements ServicesHolder {
  */
 export class NoServices extends Services {
   constructor() {
-    super({ triggerUpdate: () => {} }, new NoServicesHolder(), () => {},
+    super({ triggerUpdate: () => {},
+      getModuleStates: () => { return {} as any },
+    }, new NoServicesHolder(), () => {},
     []);
   }
 }
@@ -236,7 +239,8 @@ export class NoServicesHolder implements ServicesHolder {
    * Gets the zoomservice
    */
   getZoomService() {
-    return new ZoomService();
+    // Return a broken zoom service
+    return new ZoomService(100, {} as any);
   }
 
   getComponentService() {

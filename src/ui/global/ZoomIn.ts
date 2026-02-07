@@ -3,10 +3,12 @@ import RottnestApplication from "../container/RottnestApplication"
 
 
 const leftClick = (rott: RottnestApplication) => {
+
 	const zoomState = rott.getModuleStates().getZoomState();
 	const notify = rott.getServices().getNotifyService();
 	const refserv = rott.getServices().getRefreshService();
 	const ctxobj = rott.getUIContext().getCurrentContext();
+
 	if(ctxobj.queryCapability(ArchCapabilityQuery.MakeQuery("CanZoom")).Yes()) {
 		zoomState.zoomIn(25);
 	} else {

@@ -1,4 +1,9 @@
+import { RottnestApplicationComponentStates } from "../ui/context/global/ApplicationState";
 
+
+export interface ZoomModuleParent {
+  getModuleStates(): RottnestApplicationComponentStates
+}
 
 /**
  * Zoom Service so it can be exposed and retrieve the information related
@@ -8,12 +13,14 @@
 export class ZoomService {
 
   zoomValue: number;
+  moduleParent: ZoomModuleParent;
 
   /**
    * Constructs the zoom service
    */
-  constructor(zoomValue: number = 100) {
+  constructor(zoomValue: number = 100, moduleParent: ZoomModuleParent) {
     this.zoomValue = zoomValue;
+    this.moduleParent = moduleParent;
   }
 
   /**
@@ -21,6 +28,10 @@ export class ZoomService {
    */
   updateZoomValue(value: number) {
     this.zoomValue = value;
+    const zstate = this.moduleParent
+      .getModuleStates()
+      .getZoomState();
+    zstate.zoomValue = this.zoomValue;
   }
 
   /**
