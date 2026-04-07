@@ -503,9 +503,7 @@ class CGRootList
 		const container = this.props.container;
 		const selfRef = this;
 		const refreshColumn = (set: Set<string>) => {
-			console.log(set);
 			selfRef.setState({ rootList: set });
-			console.log("Did you run?");
 		};
 		const dispList = rlist.entries().map((e, i) => {
 			const tup: RootListItemTup = {

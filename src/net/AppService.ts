@@ -1,5 +1,6 @@
 import { AppServiceMessage } from "./AppServiceMessage.ts"; 
 import { RottRunResultMSG} from "./Messages.ts";
+import { MessageType } from "./Protocol.ts";
 
 export const APP_URL: string = "ws://localhost:8080/websocket";
 
@@ -54,7 +55,6 @@ export class AppServiceClient {
 			this.buffer.push(msg);
 			return true;
 		}
-		console.error("Unable to queue data");
 		return false;
 	}
 
@@ -141,9 +141,7 @@ export class AppServiceClient {
 	 * Sends an object as part of the payload
 	 */
 	sendObj(message: string, payload: any) {
-		console.log("Yo");
 		if(this.socket) {
-			console.log("Did we send?");
 			this.socket.send(
 				JSON.stringify({
 					message,
@@ -152,6 +150,7 @@ export class AppServiceClient {
 			);
 		}
 	}
+
 
 	sendObject(message: string, payload: any) {
 		this.sendObj(message, payload);
@@ -200,7 +199,6 @@ export class AppServiceClient {
 				let fnOnce = this.receiveOnceMap.get(mtype);
 				if(fnOnce) {
 					this.receiveOnceMap.delete(mtype);
-					console.log(mtype + ' has finished')
 					fnOnce(asm);	
 				}
 			}
@@ -210,7 +208,6 @@ export class AppServiceClient {
 		
 		const onOpenHandler = (_: any) => {
 			if(self.onOpenTrigger) {
-				console.log("Socket is opening");
 				self.onOpenTrigger();
 			}
 		}
@@ -223,7 +220,6 @@ export class AppServiceClient {
 
 	  	const onCloseHandler = (_: any) => {
 	    	if(self.onDisconnectTrigger) {
-	    		console.log("Socket is closing");	
 	      	self.onDisconnectTrigger();
 	    	}
 	  	}
@@ -268,10 +264,18 @@ export class AppServiceClient {
 	}
 
 	runResult(runMsg: RottRunResultMSG) {
-		console.log(runMsg);	
 		if(this.socket) {
 			this.socket.send(runMsg.toJsonStr());
 		}
+	}
+
+	/**
+	 * On the connection being established, it should
+	 * attempt to execute the following messages
+	 */
+	onConnect() {
+		this.sendMessage(MessageType.Arch.GetList);
+		this.sendMessage(MessageType.Executable.GetList);
 	}
 }
 

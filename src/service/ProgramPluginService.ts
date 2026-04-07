@@ -20,6 +20,7 @@ export class ProgramPluginService {
 
   stored: ProgramPluginSet = ProgramPluginSetDefault();
   current: ProgramPlugin | null = null;
+  currentName: string | null = null;
   netservice: NetworkService;
   refservice: RefreshService;
 
@@ -80,36 +81,37 @@ export class ProgramPluginService {
 		netserv.sendMessage(MessageType.Executable.GetList);
 	}
 
+	setCurrentProgramName(data: PluginData) {
+		this.currentName = data.plgKey;
+	}
+
   /**
    * Saves the program data
    */  
 	saveProgramData(data: PluginData) {
-		console.log(data);
-		const netserv = this.netservice.getNetworkService();
-		const prog = this.stored.programs
-			.find((e: ProgramPlugin) => e.name === data.plgKey);
-
-		const pdata = {
-			prgname: prog?.name,
-			prgargs: data.params
-		};
-		console.log(data);
-		console.log(pdata)
+		// const prog = this.stored.programs
+		// 	.find((e: ProgramPlugin) => e.name === data.plgKey);
 		
-		if(prog) {
-			this.current = prog;
-			this.refservice.triggerRefresh();
-			netserv.sendObj(MessageType.Executable.SetCurrent, pdata);
-		} 
+		// this.current = prog === undefined ? null : prog;
+		// console.log(this.current);
+		this.current = {
+			name: data.plgKey,
+			params: data.params,
+			parametersSet: true
+		}
 	}
 
 	/**
 	 * Sets the current executable
 	 */
 	setCurrentExecutable(exe: string) {
+		const netserv = this.netservice.getNetworkService();
 		const prog = this.stored.programs.find((e) => e.name === exe);
 		if(prog) {
 			this.current = prog;
+			netserv.sendObject(MessageType.Executable.SetCurrent, {
+				"executable_key" : exe
+			});
 		}
 	}
 
@@ -118,9 +120,12 @@ export class ProgramPluginService {
    */  
 	saveProgramConfig(data: PluginData) {
 		this.stored.config.contents = data.plgValue;
+		this.netservice.appService.sendObj(
+			MessageType.Executable.SetConfig,
+			{
+				executable_config: data.plgValue
+			});
 		this.refservice.triggerRefresh();
-		this.netservice.appService.sendObj(MessageType.Executable.SetConfig,
-			{ config: data.plgValue });
 	}
 
 	/**
@@ -167,6 +172,10 @@ export class ProgramPluginService {
 		} else {
 			return ProgramPluginDefault();
 		}
+	}
+
+	getCurrentName() {
+		return this.currentName;
 	}
 
 	isCurrentSet(): boolean {

@@ -8,7 +8,7 @@ const leftClick = (container: RottnestApplication) => {
 	const ctx = rott.getUIContext().getCurrentContext()
 	const notify = rott.getServices().getNotifyService();
 	const refserv = rott.getServices().getRefreshService();
-	console.log("Run");
+
 	if(ctx.queryCapability(ArchCapabilityQuery.MakeQuery("CanNetwork")).Yes()) {
 
 		const projNet = rott.getAppState()
@@ -24,21 +24,15 @@ const leftClick = (container: RottnestApplication) => {
 			.getConnectionManager()
 			.getNetworkService();
 
-		// const netmap = rott.getAppState()
-		// 	.getArchitectureObject()
-		// 	.getConnectionManager()
-		// 	.getNetworkMap();
 
-
-		//TODO: Marked for changes to ensure
-		//   
-		const archremap = MessageType.Layout.Run;
-		const obj = { "layout" : projNet.forNetwork(fmt) };
+		const archremap = MessageType.Layout.Prepare;
+		
+		const obj = projNet.forNetwork(fmt);
 		console.log(obj, projNet)
 		appnet.sendObj(archremap, obj);
 
 		notify.makeMessageWithId('send-arch-good', "Network Communications",
-			"Object has been sent to process-pool");
+			"Object has been sent to process-pool, waiting for response");
 		refserv.triggerRefresh();
 	} else {
 		notify.makeMessageWithId('send-arch-err', "Network Communications",

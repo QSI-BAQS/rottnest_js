@@ -115,26 +115,25 @@ export class ProgramPluginSettings
    */
   saveData() {
     const savfn = this.props.saveDataFn;
-
     const sdata = {
       pluginData: {
         plgKey: this.state.selected || '',
         plgValue: this.state.selected || '',
-        params: JSON.parse(JSON.stringify(this.state.plgArgsData))
+        params: this.state.plgArgsData
       },
       container: this.props.container
     }
-    
     savfn(sdata);
-    
-    const params = this.props.getParams(this.props.container,
-        this.props.getSelected(this.props.container));
+    const container = this.props.container;
+    // const params = this.props.getParams(this.props.container,
+    const prgPluginSrv = container.getServices().getProgramPluginService();
+    const params = JSON.parse(prgPluginSrv.getProgramConfig());
+
+    // this.props.getSelected(this.props.container));
     const nstate = {...this.state };
     nstate.params = {
       parameters: params!,
     }
-    console.log(params);
-    console.log("On a save")
   }
 
   /**
@@ -230,7 +229,6 @@ export class ProgramPluginSettings
 
     // const configOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     //   let textCfg = e.target.value;
-    //   console.log(textCfg);
     //   let data = {...ref.state};
     //   data.hasBeenModified = true;
     //   data.plgArgs = textCfg;
@@ -373,7 +371,6 @@ export function ProgramPluginObject(props: ProgramPluginObjectProps) {
   const rott = props.settings.container;
   const issued = issueFn(rott);
 
-  console.log(props);
   
   const evfn = (e: MouseEvent<HTMLButtonElement>) => {
     responseFn(e, rott)

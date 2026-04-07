@@ -53,7 +53,6 @@ export class HelpService {
    * Hides the help view
    */
   makeHidden(): void {
-    console.log("What?");
 		this.active = false;
 		if (!this.active) {
     	this.inpService.removeHook('keydown');
@@ -79,7 +78,6 @@ export class HelpService {
    */
 	toggleHelp() {
 		this.active = !this.active;
-		console.log(this.active)
 	  let regArgs: InputHookParams = ['keydown', this.handleEscKey];  
 		if (this.active) {
     	this.inpService.registerHook(regArgs);

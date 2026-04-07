@@ -53,7 +53,6 @@ export class RottGraphMSG  {
 	}
 
 	fromJSON(jsonObj: any): this | null {
-		console.log(jsonObj)
 		//Assume it is a JSON object
 		const data = jsonObj['payload'];
 		const graph = data['graph_view']['graph'];

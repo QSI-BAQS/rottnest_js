@@ -21,7 +21,8 @@ import { RTACommActions } from "./net/GlobalNetOperations";
 import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
 import { ZoomService } from "../../../service/ZoomService";
 import { ComponentService } from "../../../service/ComponentService";
-import { ArchitectureObject, ArchitectureSchema } from "rottnest-plugin/schema/ArchSchema";
+import { ArchitectureObject, ArchitectureSchema }
+	from "rottnest-plugin/schema/ArchSchema";
 import { ProjectSettingsState } from "rottnest-plugin/schema/ArchProjectState";
 import { ArchitectureUIContext } from "rottnest-plugin/schema/ArchContext";
 import { ServicesHolder } from "rottnest-plugin/schema/ServicesHolder";
@@ -130,6 +131,8 @@ export class RottnestApplicationState {
 
 		const refresh = this.modstate.getServices().getRefreshService();
 		this.architectureSchema = schema;
+		console.log(schema);
+		// This is an issue?
 		this.architectureObject = schema.createArchitecture(this
 			.modstate.getServices())
 		this.appContext = new ArchitectureUIContext(this.architectureObject);

@@ -20,37 +20,93 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 			obj.triggerUpdate();
 		}
 	},
-  recvArchList: {
+	setCurrentArch: {
+		evkey: MessageType.Arch.SetCurrent,
+    evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
+
+			
+			const { name, api, jsData, cssData } = m.getJSON().payload;
+			const styService = obj.getServices().getStyleService();
+			const archService = obj.getServices().getArchPluginService();
+
+
+			styService.appendToRootInline(cssData)
+
+			//TODO: We need to change this type
+			archService.setArchitectureContext({ name, apimap: api,
+				plugin: {
+					jsData,
+					cssData,
+				},
+				schema: '',
+			});
+			
+    }
+	},
+	setCurrentExec: {
+		evkey: MessageType.Executable.SetCurrent,
+    evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
+
+			const prg = m.getJSON().payload;
+			let prgservice = obj.getServices().getProgramPluginService();
+			prgservice.saveProgramData({
+				plgKey: prg.name,
+				plgValue: prg.name,
+				params: prg.parameters
+			})
+
+    	obj.triggerUpdate();
+			
+    }
+	},
+	recvArchList: {
     evkey: MessageType.Arch.GetList,
     evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
 
-			const styService = obj.getServices().getStyleService();
+			//NOTE: Logic will need to be moved
+			// const styService = obj.getServices().getStyleService();
 			const refService = obj.getServices().getRefreshService();
 			const archService = obj.getServices().getArchPluginService();
-			const plist = m.getJSON().payload.arch_list;
+			const styService = obj.getServices().getStyleService();
+			const plist = m.getJSON().payload['architectures'];
+			const current = m.getJSON().payload['current_architecture'];
 			for(const a of plist) {
-				const [aname, adetails] = a;
+				const aname = a;
 
-				const cssFile = adetails.cssData;
-				const jsFile = adetails.jsData;
-				styService.appendToRootInline(cssFile)
+				// const cssFile = adetails.cssData;
+				// const jsFile = adetails.jsData;
+				// styService.appendToRootInline(cssFile)
 				await archService.mapArch(aname, { kind: "Serialised",
-					data: jsFile,
-					apimap: adetails.api
+					data: '',
+					apimap: { mask: '', routes: [] }
 				});
 
 			}
+
+			if(current) {
+				
+				// const { name, api, jsData, cssData } = current;
+				// styService.appendToRootInline(cssData)
+				// archService.setArchitectureContext({ name, apimap: api,
+				// 	plugin: {
+				// 		jsData,
+				// 		cssData,
+				// 	},
+				// 	schema: '',
+				// });
+			}
+			
 			refService.triggerRefresh();			
 		}
   },
   recvProgramGetCurrent: {
     evkey: MessageType.Executable.GetCurrent,
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-			const prg = m.getJSON().payload.prg;
+			const prg = m.getJSON().payload;
 			let newProg: ProgramPlugin = {
-				name: prg['prg_name'],
-				params: prg['prg_params'].map((p: any) =>
-					{ return{ param: p.name, kind: 'any'}}) //TODO: Fix the kind
+				name: prg.name,
+				params: prg.parameters,
+				parametersSet: true
 			};
 
 			let notifyservice = obj.getServices().getNotifyService();
@@ -58,7 +114,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 			prgservice.saveProgramData({
 				plgKey: newProg.name,
 				plgValue: newProg.name,
-				params: []
+				params: newProg.params
 			})
 			
     	//obj.state.appStateData.progData.current = newProg;
@@ -72,22 +128,41 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvProgramList: {
     evkey: MessageType.Executable.GetList,
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-			const plist = m.getJSON().payload.prglist;
+			const data = m.getJSON().payload;
+			const current = data['current_executable'];
+			const plist = data['executables'];
 			let newProgData: Array<ProgramPlugin> = [];
 			for(const prg of plist) {
-				const params = prg['prgparams'].map((p: any) => {
-					const [name, kind, arg]: [string, string, any] = p;
-					return [name, kind, arg];
-				});
+				// const params = prg['prgparams'].map((p: any) => {
+				// 	const [name, kind, arg]: [string, string, any] = p;
+				// 	return [name, kind, arg];
+				// });
+				
 				newProgData.push({
-					name: prg['prgname'],
-					params: params
+					name: prg,
+					params: [],
+					parametersSet: false
 				})
 			}
 			let prgservice = obj.getServices()
 				.getProgramPluginService();
 
 			prgservice.storePrograms(newProgData);
+
+			if(current) {
+				
+				let newProg: ProgramPlugin = {
+					name: current.name,
+					params: current.parameters,
+					parametersSet: true
+				};
+
+				prgservice.saveProgramData({
+					plgKey: newProg.name,
+					plgValue: newProg.name,
+					params: newProg.params
+				})
+			}
 			
     	obj.triggerUpdate();
 			appService.consumeFromQueue();

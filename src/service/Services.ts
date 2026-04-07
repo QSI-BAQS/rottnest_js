@@ -12,6 +12,7 @@ import { ArchStorageEntry } from "../obj/plugin/Architecture";
 import { ZoomModuleParent, ZoomService } from "./ZoomService";
 import { ComponentService } from "./ComponentService";
 import { ServicesHolder } from "rottnest-plugin/schema/ServicesHolder";
+import { UtilityService } from "./UtilityService";
 
 type AppTarget = UpdateTrigger & ZoomModuleParent;
 
@@ -31,6 +32,7 @@ export class Services implements ServicesHolder {
   archplugins: ArchPluginService;
   rrservice: RunResultService;
   zoomService: ZoomService;
+  utilityService: UtilityService;
   help: HelpService;
 
   constructor(refreshTarget: AppTarget, _container: ServicesHolder,
@@ -48,6 +50,7 @@ export class Services implements ServicesHolder {
     this.help = new HelpService(this.refresh, this.inputs);
     this.rrservice = new RunResultService();
     this.zoomService = new ZoomService(100, refreshTarget);
+    this.utilityService = new UtilityService(this);
   }
 
   /**
@@ -140,6 +143,11 @@ export class Services implements ServicesHolder {
 
   getStyleService(): StyleService {
     return StyleService.GetInstance(this.getRefreshService());
+  }
+
+
+  getUtilityService(): UtilityService {
+    return this.utilityService;
   }
 }
 
@@ -249,5 +257,9 @@ export class NoServicesHolder implements ServicesHolder {
   
   getStyleService(): StyleService {
     return StyleService.GetInstance(this.getRefreshService());
+  }
+
+  getUtilityService(): UtilityService {
+    return {} as UtilityService;
   }
 }

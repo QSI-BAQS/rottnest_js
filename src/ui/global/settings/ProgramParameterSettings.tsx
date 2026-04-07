@@ -120,7 +120,6 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
     }
 
     const [valMap, notSame] = validateChanges();
-    console.log(notSame);
     const renderedContainers = new Array(...this.state
       .params.entries().map(entry => {
         const [k, e] = entry;
@@ -148,15 +147,26 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
     const argsUpdate = (_: MouseEvent<HTMLButtonElement>) => {
       const notifyserv = services.getNotifyService();
       const refserv = services.getRefreshService();
-      const paramsGroup = self.state.params.entries().map(kv => {
-            const [_, v] = kv;
-            return v;
-          })
+      const paramsGroup: any = {};
+      for(const m of self.state.params) {
+        const mkey = m[1][0];
+        paramsGroup[mkey] = [ m[1][1], m[1][2] ];
+      }
+      
+      // const paramsGroup = self.state.params.entries().map(kv => {
+      //       const [_, v] = kv;
+      //       return v;
+      //     })
       services.getNetworkService()
-        .getNetworkService().sendObj(MessageType.Executable.SetConfig,
-          paramsGroup);
+        .getNetworkService().sendObject(
+          MessageType.Executable.SetConfig,
+          {
+            "executable_config" : paramsGroup
+          });
+
       self.state.oldState = this.state.params;
-      notifyserv.makeMessageWithId('param-set-notify', "Program Parameters",
+      notifyserv.makeMessageWithId('param-set-notify',
+        "Program Parameters",
         "Program parameters have been set");
 
       refserv.triggerRefresh();

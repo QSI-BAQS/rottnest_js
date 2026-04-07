@@ -66,11 +66,19 @@ export class MessageType {
 
   // Layout Symbol list
   static Layout = {
-  	Run: "rottnest.layout.run",
+  	Prepare: "rottnest.layout.set",
+  	Run: "rottnest.layout.run_layout",
 	};
 
   // Error Symbol list
   static Error: string = "rottnest.err";
+
+  static Procedure: {
+  	RunImmediate: 'rottnest.procedure.run_immediate',
+  	RunDefer: 'rottnest.procedure.run_defer',
+  	GetState: 'rottnest.procedure.get_state',
+  	ListAll: 'rottnest.procedure.list_all',
+  }
 }
 
 

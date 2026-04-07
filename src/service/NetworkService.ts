@@ -20,10 +20,22 @@ export class NetworkService {
 	  this.appMapper = AppMessageMapper.Default();
   }
 
+  request(messageKind: string, payloadTag: string, payload: any) {
+  	const appservice = this.getNetworkService();
+		const obj: any = {};
+		obj[payloadTag] = payload;
+		appservice.sendObject(messageKind, obj)
+  	
+  }
+
+	isConnected() {
+		return this.appService.isConnected();
+	}
+
   /**
    * Starts the network service
    */
-  startService() {
+  // startService() {
 		/*const appReady = AppServiceModule
 			.ConnectionReady();
 		const appService = AppServiceModule
@@ -39,7 +51,7 @@ export class NetworkService {
 			.rtcCommsDispatch.applyAll(appService, selfRef); });
 		
 		this.commData.appService.connect();*/
-  }
+  // }
 
   /**
    * Stops the service from continuing, will ignore instructions (not implemented)

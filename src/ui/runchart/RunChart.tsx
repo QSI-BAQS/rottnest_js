@@ -16,7 +16,7 @@ import { ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
  */
 export function GenData(n: number): Array<CGSample> {
 	const data: Array<CGSample> = [];
-	const nodesRan = [
+	const nodesRan = [ //NOTE: We need to check this!
 		'0_0',
 		'0_0s',
 		'0_1'

@@ -112,7 +112,7 @@ const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ container, on
       const refresh = container.getServices().getRefreshService();
       notify.makeMessageWithId('connection-success', "Network",
         "Connected to workpool");
-      
+      // appService.onConnect();
       refresh.triggerRefresh();
   		//setConnectionState(nstate);
   	};

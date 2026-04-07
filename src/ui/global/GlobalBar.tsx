@@ -10,6 +10,7 @@ import ZoomOutEvent from './ZoomOut.ts';
 import SettingsEvent from './Settings.ts';
 import NewProjectEvent from './NewProject.ts';
 import RunEvents from './Run.ts';
+import PrepareEvents from './Prepare.ts';
 import ReconnectEvent from './ReconnectEvent.ts';
 import NullEvents from './NullEvents.ts';
 import LogoEvents from './LogoEvents.ts';
@@ -108,10 +109,8 @@ const BarItem: React.FC<BarItemData> = (props) => {
 	const usableKey = capabilityKey ? capabilityKey : 'Allowed';
 
 	const ctx = props.containerRef.getUIContext().getCurrentContext()
-	
 	const usable = ctx.queryCapability(ArchCapabilityQuery.MakeQuery(usableKey)).Yes()
 		|| usableKey === 'Allowed';
-	
 	//TODO: Something is triggering this twice
 	return (
 		<li 
@@ -336,7 +335,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			helpId: "undo_redo"
 		},
 		{ 
-			id: 10, //TODO: Remove the separator
+			id: 999, //TODO: Remove the separator
 			name: "", 
 			toolTip: "", 
 			image: "missing",
@@ -376,6 +375,17 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 		},
 		{ 
 			id: 10, 
+			name: "Prepare", 
+			toolTip: "Run", 
+			image: "Prepare",
+			events: PrepareEvents,
+			capabilityKey:"CanRun",
+			style: styles.run,
+			iconComponent: <PlaySquareOutlined />,
+			helpId: "compile_button"
+		},
+		{ 
+			id: 11, 
 			name: "Run", 
 			toolTip: "Run", 
 			image: "Run",
@@ -383,7 +393,7 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			capabilityKey:"CanRun",
 			style: styles.run,
 			iconComponent: <PlaySquareOutlined />,
-			helpId: "compile_button"
+			helpId: "run_button"
 		},
 		{ 
 			id: 4, 

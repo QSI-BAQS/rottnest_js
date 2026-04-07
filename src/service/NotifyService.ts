@@ -1,5 +1,20 @@
 import { NotifyQueue, NotifyMessage } from "../ui/global/notify/NotifyMessage";
 
+export type NotifyTuple = {
+  ID: string,
+  title: string,
+  message: string
+}
+
+
+export const NotifyID = {
+  ArchUnavailable: {
+    ID: "arch-unavailable",
+    title: "Unavailable",
+    message: "Architectures are unavailable" },
+  ZoomInUnavailable: "zoom-in-unavailable",
+  ZoomOutUnavailable: "zoom-out-unavailable",
+}
 
 
 /**

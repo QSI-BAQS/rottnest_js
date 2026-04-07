@@ -10,14 +10,28 @@ import { PluginEntry } from "../ui/global/settings/GeneralSettings";
 import { MessageType } from "../net/Protocol";
 
 ///TODO: Move the interfaces into a separate module
-import { Services } from "./Services";
+// import { Services } from "./Services";
 import { ArchitectureSchema } from "rottnest-plugin/schema/ArchSchema";
 import { ArchPluginLoader } from "rottnest-plugin/schema/ArchPlugin";
+// import { Services } from "./Services";
 
 //import StorageDB from "../db/StorageDB";
 // Temporary callbacks
 export type ArchUpdateTrigger = (arch: ArchitectureSchema) => void;
 
+
+export type ArchPluginDataSet = {
+	name: string
+	apimap: {
+		mask: string,
+		routes: Array<string>
+	},
+	plugin: {
+		jsData: string,
+		cssData: string
+	},
+	schema: any
+}
 
 /**
  * Storage for all the plugins
@@ -153,11 +167,11 @@ export class ArchPluginService {
 	/**
 	 * Maps an architecture and stores
 	 * it into the storage class for it to be held
+	 * @deprecated
 	 */
 	async mapArch(name: string, archpkg: ArchPackage) {
 		if(archpkg.kind === "Serialised") {
 			const byteData = new TextEncoder().encode(archpkg.data);
-			//WARN: toBase64 is a 2025 feature, but the following helps stabilise module switching
 	    const modtext = (Uint8Array.from(byteData) as any).toBase64();
 	    
 	    const module = await import('data:text/javascript;base64,' + modtext);
@@ -183,6 +197,28 @@ export class ArchPluginService {
 		}
 	}
 
+
+	async constructSchema(archData: ArchPluginDataSet): Promise<ArchitectureSchema | null> {
+		try {
+			
+			const byteData = new TextEncoder().encode(archData.plugin.jsData);
+	    const modtext = (Uint8Array.from(byteData) as any).toBase64();
+    
+	    const module = await import('data:text/javascript;base64,' + modtext);
+			this.storage.addPlugin({
+				archname: archData.name,
+				default: module.default,
+				apimap: archData.apimap
+			});
+
+			return module;
+
+		} catch(ex) {
+
+			return null;
+		}
+	}
+
 	/**
 	 * Stores the configuration
 	 */
@@ -197,42 +233,81 @@ export class ArchPluginService {
   	this.current = arch;
   }
 
+	//TODO: Consider changing the 
+	async setArchitectureContext(archData: ArchPluginDataSet) {
+		// Get style services
+		const refService = this.refservice;
+		const { name, apimap } = archData;
+
+		const module: any = await this.constructSchema(archData);
+		
+		if(module === null) {
+			//TODO: Notify that it failed to load the schema
+			return;
+		}
+		// TODO: Fix up the constructor issue here
+		const schema = new module.default();
+
+		this.current = {
+			identifier: name,
+			api_map: apimap
+		};
+		
+		if(schema) {
+			this.update(schema);
+		} else {
+			console.error("Unable to swap architecture, metadata listed, plugin missing");
+		}
+		
+
+		refService.triggerRefresh();
+	}
+
 	/**
 	 * Retrieves the architecture that is currently in the list
 	 * using a key and maps it to an existing key
 	 * if not found, it will not save
 	 */
 	saveArchData(data: PluginData) {
-		const archKey = data.plgKey;
-		const archMap = this.storage.core.get(data.plgKey);
-		if(archMap) {
-			let arch = {
-				name: archMap.schema.name,
-				createArchitecture: (services: Services) => {
-					return archMap.schema.createArchitecture(services)
-				}
-			};
-			
-			this.current = {
-				identifier: archMap.schema.name,
-				api_map: archMap.apimap
-			}
-			if(arch) {
-				this.update(arch);
-			} else {
-				console.error("Unable to swap architecture, metadata listed, plugin missing");
-			}
-			this.netservice.getNetworkService().sendObj(MessageType.Arch.SetCurrent, {
-				'arch_name': archKey
-			})
-			//this.update()
-			this.refservice.triggerRefresh();
-			
-		} else {
-			console.error("Unable to save architecture")
-		}
+		const netService = this.netservice;
+
+		// netService.sendObject(MessageType.Arch.SetCurrent,
+		// 	data.plgKey
+		netService.request(MessageType.Arch.SetCurrent, 'architecture_key', data.plgKey);
 			
 	}
+	// NOTE: Old mechanism
+	// saveArchData(data: PluginData) {
+		// const archKey = data.plgKey;
+		// const archMap = this.storage.core.get(data.plgKey);
+		// if(archMap) {
+		// 	let arch = {
+		// 		name: archMap.schema.name,
+		// 		createArchitecture: (services: Services) => {
+		// 			return archMap.schema.createArchitecture(services)
+		// 		}
+		// 	};
+			
+		// 	this.current = {
+		// 		identifier: archMap.schema.name,
+		// 		api_map: archMap.apimap
+		// 	}
+		// 	if(arch) {
+		// 		this.update(arch);
+		// 	} else {
+		// 		console.error("Unable to swap architecture, metadata listed, plugin missing");
+		// 	}
+		// 	this.netservice.getNetworkService().sendObj(MessageType.Arch.SetCurrent, {
+		// 		'arch_name': archKey
+		// 	})
+		// 	//this.update()
+		// 	this.refservice.triggerRefresh();
+			
+		// } else {
+		// 	console.error("Unable to save architecture")
+		// }
+			
+	// }
 
 
 

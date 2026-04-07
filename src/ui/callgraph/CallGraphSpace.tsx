@@ -680,11 +680,10 @@ export class CallGraphSpace extends
 					shouldUpdate = true;
 				}
 					
-				console.log(mdat, rkind); 	
 				if(rkind === "VisualResult") {
-					console.log("Got viz-result");
-					console.log(mdat, rkind); 	
-					container.getStateData().getVisState().setVizData(mdat);
+					container.getStateData()
+						.getVisState()
+						.setVizData(mdat);
 					modMeta.setEnable("Visualiser");
 					this.props.stash
 					.insert('viz_sim_data',
@@ -896,10 +895,10 @@ export class CallGraphSpace extends
 				rootList.map((e) => {
 
 					return this.traverseGraph(graphFromContainer, e[0]) })
-				.map((ldw: CGTreeDisplayData) => { 
+					.map((ldw: CGTreeDisplayData) => { 
 						
 					return ldw.layerData
-				.map((wl: CGTreeLayerData, _lidx: number) => {
+					.map((wl: CGTreeLayerData, _lidx: number) => {
 					//TODO: Re-evaluate the computation of lines between callgraph components
 					// const wlLength 
 					// 	= wl.layerElements.length;

@@ -1,10 +1,9 @@
 import React, { ChangeEvent, MouseEvent } from "react";
-
-
-import styles from '../../styles/PluginSettingsForm.module.css';
 import { CloseOutlined, ProfileOutlined } from "@ant-design/icons";
 import { PluginData } from "../../../obj/plugin/Generic";
+import { NotifyID } from '../../../service/NotifyService';
 import RottnestApplication from "../../container/RottnestApplication";
+import styles from '../../styles/PluginSettingsForm.module.css';
 
 
 /**
@@ -301,7 +300,13 @@ export function PluginObject(props: PluginObjectProps) {
 
     
   const evfn = (e: MouseEvent<HTMLButtonElement>) => {
-    responseFn(e, rott)
+    //NOTE: We will need to trigger a check before it is called
+    const util = rott.getServices().getUtilityService();
+    if(!util.isConnected()) {
+      util.notifyUI(NotifyID.ArchUnavailable);
+    } else {
+      responseFn(e, rott);
+    }
   }
 
   return (

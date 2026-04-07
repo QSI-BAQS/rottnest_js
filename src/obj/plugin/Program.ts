@@ -30,6 +30,7 @@ export type ProgramParam = [string, string, any]
 export type ProgramPlugin = {
   name: string,
   params: Array<ProgramParam>
+  parametersSet: boolean
 }
 
 
