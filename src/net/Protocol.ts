@@ -73,6 +73,7 @@ export class MessageType {
   // Error Symbol list
   static Error: string = "rottnest.err";
 
+	// Procedure Symbol list
   static Procedure: {
   	RunImmediate: 'rottnest.procedure.run_immediate',
   	RunDefer: 'rottnest.procedure.run_defer',
