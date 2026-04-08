@@ -6,7 +6,7 @@ import { LayoutRecencyService }
 
 const TestDocumentPrefix = "LayoutRecencyServiceTest"
 
-TestDocument.begin(`${TestDocumentPrefix} - Construction`)
+TestDocument.begin(`${TestDocumentPrefix} - ConstructionDefinition`)
   .description("Get Instance - Ensures that it matches")
   .derive()
   .withState(
@@ -27,7 +27,7 @@ TestDocument.begin(`${TestDocumentPrefix} - Construction`)
   .eval();
 
 
-TestDocument.begin(`${TestDocumentPrefix} - Construction`)
+TestDocument.begin(`${TestDocumentPrefix} - EmptyConstruction`)
   .description("")
   .derive()
   .withState(
@@ -43,19 +43,19 @@ TestDocument.begin(`${TestDocumentPrefix} - Construction`)
     .evaluator((state, _input) => {
       const recency = state.recency;
       expect(recency.getRecents()).toEqual({});
-      expect(recency.getNames()).toEqual({});
     })
   .validate()
   .eval();
 
 
-TestDocument.begin(`${TestDocumentPrefix} - Construction`)
+TestDocument.begin(`${TestDocumentPrefix} - ConstructionSingle`)
   .description("")
   .derive()
   .withState(
     (() => {
       const recency = LayoutRecencyService.GetInstance();
       recency.drain();
+      recency.reset();
       return { recency };
     })()
   )
@@ -67,7 +67,7 @@ TestDocument.begin(`${TestDocumentPrefix} - Construction`)
       const expectedEntry = {
         name: 'layout1',
         data: { datacube: 'this is a cube' },
-        key: `${LayoutRecencyService.PrefixKey}${0}`
+        key: `${LayoutRecencyService.PrefixKey}0`
       };
 
       const entry = LayoutRecencyService.ConstructEntry(

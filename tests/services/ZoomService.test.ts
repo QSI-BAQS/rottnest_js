@@ -1,6 +1,18 @@
 import { TestDocument } from '../TestDocument';
-import { ZoomService } from '../../src/service/ZoomService';
+import { ZoomService, ZoomModuleParent } from '../../src/service/ZoomService';
 
+
+class MockModuleState implements ZoomModuleParent {
+
+  getModuleStates() {
+    return {
+      getZoomState: function() {
+        return {} as any
+      }
+    } as any
+  }
+  
+}
 
 
 TestDocument
@@ -13,7 +25,7 @@ TestDocument
   })
   .withState((() => {
     return {
-      zoom: new ZoomService(100)
+      zoom: new ZoomService(100, new MockModuleState())
     }
   })())
   .withInputs()

@@ -109,9 +109,12 @@ export class ProgramPluginService {
 		const prog = this.stored.programs.find((e) => e.name === exe);
 		if(prog) {
 			this.current = prog;
-			netserv.sendObject(MessageType.Executable.SetCurrent, {
-				"executable_key" : exe
-			});
+			if(netserv) {
+				debugger;
+				netserv.sendObject(MessageType.Executable.SetCurrent, {
+					"executable_key" : exe
+				});
+			}
 		}
 	}
 

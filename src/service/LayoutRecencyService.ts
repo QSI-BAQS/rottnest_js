@@ -96,6 +96,13 @@ export class LayoutRecencyService {
   }
 
   //
+  // Resets the key to 0
+  //  
+  reset() {
+    this.#currentKey = 0;
+  }
+
+  //
   // Generates the next key between 0 and capacity-1
   // Will cycle through them as to not have infinite amount of memory utilised
   // 
@@ -112,7 +119,7 @@ export class LayoutRecencyService {
   getRecents(): { [key: string]: any } {
     let recents = {};
     if(localStorage[LayoutRecencyService.StorageKey] !== null) {
-      recents = JSON.parse(localStorage[LayoutRecencyService.StorageKey]);
+      recents = JSON.parse(localStorage[LayoutRecencyService.StorageKey]).layouts;
       return recents;
     }
     return recents;
@@ -130,11 +137,15 @@ export class LayoutRecencyService {
   // and provide some decision making process for the user when
   // look into it
   // 
-  pushRecent(entry: LayoutRecencyEntry) {
+  pushRecent(entry: Partial<LayoutRecencyEntry>) {
     const recents = this.getRecents();
-    const nextKey = this.nextKey();
-    const name = entry.name;
-
+    const nextKey = entry.key ?
+      (entry.key.startsWith(LayoutRecencyService.PrefixKey) ? 
+        entry.key : this.nextKey()) :
+      this.nextKey();
+      
+    const name = entry.name!;
+    console.log(nextKey);
     recents[nextKey] = entry;
     this.#names[name] = nextKey;
     

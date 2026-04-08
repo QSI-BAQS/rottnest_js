@@ -16,7 +16,7 @@ const ProgramPluginServiceDocument = TestDocument.template("ProgramPluginService
       programs: [{
         name: "Magic Program 1",
         params: []
-      }],
+      } as any],
       config: { contents: '[]' }
     };
     return { prgservice: prg };
@@ -36,7 +36,7 @@ ProgramPluginServiceDocument
     .addInput("Magic Program 1")
   .how()
   .withEvaluator()
-    .evaluator((state, input) => {
+    .evaluator((state, _input) => {
       const prgservice = state.prgservice;
       expect(prgservice.current).toEqual({
           name: "Magic Program 1",
@@ -51,7 +51,7 @@ ProgramPluginServiceDocument
   .description("Get parameters - exists")
   .toTest(function getParameters(state, input) {
     const prgservice = state.prgservice;
-    prgservice.setCurrentExecutable(input);
+    prgservice.getParameters(input);
 
   })
   .skip()
@@ -112,7 +112,7 @@ ProgramPluginServiceDocument
   .withInputs()
     .single("<none>")
   .withEvaluator()
-    .evaluator((state, input) => {
+    .evaluator((state, _input) => {
       const prgservice = state.prgservice;
       expect(prgservice.getProgramConfig()).toEqual('[]')
     })

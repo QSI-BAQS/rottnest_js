@@ -15,6 +15,10 @@ export class NetworkService {
   registerReciverKinds(...data: any) {
     
   }
+
+  sendObject(_data: string) {
+    //NOOP
+  }
 }
 
 export type RefreshServiceMock = RefreshService;
