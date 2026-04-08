@@ -6,13 +6,13 @@ import { ArchAPIMap, ArchitecturePlugin, ArchitecturePluginConfig,
     ArchStorageEntry}
 	from "../obj/plugin/Architecture";
 // import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
-import { PluginEntry } from "../ui/global/settings/GeneralSettings";
 import { MessageType } from "../net/Protocol";
 
 ///TODO: Move the interfaces into a separate module
 // import { Services } from "./Services";
 import { ArchitectureSchema } from "rottnest-plugin/schema/ArchSchema";
 import { ArchPluginLoader } from "rottnest-plugin/schema/ArchPlugin";
+import { PluginEntry } from "../obj/PluginEntry";
 // import { Services } from "./Services";
 
 //import StorageDB from "../db/StorageDB";
@@ -366,12 +366,14 @@ export class ArchPluginService {
 	 * Gets the currently retrieve set of plugin entries
 	 */
 	getArchItems(): Array<PluginEntry> {
-		return new Array(...this.storage.core.entries().map((a) => {
-			console.log(a);
-			return ArchitecturesToEntry({
-				identifier: a[0],
-				api_map: {}
-			});
+		// Used the loosest type here, TODO: Refactor or clean up unsafe
+		return new Array(...(this.storage.core.entries() as any)
+			.filter((a: any) => a[0] !== undefined)
+			.map((a: any) => {
+				return ArchitecturesToEntry({
+					identifier: a[0],
+					api_map: {}
+				});
 		}));
 	}
 

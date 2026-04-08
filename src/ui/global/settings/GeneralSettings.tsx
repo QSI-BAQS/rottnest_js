@@ -2,8 +2,10 @@ import React, { ChangeEvent, MouseEvent } from "react";
 import { CloseOutlined, ProfileOutlined } from "@ant-design/icons";
 import { PluginData } from "../../../obj/plugin/Generic";
 import { NotifyID } from '../../../service/NotifyService';
+
 import RottnestApplication from "../../container/RottnestApplication";
 import styles from '../../styles/PluginSettingsForm.module.css';
+import { PluginEntry } from "../../../obj/PluginEntry";
 
 
 /**
@@ -241,14 +243,6 @@ export class PluginSettings
   }
 }
 
-/**
- * A particular entry that can be use
- */
-export type PluginEntry = {
-  keyName: string
-  plgName: string
-  params: Array<[string, string, any]>
-}
 
 /**
  * Options data for the plugin component
