@@ -5,11 +5,6 @@ import {CallGraphStatsSpace} from "./CGChart";
 import style from '../styles/CGChart.module.css';
 import {CUVolume} from "../../obj/chart/Metrics.ts";
 import { ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
-/*const PreMadeData = [
-	genData(20),
-	genData(20),
-	genData(20)
-];*/
 
 /**
  * Generates a data for testing
@@ -90,11 +85,11 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 		},
 		dataRefs: aggrData
 
-	}
-
+	}	
 	//TODO: When fixing the lat2d implementation, we need to provide this information
 	const rrService = workspaceData.architecture.getServices().getRunResultService();
 	const rrBuf = rrService;
+	console.log(rrBuf);
 	const cuidObjs = rrBuf.getVolumeSet();
 	//TODO: Temporary, could likely do it directly but not wanting to play games
 	//at the moment.
@@ -118,7 +113,7 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 		for(const ckey in cvol) {
 			const cv = cvol[ckey as keyof CUVolume];
 			const akey = ckey as keyof DataAggrMap;
-			if(cv) {
+			if(cv !== null && cv !== undefined) {
 				const dgrRef = daggr.aggrMap[akey]
 				if(dgrRef) {
 					if(cv < gMinY) {

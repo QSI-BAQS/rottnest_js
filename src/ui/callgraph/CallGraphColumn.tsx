@@ -234,6 +234,8 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 					</span>
 				</div>
 			</div>
+
+		
 		const renResult = !cuDetailsReady ? 
 			(<div className={styles.nodePanel}>
 			 	<header>

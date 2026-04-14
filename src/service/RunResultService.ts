@@ -100,7 +100,6 @@ export class RunResultService {
 	}
 
 	isCUIDEndComp(jsonObj: any): boolean {
-
 		const isCUIDObjRes = this.isCUIDObj(jsonObj);
 		return isCUIDObjRes && jsonObj.cu_id === 'endcomp';
 	}
@@ -148,6 +147,7 @@ export class RunResultService {
 				npQubits: jsonObj.np_qubits
 			});
 			msgKind = "CUIDTotal";
+
 		} else if(this.isCUIDEndComp(jsonObj)) {
 			msgKind = "CUIDEndComp";
 			this.endComps.push({
@@ -243,6 +243,8 @@ export class RunResultService {
 			console.warn("Object received that did not match category");
 			console.warn(JSON.stringify(jsonObj));
 		}
+
+
 		return [msgKind, jsonObj]	
 	}
 

@@ -5,6 +5,7 @@ import {WorkspaceBufferMap} from "../workspace/WorkspaceBufferMap";
 import { CallGraphStatsData, CUAggrKey, CUDataKeyRef, CUScaleKeyRef, 
 	DataAggregate, DataAggrIdentifier, DataAggrMap } from "./ChartData";
 
+type ScaleKey = "Linear" | "Log";
 
 const onNodeClick = () => {
 	//TODO: Clean this up
@@ -231,7 +232,8 @@ const GenerateNodes = (
 	lIdent: number,
 	data: DataAggregate,
 	xScale: d3.ScaleLinear<number, number>,
-	yScale: d3.ScaleLinear<number, number>, 
+	yScale: d3.ScaleLinear<number, number>,
+	scaleKey: string, 
 	selKey: CUAggrKey,
 	colorStr: string,
 	bmap: WorkspaceBufferMap): Array<ReactElement> => {
@@ -248,25 +250,10 @@ const GenerateNodes = (
 			selectedLine = jcnode.lineIdx;
 		}
 	}
-
+	let count = 0;
+	// return data.idxs.map((sample, i) => {
 	return data.idxs.map((sample, i) => {
 		
-		const onNodeHoverTrigger = (isCuid: boolean) => {
-			if(isCuid) {
-				bmap.insert('current_node',
-				JSON.stringify({
-					idx: sample.cuid
-				}));
-			}
-			bmap.insert('current_chart_idx', 
-			JSON.stringify({
-				idx: i,
-				refIdx: sample.mxid,
-				selKey: selKey,
-				lineIdx: lIdent,
-			}));
-			bmap.commit();
-		}
 		const mxid = sample.mxid;
 		const isCuidObj = (sample.cuid !== null && sample.cuid !== undefined)
 		const selectedObj = (selectedIdx === i) &&
@@ -274,13 +261,57 @@ const GenerateNodes = (
 			(selectedLine === lIdent);
 		const selStyle = !isCuidObj ? style.cuObjectNotCuidSelected : selectedObj ? 
 			style.cuObjectSelected : '';
+		let measuredValue = data.aggrMap[selKey][i];
+
+		const onNodeHoverTrigger = (isCuid: boolean) => {
+			console.log(measuredValue, mxid, i);
+			console.log(data.aggrMap[selKey])
+			if(isCuid) {
+				bmap.insert('current_node',
+				JSON.stringify({
+					// idx: sample.cuid //NOTE: This has been disabled
+				}));
+			}
+			bmap.insert('current_chart_idx', 
+			JSON.stringify({
+				idx: i,
+				// refIdx: sample.mxid, //NOTE: This has been disabled
+				selKey: selKey,
+				lineIdx: lIdent,
+			}));
+			bmap.commit();
+		}
+
+
 		const actionMouseOver = sample.cuid !== null ||
 			sample.cuid !== undefined ? onNodeHoverTrigger :
 			(_gg: any) => {};
+
+
+		if(i >= data.aggrMap[selKey].length) {
+			if(scaleKey === 'Log') {
+				measuredValue = 1;
+			} else {
+				measuredValue = 0;
+			}
+		}
+		
+		//TODO: Check to see if this is correct 
+		if((isNaN(measuredValue) || measuredValue == 0) && scaleKey === 'Log') {
+			measuredValue = 1;
+		}
+		if(selKey === 'BELL_IDLE_VOLUME') {
+			if(measuredValue > 150) {
+				count++;
+			}
+		}
+
+		const yValue = yScale(measuredValue);
+				
 		return (<circle
 			key={`circ_${i}`}
 			cx={xScale(mxid)}
-			cy={yScale(data.aggrMap[selKey][i])}
+			cy={`${yValue}`}
 			r={4}
 			stroke={colorStr}
 		        fill={colorStr}
@@ -359,7 +390,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	
 	const bmap = props.workspaceData.stash;
 	const [keyref, setKeyRef] = useState<CUDataKeyRef>({ keyvalue: String(props.selKey) });
-	//const [lineref, setLineRef] = useState<CUWidgetKeyRef>({ keyvalue: -1 });
+
 	const [scaleref, setScaleRef] = useState<CUScaleKeyRef>({keyvalue: 'Linear'});
 	const [lineCol, _setLineCol] = useState<Array<string>>(nLins);
 	const [nodeCol, _setNodeCol] = useState<Array<string>>(nCols);
@@ -375,7 +406,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	const height = props.dimensions.height;
 	const boundsWidth = width - mWidth;
 	const boundsHeight = height - mHeight;
-	const scaleFnStr = scaleref.keyvalue;
+	const scaleFnStr: ScaleKey = scaleref.keyvalue as ScaleKey;
 	
 	const [wDat, _wLen] = [data.idxs, data.idxs.length];
 	const { hArr } = data.dataRefs.map((e,i) => {
@@ -416,7 +447,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	}
 
 	const scaleFn = scaleFnStr === 'Linear' ? d3.scaleLinear : d3.scaleLog;
-	const yScale = scaleFn() 
+	const yScale = scaleFn()
 		.domain([yMin || 0, yMax || 0])
 		.range([boundsHeight, 0])
 
@@ -465,7 +496,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 			const akey = refKey as keyof DataAggrMap;
 			
 			if(keyref.keyvalue === 'ALL' || d === data.aggrMap[akey]) { 	
-			   return GenerateNodes(idx, data, xScale, yScale, akey, lineCol[idx], bmap)
+			   return GenerateNodes(idx, data, xScale, yScale, scaleFnStr, akey, lineCol[idx], bmap)
 			} else {
 				return <></>
 			}
@@ -484,6 +515,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 		}
 	});
 	
+
 	let legndNames = [];
 	let colorsIncluded = LineColorList;
 	let setEnableProxy: (d: boolean[]) => void = setEnableSet; 

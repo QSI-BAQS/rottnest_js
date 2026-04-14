@@ -110,7 +110,6 @@ export class ProgramPluginService {
 		if(prog) {
 			this.current = prog;
 			if(netserv) {
-				debugger;
 				netserv.sendObject(MessageType.Executable.SetCurrent, {
 					"executable_key" : exe
 				});
