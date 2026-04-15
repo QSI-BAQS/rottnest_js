@@ -183,7 +183,7 @@ export class PluginSettings
     };
 
     const configOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-      let textCfg = e.target.value;
+      let textCfg = (e.target as any).value;
       let data = {...ref.state};
       data.config = textCfg;
       ref.setState(data);
@@ -257,7 +257,9 @@ export type PluginOptionsData = {
  * A settings list component
  */
 function PluginSettingsList(props: PluginOptionsData) {
-  const entries = props.plgItems.map((e) => {
+  const entries = props.plgItems
+    .filter((e) => e.keyName !== "Rz Counter")
+    .map((e) => {
     return <option key={`arch_${e.keyName}`} className={styles.plgOption} value={e.keyName}>{e.keyName}</option>
     
   });

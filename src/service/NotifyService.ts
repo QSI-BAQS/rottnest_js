@@ -14,6 +14,18 @@ export const NotifyID = {
     message: "Architectures are unavailable" },
   ZoomInUnavailable: "zoom-in-unavailable",
   ZoomOutUnavailable: "zoom-out-unavailable",
+  Executable: {
+    SetCurrent: {
+      ID: "prg-set",
+      title: "Program Set",
+      message: "Program has been set"
+    },
+    GetCurrent: {
+      ID: "prg-set",
+      title: "Program Set",
+      message: "Retrieved the current executable from the server"
+    }
+  }
 }
 
 

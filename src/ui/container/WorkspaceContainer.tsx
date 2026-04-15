@@ -70,7 +70,7 @@ export class ArchWorkspaceContainer
 				<div className={styles.workspaceContainer}>
 					{comps}
 				</div>
-			)
+			);
 		} else {
 			return <></>
 		}

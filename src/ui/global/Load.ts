@@ -1,6 +1,6 @@
 import RottnestApplication from "../container/RottnestApplication"
 import { LoadComponent } from "./LoadExtra";
-import { PluginEntry } from "./settings/GeneralSettings";
+import { PluginEntry } from "../../obj/PluginEntry";
 
 
 /**
@@ -125,7 +125,7 @@ export const hiddenInputProc = async(e: any, rott: RottnestApplication) => {
 							const archList = getArchitectureList(rott);
 							const suitable = findSuitableArchitecture(projectArch, archList);
 							if(suitable !== undefined) {
-								//Trigger a move to a new arch and with the project associated.
+								// Trigger a move to a new arch and with the project associated.
 								// Get arch schema
 								// Use rott to swap
 								// Update project
@@ -134,6 +134,7 @@ export const hiddenInputProc = async(e: any, rott: RottnestApplication) => {
 									plgValue: suitable.plgName,
 									params: suitable.params
 								})
+								/// Probably the old one?
 								const newArchObj = rott.getAppState().getArchitectureObject();
 								//Needs to be re-interpreted!
 								const newSerializer = newArchObj.getSerializer();

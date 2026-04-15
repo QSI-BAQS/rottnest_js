@@ -1,3 +1,5 @@
+import AppServiceModule from "../../../net/AppServiceModule";
+import RottnestApplication from "../../container/RottnestApplication";
 import { ArchPluginService } from "../../../service/ArchPluginService";
 import { HelpService } from "../../../service/HelpService";
 import { InputHookService } from "../../../service/InputHookService";
@@ -12,8 +14,6 @@ import { ErrorState } from "./modules/ErrorState";
 import { PluginRepresetationState } from "./modules/PluginRepState";
 import { ProgramPluginState } from "./modules/ProgramPlugin";
 import { ZoomState } from "./modules/ZoomState";
-import AppServiceModule from "../../../net/AppServiceModule";
-import RottnestApplication from "../../container/RottnestApplication";
 import { RunResultService } from "../../../service/RunResultService";
 import { NoArchSchema } from "../../../schema/noarch/NoArch";
 import { StyleService } from "../../../service/StyleService";
@@ -21,11 +21,12 @@ import { RTACommActions } from "./net/GlobalNetOperations";
 import { ArchStorageEntry } from "../../../obj/plugin/Architecture";
 import { ZoomService } from "../../../service/ZoomService";
 import { ComponentService } from "../../../service/ComponentService";
-import { ArchitectureObject, ArchitectureSchema }
-	from "rottnest-plugin/schema/ArchSchema";
 import { ProjectSettingsState } from "rottnest-plugin/schema/ArchProjectState";
 import { ArchitectureUIContext } from "rottnest-plugin/schema/ArchContext";
 import { ServicesHolder } from "rottnest-plugin/schema/ServicesHolder";
+
+import { ArchitectureObject, ArchitectureSchema }
+	from "rottnest-plugin/schema/ArchSchema";
 
 type ArchSwapFn = (arch: ArchitectureSchema) => void;
 

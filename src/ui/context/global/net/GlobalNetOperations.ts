@@ -7,6 +7,7 @@ import { CommEventOps, CommOpQueue, CommsActions } from '../ops/CommsOps.ts';
 
 import { MessageType } from '../../../../net/Protocol.ts';
 import RottnestApplication from "../../../container/RottnestApplication.tsx";
+import { NotifyID } from "../../../../service/NotifyService.ts";
 
 export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvErr: {
@@ -54,7 +55,11 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 				plgValue: prg.name,
 				params: prg.parameters
 			})
-
+	
+      const notify = obj.getServices().getNotifyService();
+    	notify.makeMessageWithId(NotifyID.Executable.SetCurrent.ID,
+    		NotifyID.Executable.SetCurrent.title,
+    		NotifyID.Executable.SetCurrent.message);
     	obj.triggerUpdate();
 			
     }
@@ -67,7 +72,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 			// const styService = obj.getServices().getStyleService();
 			const refService = obj.getServices().getRefreshService();
 			const archService = obj.getServices().getArchPluginService();
-			const styService = obj.getServices().getStyleService();
+			// const styService = obj.getServices().getStyleService();
 			const plist = m.getJSON().payload['architectures'];
 			const current = m.getJSON().payload['current_architecture'];
 			for(const a of plist) {
@@ -118,9 +123,9 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 			})
 			
     	//obj.state.appStateData.progData.current = newProg;
-    	notifyservice.makeMessageWithId("prg-set",
-    		"Program Set",
-    		"Retrieved the current executable from the server");
+    	notifyservice.makeMessageWithId(NotifyID.Executable.GetCurrent.ID,
+    		NotifyID.Executable.GetCurrent.title,
+    		NotifyID.Executable.GetCurrent.message);
     	obj.triggerUpdate();
 			appService.consumeFromQueue();
 		}

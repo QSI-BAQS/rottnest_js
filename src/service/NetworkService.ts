@@ -57,7 +57,7 @@ export class NetworkService {
    * Stops the service from continuing, will ignore instructions (not implemented)
    */
   stopService() {
-    
+    // NO-OP
   }
 
   /**

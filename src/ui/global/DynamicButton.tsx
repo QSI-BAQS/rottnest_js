@@ -5,6 +5,7 @@ import { RollbackOutlined, CheckCircleOutlined, DisconnectOutlined }
   from '@ant-design/icons';
   
 import styles from '../styles/GlobalBar.module.css';
+import { MessageType } from '../../net/Protocol.ts';
 
 const MAX_RECONNECTS: number = 10;
 
@@ -113,6 +114,8 @@ const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ container, on
       notify.makeMessageWithId('connection-success', "Network",
         "Connected to workpool");
       // appService.onConnect();
+      appService.sendMessage(MessageType.Arch.GetCurrent);
+      appService.sendMessage(MessageType.Executable.GetCurrent);
       refresh.triggerRefresh();
   		//setConnectionState(nstate);
   	};
