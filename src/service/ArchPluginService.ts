@@ -174,7 +174,7 @@ export class ArchPluginService {
 			const byteData = new TextEncoder().encode(archpkg.data);
 	    const modtext = (Uint8Array.from(byteData) as any).toBase64();
 	    
-	    const module = await import('data:text/javascript;base64,' + modtext);
+	    const module = await import(/* @vite-ignore */  'data:text/javascript;base64,' + modtext); 
 			this.storage.addPlugin({
 				archname: name,
 				default: module.default,
@@ -204,7 +204,7 @@ export class ArchPluginService {
 			const byteData = new TextEncoder().encode(archData.plugin.jsData);
 	    const modtext = (Uint8Array.from(byteData) as any).toBase64();
     
-	    const module = await import('data:text/javascript;base64,' + modtext);
+	    const module = await import(/* @vite-ignore */ 'data:text/javascript;base64,' + modtext);
 			this.storage.addPlugin({
 				archname: archData.name,
 				default: module.default,

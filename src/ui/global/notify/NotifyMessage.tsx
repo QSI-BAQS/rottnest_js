@@ -199,6 +199,8 @@ export type NotifyViewState = {
  */
 export class NotifyMessageView extends Component<NotifyViewProps, NotifyViewState> {
 
+  static TimeOutMillis = 2200;
+
   state: NotifyViewState = {
     toShow: true,
     isFocusedOn: false,
@@ -224,7 +226,7 @@ export class NotifyMessageView extends Component<NotifyViewProps, NotifyViewStat
         } else {
           ref.state.timedOut = true;
         }
-      }, 5000);
+      }, NotifyMessageView.TimeOutMillis);
     }
   }
 

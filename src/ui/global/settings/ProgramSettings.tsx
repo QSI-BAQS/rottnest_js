@@ -153,7 +153,6 @@ export class ProgramPluginSettings
     }
     
     savfn(sdata);
-    
   }
 
   /**
@@ -192,9 +191,10 @@ export class ProgramPluginSettings
       .getProgramPluginService()
       .isCurrentSet();
     const hasBeenModified = this.state.hasBeenModified;
+    const cancelFnWindow = this.props.cancelFn;
     const plgOptions = this.props.plgItemsGetter(container);
     let selectedKey = this.props.getSelected(container);
-
+    
     if(!plgIsSet && !hasBeenModified) {
       if(plgOptions.length > 0) {
         selectedKey = this.state.selected = plgOptions[0].keyName;
@@ -226,6 +226,14 @@ export class ProgramPluginSettings
       // Opens the config data
       ref.toggleConfig();
     };
+
+    const configClose = () => {
+      // TODO: Correct this
+      const data = {
+        container: container
+      }
+      cancelFnWindow(data as any)
+    }
 
     // const configOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     //   let textCfg = e.target.value;
@@ -259,7 +267,7 @@ export class ProgramPluginSettings
       <div className={styles.pluginConfigTextSpace}>
         <ProgramParametersContainer
           services={this.props.container.getServices()}
-            params={params} />
+            params={params} closeFn={configClose}/>
       </div>
       </>
     ) : <></>

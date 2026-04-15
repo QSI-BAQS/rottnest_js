@@ -250,15 +250,13 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 						.setCurrentExecutable(data.pluginData.plgKey);
 					rott.getServices().getProgramPluginService()
 						.saveProgramData(data.pluginData);
-					//rott.getModuleStates().getProgramState().closeProgramSettings();
+					// rott.getModuleStates().getProgramState().closeProgramSettings();
 				},
-				saveConfigFn: (_data: PluginPackage) => {
+				saveConfigFn: (data: PluginPackage) => {
 					
-					//const rott = data.container;
-					
-
-					// rott.getServices().programplugins.saveProgramConfig(data.pluginData);
-					// rott.getModuleStates().getProgramState().closeProgramSettings();					
+					const rott = data.container;
+					rott.getServices().programplugins.saveProgramConfig(data.pluginData);
+					rott.getModuleStates().getProgramState().closeProgramSettings();					
 				},
 				cancelFn: (data: PluginPackage) => {
 					const rott = data.container;

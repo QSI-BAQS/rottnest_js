@@ -667,7 +667,7 @@ export class CallGraphSpace extends
 				let modMeta = container.getModulesMeta();
 				if(rkind === "CUIDObj" || rkind === "CUIDTotal") {
 					modMeta.setEnable("CallGraph");
-					modMeta.setEnable("Chart");
+					modMeta.setEnable("RunChart");
 
 					shouldUpdate = true;
 				}

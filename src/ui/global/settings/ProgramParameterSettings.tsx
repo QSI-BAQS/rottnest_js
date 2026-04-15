@@ -4,6 +4,7 @@ import { Services } from "../../../service/Services";
 import style from '../../styles/PluginSettingsForm.module.css';
 import paramStyle from '../../styles/ProgramParameterSettings.module.css';
 import { MessageType } from "../../../net/Protocol";
+import { PluginPackage } from "./GeneralSettings";
 /**
  * Displays and allows the data to be edited
  */
@@ -36,8 +37,10 @@ export class NumericParameterContainer
     const hasChanged = this.props.hasChanged;
     
     const inputUpdateFn = (e: ChangeEvent<HTMLInputElement>) => {
-      
-      const newValue = convertFn(e.target.value);
+      let newValue = e.target.value;
+      if(e.target.value.length > 0) {
+        newValue = convertFn(newValue);
+      }
       updateFn(newValue);
     }
 
@@ -61,6 +64,7 @@ export class NumericParameterContainer
 export type ProgramParameterData = {
   services: Services,
   params: Array<ProgramParam>
+  closeFn: (data:PluginPackage) => void
 }
 
 /**
@@ -95,6 +99,11 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
   updateState() {
     const nstate = {...this.state};
     this.setState(nstate);
+  }
+
+  closeWindow() {
+    const closeFn = this.props.closeFn;
+    closeFn({})
   }
 
   render() {
@@ -133,11 +142,11 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
             self.setState(nstate);
           }
         }
-        
+        // BUG: value is immediately converting it
         return <NumericParameterContainer
           key={`numparam_${e[0]}`} name={e[0]} kind={e[1]}
           hasChanged={valMap.get(e[0])!}
-          value={Number(e[2])}
+          value={e[2]}
           isFloat={e[1] === 'float'}
           updateFn={updateFn}
           />
@@ -149,8 +158,19 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
       const refserv = services.getRefreshService();
       const paramsGroup: any = {};
       for(const m of self.state.params) {
+        console.log(m);
         const mkey = m[1][0];
-        paramsGroup[mkey] = [ m[1][1], m[1][2] ];
+        const val = m[1][2];
+        if(typeof val !== 'string') {
+          paramsGroup[mkey] = [ m[1][1], m[1][2] ];
+        } else {
+          
+          notifyserv.makeMessageWithId('param-set-notify-err',
+            "Program Parameters",
+            `Program parameter "${mkey}" is invalid`);
+          return;
+
+        }
       }
       
       // const paramsGroup = self.state.params.entries().map(kv => {
@@ -168,8 +188,8 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
       notifyserv.makeMessageWithId('param-set-notify',
         "Program Parameters",
         "Program parameters have been set");
-
-      refserv.triggerRefresh();
+      this.closeWindow();
+      // refserv.triggerRefresh();
     }
 
     return (

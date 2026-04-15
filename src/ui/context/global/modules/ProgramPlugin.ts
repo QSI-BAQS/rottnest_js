@@ -54,6 +54,7 @@ export class ProgramPluginState {
 	 * was present for selection
 	 */
 	closeProgramSettings() {
+		console.log("Should close?");
 	  this.swapFn(false, false);
 		this.updateTrigger.triggerRefresh();
 	}
