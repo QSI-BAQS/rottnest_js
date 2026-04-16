@@ -5,7 +5,7 @@ import {CUReqResult,
     SuperconductingCallGraphEntry,
 	} from "../../obj/CallGraph.ts";
 
-
+import { CallGraphWebSocketHooks } from "../../net/hooks/CallGraphHooks.ts";
 import { AppServiceMessage } from "../../net/AppServiceMessage.ts";
 
 
@@ -532,6 +532,8 @@ export class CallGraphSpace extends
 		moveMode: false,
 	}
 
+	callgraphHooks = new CallGraphWebSocketHooks();
+
 	resetState() {
 		this.state.cunitMap = new Map();
 		this.state.dispPositions = new Map();
@@ -553,156 +555,9 @@ export class CallGraphSpace extends
 	}
 	
 	serviceHook(asm: AppServiceMessage): void {
+		const cgServiceHook = this.callgraphHooks;
 		const cgspace = this;	
-		const container = this.props.architecture as any; //WARN Dangerous assumptions
-		//const appService = container.getConnectionManager().getNetworkService();
-
-		const jsonObj = asm.getJSON()
-		if(jsonObj) {
-			if(jsonObj.message === 'status_response') {
-				const containerMsg 
-				= new RottStatusResponseMSG();
-				const rData = asm
-					.parseDataTo(containerMsg)
-				if(rData) {
-					const cuData = rData
-						.curesult;
-					this.state.cunitMap	
-						.set(cuData.cu_id,
-						     cuData);
-					this.props.stash
-					.insert('node_column',
-						JSON
-						.stringify(cuData));
-						const nState 
-						= {...this.state}
-					this.setState(nState);
-				}
-			} else if(jsonObj.message === REMAP_HACK['cg_lat2d_get_graph']) {
-				//let gid = jsonObj.gid;
-				let parserOps = new NetParserOperations();
-				let graph = parserOps.decodeGraph(asm); //TODO
-				let expands = true;
-				let expGid = 'invalid';
-
-				if(graph) {
-					container.getStateData().getCallGraphState().setGraphViewData(graph);
-					if(graph.graph) {
-						let sz = graph.graph.size;
-						if(sz) {	
-							if(sz === 1) {
-								const e = graph.graph.
-								values().map((et: any) => {
-									return et;
-								}).toArray()[0];
-								expands = e.expands;
-								expGid = e.id;
-							}	
-							
-						}
-
-					}
-				}
-				this.props.stash
-					.insert('node_column',
-						JSON
-						.stringify(0));
-				this.props.stash
-					.insert('cgviz_chart_gid_data',
-						JSON
-						.stringify({
-							expands,
-							gid: expGid,
-							idx: expGid
-
-						}));
-			
-
-				//TODO:
-				// Reset the call_graph
-				// and update
-				cgspace.resetState();
-				const nState = {...cgspace.state}
-				nState.refresh = true;
-				cgspace.setState(nState);
-
-			} else if(jsonObj.message === REMAP_HACK['cg_lat2d_get_root_graph']) {
-				let parserOps = new NetParserOperations();
-				let graph = parserOps.decodeGraph(asm);
-				let expands = true;
-				this.props.stash
-					.insert('cgviz_chart_gid_data',
-						JSON
-						.stringify({
-							expands,
-						}));
-				this.props.stash
-					.insert('node_column',
-						JSON
-						.stringify(0));
-				if(graph) {
-					container.getStateData().getCallGraphState()
-					.setGraphViewData(graph);
-					
-				}
-				cgspace.resetState();
-				const nState = {...cgspace.state}
-				nState.refresh = true;
-				cgspace.setState(nState);
-
-			} else if(jsonObj.message === 'data.run_result' ||
-				jsonObj.message === REMAP_HACK['cg_lat2d_run_graph_node']) {
-			
-				//TODO Set the graph id for
-				//the msg to be sent for
-				//get_graph
-								
-				/*container.state.visData = jsonObj;
-				container.state.tabData
-				.availableTabs[2]
-					= true;*/
-
-				let rrBuf = container.getServices().getRunResultService();
-
-			
-				//A lot of heavy lifting done with this
-				//to address a terrible messaging system
-				const [rkind, mdat] = rrBuf.decodeAndSort(jsonObj
-									  .payload);
-				let shouldUpdate = false;
-				//TODO: This is bloody nasty!
-				// WARNING: You are dealing with something quite gross here!
-				let modMeta = container.getModulesMeta();
-				if(rkind === "CUIDObj" || rkind === "CUIDTotal") {
-					modMeta.setEnable("CallGraph");
-					modMeta.setEnable("Chart");
-
-					shouldUpdate = true;
-				}
-					
-				if(rkind === "VisualResult") {
-					container.getStateData()
-						.getVisState()
-						.setVizData(mdat);
-					modMeta.setEnable("Visualiser");
-					this.props.stash
-					.insert('viz_sim_data',
-						JSON.stringify({
-							simready: true 
-						})
-					);
-					shouldUpdate = true;
-
-
-				}
-
-				if(shouldUpdate) {
-					container.getServices().getRefreshService().triggerRefresh();
-				}
-
-				
-			}
-		}
+		cgServiceHook.trigger(cgspace, asm);
 	}
 
 	traverseGraph(graph: SuperconductingCallGraph, 
@@ -760,9 +615,7 @@ export class CallGraphSpace extends
 			}
 		}
 
-		return {
-			layerData: traversalData	
-		}
+		return { layerData: traversalData }
 	}
 	
 	identifyRoots(graph: SuperconductingCallGraph): Array<[string, 
@@ -776,7 +629,6 @@ export class CallGraphSpace extends
 			}
 		}
 
-		
 		for(const [k, cgobj] of graph.graph.entries()) {
 			if(!seenSet.has(k)) {
 				rootList.push([k, cgobj]);

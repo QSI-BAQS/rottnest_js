@@ -434,7 +434,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	let [yMin, yMax] = d3.extent(hDat, (d: number) => d);
 	if(keyref.keyvalue === 'ALL') {
 		if(scaleFnStr === 'Log') {
-			yMin = gMinY;
+			yMin = 1; // NOTE: Below is weird, so fix up if needed
 			yMax = gMaxY;
 		} else {
 
@@ -443,6 +443,8 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	} else {
 		if(scaleFnStr === 'Linear') {
 			yMin = 0;
+		} else {
+			yMin = 1;
 		}
 	}
 

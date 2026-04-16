@@ -33,6 +33,7 @@ export class RottGraphMSG  {
 		console.log(jsonObj)
 		//Assume it is a JSON object
 		const data = jsonObj['payload'];
+		// TODO: Fix this!
 		const graph = data['graph_view']['graph'];
 		for(const k in graph) {
 
