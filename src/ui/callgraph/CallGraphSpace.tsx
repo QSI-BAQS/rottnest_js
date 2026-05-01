@@ -297,7 +297,7 @@ class CGObject extends React.Component<CGDispData,
 				  this.props.cuReqData.status 
 					!== 'complete') {
 					this.apservice.sendObj(REMAP_HACK['cg_lat2d_get_graph'], {
-						'gid': this.data.idx
+						'graph_id': this.data.idx
 					});
 					this.state.cuReady = true;
 					this.state.dataReady = true;
@@ -988,9 +988,9 @@ export class CallGraphSpace extends
 
 						const aps = cgref.appService;
 						cgref.resetState();
-						aps.sendObj(REMAP_HACK['cg_lat2d_get_root_graph'], JSON.stringify(
-							{ gid: 0 }
-						));
+						aps.sendObj(REMAP_HACK['cg_lat2d_get_root_graph'],
+							{ graph_id: 0 }
+						);
 						
 					}
 

@@ -61,7 +61,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		
 		const appService = container.getConnectionManager().getNetworkService();
 		appService.sendObj(REMAP_HACK['cg_lat2d_run_graph_node'], {
-				gid: data.idx
+				graph_id: data.idx
 			})
 	}
 
