@@ -41,7 +41,7 @@ function DeserialFailMarkerCheck(data: any): boolean {
 function CheckedDeserialize(data: FileReaderRetType): string  {
 	let output = 'false';
 	let loadedVal = String(data);
-	console.log(data);
+	//console.log(data);
 	if(loadedVal.length > 4) {
 		output = loadedVal;
 	}
@@ -81,7 +81,7 @@ function findSuitableArchitecture(name: string, archList: Array<PluginEntry>) {
 		'Active Volume': 'Active Volume'
 	}
 	const mapResult: string | undefined = archMap[name];
-	console.log(mapResult);
+	//console.log(mapResult);
 	if(mapResult !== undefined) {
 		//Check archList now
 

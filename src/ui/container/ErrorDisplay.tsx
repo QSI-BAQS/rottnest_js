@@ -46,7 +46,7 @@ export default class ErrorDisplay extends React.Component<ErrorProps, NullObject
 			const msgSpl = msg.split("\n").map((e) => {
 				return <pre className={styles.preFormatDump}>{e}</pre>
 			});
-			console.log(msgSpl);
+			//console.log(msgSpl);
 			return (
 				<div className={styles.errorDisplay} 
 					style={{position:'absolute'}}>

@@ -158,7 +158,7 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
       const refserv = services.getRefreshService();
       const paramsGroup: any = {};
       for(const m of self.state.params) {
-        console.log(m);
+        //console.log(m);
         const mkey = m[1][0];
         const val = m[1][2];
         if(typeof val !== 'string') {

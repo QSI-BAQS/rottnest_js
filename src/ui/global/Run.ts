@@ -8,7 +8,7 @@ const leftClick = (container: RottnestApplication) => {
 	const ctx = rott.getUIContext().getCurrentContext()
 	const notify = rott.getServices().getNotifyService();
 	const refserv = rott.getServices().getRefreshService();
-	console.log("Run");
+	//console.log("Run");
 	if(ctx.queryCapability(ArchCapabilityQuery.MakeQuery("CanNetwork")).Yes()) {
 
 		const projNet = rott.getAppState()
@@ -34,7 +34,7 @@ const leftClick = (container: RottnestApplication) => {
 		//   
 		const archremap = MessageType.Layout.Run;
 		const obj = { "layout" : projNet.forNetwork(fmt) };
-		console.log(obj, projNet)
+		//console.log(obj, projNet)
 		appnet.sendObj(archremap, obj);
 
 		notify.makeMessageWithId('send-arch-good', "Network Communications",

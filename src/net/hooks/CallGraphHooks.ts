@@ -52,7 +52,7 @@ export class CallGraphWebSocketHooks {
 
   getGraphConfirmationHook(context: any, jsonObj: any, asm: AppServiceMessage) {
     //TODO: Need to handle confirmation
-    console.log("YO!")
+    //console.log("YO!")
   }
   
   getRootGraphHook(context: any, _jsonObj: any, asm: AppServiceMessage) {

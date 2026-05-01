@@ -5,7 +5,7 @@
  */
 class NoRefreshImpl implements UpdateTrigger {
   triggerUpdate(): void {
-    console.log("triggerUpdate correspond to NoRefresh action")
+    //console.log("triggerUpdate correspond to NoRefresh action")
   }
 }
 

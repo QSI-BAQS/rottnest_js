@@ -89,7 +89,7 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 	//TODO: When fixing the lat2d implementation, we need to provide this information
 	const rrService = workspaceData.architecture.getServices().getRunResultService();
 	const rrBuf = rrService;
-	console.log(rrBuf);
+	//console.log(rrBuf);
 	const cuidObjs = rrBuf.getVolumeSet();
 	//TODO: Temporary, could likely do it directly but not wanting to play games
 	//at the moment.

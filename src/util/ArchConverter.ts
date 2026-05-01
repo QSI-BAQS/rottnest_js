@@ -92,7 +92,7 @@ export default class ArchConverter {
 			}
 		}
 
-		//console.log(tmap);
+		////console.log(tmap);
 		if(root) {	
 			tschedProject.regions.push(root);
 			return tschedProject;

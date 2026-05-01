@@ -28,7 +28,7 @@ const leftClick = (container: RottnestApplication) => {
 		const archremap = MessageType.Layout.Prepare;
 		
 		const obj = projNet.forNetwork(fmt);
-		console.log(obj, projNet)
+		//console.log(obj, projNet)
 		appnet.sendObj(archremap, obj);
 
 		notify.makeMessageWithId('send-arch-good', "Network Communications",
