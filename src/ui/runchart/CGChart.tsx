@@ -264,8 +264,8 @@ const GenerateNodes = (
 		let measuredValue = data.aggrMap[selKey][i];
 
 		const onNodeHoverTrigger = (isCuid: boolean) => {
-			console.log(measuredValue, mxid, i);
-			console.log(data.aggrMap[selKey])
+			//console.log(measuredValue, mxid, i);
+			//console.log(data.aggrMap[selKey])
 			if(isCuid) {
 				bmap.insert('current_node',
 				JSON.stringify({

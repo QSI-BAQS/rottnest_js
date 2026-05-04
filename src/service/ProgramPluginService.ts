@@ -93,7 +93,7 @@ export class ProgramPluginService {
 		// 	.find((e: ProgramPlugin) => e.name === data.plgKey);
 		
 		// this.current = prog === undefined ? null : prog;
-		// console.log(this.current);
+		// //console.log(this.current);
 		this.current = {
 			name: data.plgKey,
 			params: data.params,

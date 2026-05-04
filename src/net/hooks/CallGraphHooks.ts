@@ -36,7 +36,7 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 
   getGraphConfirmationHook(_context: any, _jsonObj: any, _asm: AppServiceMessage) {
     //TODO: Need to handle confirmation
-    console.log("YO!")
+    //console.log("YO!")
   }
   
   getRootGraphHook(context: any, _jsonObj: any, asm: AppServiceMessage) {

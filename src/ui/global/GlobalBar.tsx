@@ -371,17 +371,17 @@ class GlobalBar extends React.Component<GlobalBarProps, GlobalBarData> {
 			style: styles.reconnect,
 			iconComponent: <RollbackOutlined />
 		},
-		{ 
-			id: 10, 
-			name: "Prepare", 
-			toolTip: "Run", 
-			image: "Prepare",
-			events: PrepareEvents,
-			capabilityKey:"CanRun",
-			style: styles.run,
-			iconComponent: <PlaySquareOutlined />,
-			helpId: "compile_button"
-		},
+		// { 
+		// 	id: 10, 
+		// 	name: "Prepare", 
+		// 	toolTip: "Run", 
+		// 	image: "Prepare",
+		// 	events: PrepareEvents,
+		// 	capabilityKey:"CanRun",
+		// 	style: styles.run,
+		// 	iconComponent: <PlaySquareOutlined />,
+		// 	helpId: "compile_button"
+		// },
 		{ 
 			id: 11, 
 			name: "Run", 

@@ -1,6 +1,7 @@
 import { AppServiceMessage } from "../AppServiceMessage";
-import { MessageType } from "../Protocol";
 import { WebSocketHookDefault } from "./Common";
+import { MessageType } from "../Protocol";
+
 
 /**
   * Hooks/Callbacks that are used within the call graph
@@ -74,7 +75,6 @@ export class ArchitectureWebSocketHooks extends WebSocketHookDefault {
     
   }
 
-  
+}
 
   
-}

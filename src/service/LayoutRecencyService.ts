@@ -145,7 +145,7 @@ export class LayoutRecencyService {
       this.nextKey();
       
     const name = entry.name!;
-    console.log(nextKey);
+    //console.log(nextKey);
     recents[nextKey] = entry;
     this.#names[name] = nextKey;
     

@@ -132,7 +132,7 @@ export class RottnestApplicationState {
 
 		const refresh = this.modstate.getServices().getRefreshService();
 		this.architectureSchema = schema;
-		console.log(schema);
+		//console.log(schema);
 		// This is an issue?
 		this.architectureObject = schema.createArchitecture(this
 			.modstate.getServices())

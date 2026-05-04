@@ -528,7 +528,7 @@ export class CallGraphSpace extends
 		//depth, parentIdx, entryIdx	
 		let queue: Array<[number, string, string]> 
 			=[[0,'', rootIdx]];
-		let seenList: Set<string> = new Set();
+		// let seenList: Set<string> = new Set(); //TODO: May need to fix!
 		let traversalData: Array<CGTreeLayerData> = [];
 		let current: [number, string, string] 
 			| undefined = undefined;
@@ -812,7 +812,8 @@ export class CallGraphSpace extends
 						const aps = cgref.appService;
 						cgref.resetState();
 						aps.sendObj(MessageType.CallGraph.GetRootGraph,
-							JSON.stringify({ gid: 0 }));
+							JSON.stringify({ graph_id: 0 }));
+						
 					}
 				return (
 					<div className={styles.widgetSpace}

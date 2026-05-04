@@ -52,7 +52,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		
 		const appService = container.getConnectionManager().getNetworkService();
 		appService.sendObj(MessageType.CallGraph.RunGraphNode, {
-				gid: data.idx
+				graph_id: data.idx
 			})
 	}
 
