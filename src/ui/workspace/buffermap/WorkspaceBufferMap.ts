@@ -13,22 +13,35 @@ export interface BufferMapTrigger {
  */
 export class WorkspaceBufferMap {
 	context: BufferMapTrigger;	
-	map: Map<string, string> = new Map();
+	map: Map<string, any> = new Map();
 	sharedMap: Map<string, any> = new Map();
 
+	/**
+	 * Construction of workspace buffer map
+	 *   - 
+	 */
 	constructor(context: BufferMapTrigger) {
 		this.context = context;
 	}
 
+	/**
+	 * Places key-value map within the map itself
+	 * - Not much different to regular map but is just implied to be shared
+	 */
 	stash(key: string, data: any) {
-		this.sharedMap
-			.set(key, data);
+		this.sharedMap.set(key, data);
 	}
 
+	/**
+	 * Clears the data within it
+	 */
 	dropStash() {
 		this.sharedMap.clear();
 	}
 
+	/**
+	 * Retrieves the map inside it
+	 */
 	getStash() {
 		return this.sharedMap;
 	}

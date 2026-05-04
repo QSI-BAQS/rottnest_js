@@ -1,42 +1,34 @@
 import { NetParserOperations } from "../../obj/CallGraphNet";
 import { AppServiceMessage } from "../AppServiceMessage";
 import { VisualiserPacketKind } from "../VisualiserProtocol";
+import { WebSocketHookDefault } from "./Common";
 // import { MessageType } from "../Protocol";
 
 
-const VisualiserUnexpectedJSONError = "Unable to deserialize object received";
-const VisualiserUnexpectedError = "Unable to select appropriate method";
 
 /**
   * Hooks/Callbacks that are used within the call graph
   * classes to enable a clean interaction with the callgraph
   * instances
   */
-export class VisualiserWebSocketHooks {
+export class VisualiserWebSocketHooks extends WebSocketHookDefault {
 
   parserOps = new NetParserOperations();
-  internalMap = {
+  internalMap =
+  {
     [VisualiserPacketKind.GetVisualiserState]: this.getVisualiserStateHook,
     [VisualiserPacketKind.GetVisualiserObject]: this.getVisualiserObjectHook,
   }
-  
-  
-  trigger(context: any, asm: AppServiceMessage) {
-    const jsonObj = asm.getJSON();
-    if(jsonObj) {
-      const payload = jsonObj.payload;
-      const subkind = payload.kind;
-      const method = this.internalMap[subkind]
-      if(method) {
-        method(context, jsonObj, asm);
-      } else {
-        console.warn(VisualiserUnexpectedError);
-      }
-    } else {
-      console.warn(VisualiserUnexpectedJSONError);
-    }
-  }
 
+  constructor() {
+    super();
+    this.setInternalMap({
+      [VisualiserPacketKind.GetVisualiserState]: this.getVisualiserStateHook,
+      [VisualiserPacketKind.GetVisualiserObject]: this.getVisualiserObjectHook,
+    })
+  
+  }
+  
   getVisualiserStateHook(context: any, jsonObj: any, asm: AppServiceMessage) {
     // TODO: Need to handle state on the backend
     // appService.sendObj(MessageType.Visualiser.GetRootGraph, JSON.stringify({}))

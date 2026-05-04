@@ -1,22 +1,13 @@
 import React from "react";
-import styles from '../styles/CGSpace.module.css'
-
 import {CGResult, CGResultDummy, CUReqResult, CUReqResultDummy} 
 	from "../../obj/CallGraph.ts";
-import { ArchStashMap, ArchWorkspace, ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
+import { ArchStashMap, ArchWorkspace, ArchWorkspaceData } 
+	from "rottnest-plugin/schema/ArchWorkspace";
 import { ArchitectureObject } from "rottnest-plugin/schema/ArchSchema";
 import { MessageType } from "../../net/Protocol.ts";
-
-
-
-
-
-const REMAP_HACK = {
-  "cg_lat2d_get_graph": MessageType.CallGraph.GetGraph,
-  "cg_lat2d_get_root_graph": MessageType.CallGraph.GetRootGraph,
-  "cg_lat2d_run_graph_node": MessageType.CallGraph.RunGraphNode,
-  "cg_lat2d_status_response": MessageType.CallGraph.GetStatus,
-}
+import styles from '../styles/CGSpace.module.css'
+import { CallGraphConstants } from "./CallGraphCommon.ts";
+import { BufferMapKey } from "../workspace/buffermap/BufferMapCommon.ts";
 
 
 type NodeData = {
@@ -44,7 +35,7 @@ type CGNodeData = {
 
 class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 
-	cuId: string = 'test';
+	cuId = CallGraphConstants.ComputeUnitId;
 
 	actionOnNode(data: any,
 		    runReady: boolean, simReady: boolean) {
@@ -60,7 +51,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 			.architecture as any; //WARN: Unsafe assumption
 		
 		const appService = container.getConnectionManager().getNetworkService();
-		appService.sendObj(REMAP_HACK['cg_lat2d_run_graph_node'], {
+		appService.sendObj(MessageType.CallGraph.RunGraphNode, {
 				gid: data.idx
 			})
 	}
@@ -80,7 +71,10 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 
 		if(simReady) {
 			//Grab data here?
-			const vizData = container.getStateData().getVisState().getVizData();
+			const vizData = container
+				.getStateData()
+				.getVisState()
+				.getVizData();
 			
 			bmap.insert('current_viz_data', JSON.stringify(vizData)); 
 			//TODO: You got to fix this
@@ -111,9 +105,9 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 
 		const gendcomp = rrbuf.getEndComp();
 		if(gendcomp.length > 0) {
-			return 'Compilation Finished';
+			return CallGraphConstants.CompilationState.Finished;
 		} else {
-			return 'Compiling';
+			return CallGraphConstants.CompilationState.Compiling;
 		}
 	}
 
@@ -131,9 +125,11 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		let cuTocks = cuResults.tocks;
 	        let tsourceInfo = cuResults.tSource;
 		let cuDetailsReady = false;
-		let nName = 'Not selected';
-		let nDescription = '';
-		let nKind = 'NoKind';
+
+		let nName = CallGraphConstants.Node.NotSelected;
+		let nDescription = CallGraphConstants.Node.NoDescription;
+		let nKind = CallGraphConstants.Node.NoKind;
+
 		let compStr = this.getCompilationFinished();
 		if(ndata.nodeData !== null 
 		   && ndata.nodeData !== undefined) {
@@ -143,7 +139,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		}
 		let tdata = [];		
 	
-	        if(tsourceInfo) {
+    if(tsourceInfo) {
 			for(const k in tsourceInfo) {
 				const tdat = tsourceInfo[k];
 				tdata.push(
@@ -153,7 +149,9 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 				);
 			}
 		}
-		const bmapViz = JSON.parse(bmap.get('viz_sim_data'));
+
+		const bmapViz = JSON.parse(bmap.get(BufferMapKey.Visualiser.SimData));
+
 		let simReady = false;
 		let runReady = false;
 		let runReqd = false;
@@ -164,11 +162,14 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 			runReqd = bmapViz.runrequested;
 			runFnd = bmapViz.runfinished;
 		}
-		let visText = runReady ? 'Run Node' : 'Not Available';
-		visText = runReqd ? 'Currently Running' : visText;
-		visText = runFnd ? 'Run Visualisation' : visText;
-		visText = simReady ? 'Run Visualisation' :
-			visText;	
+		let visText = runReady ? CallGraphConstants.Node.RunNode
+			: CallGraphConstants.Node.RunNodeNotAvailable;
+			
+		visText = runReqd ? CallGraphConstants.Visualiser.RunRequested : visText;
+			
+		visText = runFnd ? CallGraphConstants.Visualiser.VisualisationReady : visText;
+			
+		visText = simReady ? CallGraphConstants.Visualiser.VisualisationReady : visText;	
 
 		const vzReadyStyle = simReady || runReady ? '' : styles.vizNotReady;
 		const compInfo = (<div className={styles.dataSegment}>
@@ -239,8 +240,8 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		const renResult = !cuDetailsReady ? 
 			(<div className={styles.nodePanel}>
 			 	<header>
-				<div>Id: {nName}</div> 
-				<div>Type: {nKind}</div>
+				<div>Id: {nName} </div> 
+				<div>Type: {nKind} </div>
 				</header>
 				<div>
 				{nDescription}
@@ -248,7 +249,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 				<div className={styles
 					.dataSegment}>
 					<header>
-					Global Volumes:
+					{ CallGraphConstants.Headers.GlobalVolumes }
 					</header>
 
 					<div><span>Reg.Vol: </span>
@@ -312,7 +313,8 @@ export class CGNodeColumn
 
 		const wsData = this.props.workspaceData;
 		const bmap = wsData.stash;
-		const graphRef = bmap.getStash().get('graph_ref');
+		const graphRef = bmap.getStash()
+			.get(BufferMapKey.CallGraph.GraphRef);
 
 		let sData = bmap.get('current_node');
 		let idx = 'Not Selected';
@@ -336,7 +338,7 @@ export class CGNodeColumn
 			<div className={styles.widgetViewContainer}>
 				<header className={styles
 					.widgetContainerHeader}>
-					Context & Volumes	
+					{ CallGraphConstants.Headers.ColumnContextAndVolumes }
 				</header>
 				<CGSelectedNodeBox 
 					nodeData={{
@@ -418,7 +420,7 @@ class RootListItem
 		const aps = this.container.getConnectionManager().getNetworkService();
 		if(this.rootIdx === 'root') {
 			this.rlist = new Set(['root']);	
-			aps.sendObj(REMAP_HACK['cg_lat2d_get_root_graph'], {});
+			aps.sendObj(MessageType.CallGraph.GetRootGraph, {});
 			let nnode = {
 				idx: this.rootIdx
 			};
@@ -450,7 +452,7 @@ class RootListItem
 
 			this.bufferMap
 				.insert('root_node',nstr);
-			aps.sendObj(REMAP_HACK['cg_lat2d_get_graph'],  {gid: this.rootIdx });
+			aps.sendObj(MessageType.CallGraph.GetGraph,  {gid: this.rootIdx });
 			//this.refresh(nSet);
 			this.bufferMap.commit();
 		}

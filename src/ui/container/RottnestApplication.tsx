@@ -3,8 +3,8 @@ import GlobalBar from '../global/GlobalBar.tsx';
 import ErrorDisplay from './ErrorDisplay.tsx';
 import { HelpContainer } from './HelpContainer.tsx';
 import { NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
-import { UpdateTrigger } from '../../service/RefreshService.ts';
 import { ArchWorkspaceContainer } from './WorkspaceContainer.tsx'
+import { UpdateTrigger } from '../../service/RefreshService.ts';
 import { RottnestApplicationState, RottnestProperties, RottnestState }
 	from '../context/global/ApplicationState.ts'
 

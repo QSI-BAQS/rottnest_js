@@ -34,11 +34,16 @@ export class RottGraphMSG  {
 		//Assume it is a JSON object
 		const data = jsonObj['payload'];
 		// TODO: Fix this!
-		const graph = data['graph_view']['graph'];
-		for(const k in graph) {
+		// We need to use result and iterate over the objects...
+		const graphs = data['result']
+		const graphMap = this.graph.graph; // TODO: This is silly
+		
+		// const graph = data['graph_view']['graph'];
+		for(const graphObj of graphs) {
 
-			const cobj = graph[k];
-			this.graph.graph.set(cobj.id,cobj);
+			const handleId = graphObj.handle_id
+			// const cobj = graphs[k];
+			graphMap.set(handleId, graphObj);
 
 		}
 		return this;

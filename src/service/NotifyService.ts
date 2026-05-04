@@ -20,6 +20,11 @@ export const NotifyID = {
       title: "Program Set",
       message: "Program has been set"
     },
+    ListUnavailable: {
+      ID: "prg-set-unavailable",
+      title: "Executables Unavailable",
+      message: "Current not accessible at this time"
+    },
     GetCurrent: {
       ID: "prg-set",
       title: "Program Set",

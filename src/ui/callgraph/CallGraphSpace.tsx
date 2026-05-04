@@ -1,18 +1,15 @@
 import React, {CSSProperties} from "react";
-import {CUReqResult,
-	RottCallGraphEntryDefault,
-    SuperconductingCallGraph,
-    SuperconductingCallGraphEntry,
-	} from "../../obj/CallGraph.ts";
-
-import { CallGraphWebSocketHooks } from "../../net/hooks/CallGraphHooks.ts";
-import { AppServiceMessage } from "../../net/AppServiceMessage.ts";
-
+import {CallGraphData, CallGraphEntry, CUReqResult, RottCallGraphEntryDefault }
+	from "../../obj/CallGraph.ts";
+import { CallGraphWebSocketHooks }
+	from "../../net/hooks/CallGraphHooks.ts";
+import { AppServiceMessage }
+	from "../../net/AppServiceMessage.ts";
+import { ArchStashMap, ArchWorkspaceData }
+	from "rottnest-plugin/schema/ArchWorkspace";
+import { MessageType } from "../../net/Protocol.ts";
 
 import styles from '../styles/CGSpace.module.css';
-import { ArchStashMap, ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
-import { MessageType } from "../../net/Protocol.ts";
-import { NetParserOperations, RottStatusResponseMSG } from "../../obj/CallGraphNet.ts";
 
 
 interface CGUpdateableContext {	
@@ -26,55 +23,9 @@ interface CGUpdatable {
 	getCoords(): CGObjectLineUpdatable	
 }
 
-
 export interface ASContextHook {
 	serviceHook(asm: AppServiceMessage): void
 }
-
-
-const REMAP_HACK = {
-  "cg_lat2d_get_graph": MessageType.CallGraph.GetGraph,
-  "cg_lat2d_get_root_graph": MessageType.CallGraph.GetRootGraph,
-  "cg_lat2d_run_graph_node": MessageType.CallGraph.RunGraphNode,
-  "cg_lat2d_status_response": MessageType.CallGraph.GetStatus,
-};
-
-//TODO: We need to re-evaluate the usage of the call graph here
-/*
-
-class UpdatableLineRef implements CGUpdatable {
-	
-	ctx: CGUpdateableContext | null = null;
-	
-
-	getCoords(): CGObjectLineUpdatable {
-		if(this.ctx) { 
-			return this.ctx.getCoords(); 
-		}
-		else {
-			return {
-				updateable: this, 
-				pairUnit1: '%', 
-				pairUnit2: '%', 
-				x1: 0,
-				x2: 0,
-				y1: 0,
-				y2: 0
-			}
-		}
-	}
-
-	pushPositionUpdate(pdata: CGLinePositionData): void {
-		if(this.ctx) {
-			this.ctx.pushPositionUpdate(pdata);
-		}
-			
-	}
-
-	registerContext(ctx: any): void {
-		this.ctx = ctx;
-	}
-}*/
 
 type CGPositionData = {
 	x: number
@@ -84,12 +35,15 @@ type CGPositionData = {
 }
 
 type CGViewState = { 
-	dispPositions: Map<string, CGPositionData> 
+	dispPositions: Map<string, CGPositionData>
+	
 	//The x1, y1 position
 	srcPositions: Map<string, Map<string, CGUpdatable>>
+
 	//The x2, y2 position
 	destPositions: Map<string, Map<string, CGUpdatable>>
 	cunitMap: Map<string, CUReqResult>
+	
 	//registerMap: Map<string, CGObjectLine>
 	refresh: boolean
 	xOff: number
@@ -120,10 +74,14 @@ type CGTreeDisplayData = {
  *
  */
 type CGAggr = {
-	graph: SuperconductingCallGraph
+	graph: CallGraphData
 	workspaceData: ArchWorkspaceData
 }
 
+/**
+ * CGDispData
+ * 
+ */
 type CGDispData = {
 	wdaggr: CGAggr
 	index: string 
@@ -136,6 +94,9 @@ type CGDispData = {
   expands: boolean;
 };
 
+/**
+ * CGObjectData
+ */
 type CGObjectData = {
 	x: number
 	y: number
@@ -155,8 +116,9 @@ class CGObject extends React.Component<CGDispData,
 	cuId = this.props.cuId
 	//TODO: Don't look, it is awful
 	apservice = this.props.wdaggr
-		.workspaceData.architecture.getConnectionManager()
-		.getNetworkService()
+		.workspaceData.architecture
+			.getConnectionManager()
+			.getNetworkService()
 
 	updateFn = this.props.updateTrigger;
 	
@@ -208,9 +170,6 @@ class CGObject extends React.Component<CGDispData,
 
 	}	
 
-	/**
-	 * 
-	 */
 	onHoverTrigger() {
 		//1. Trigger an update on the panel
     this.data.bufferMap.insert(
@@ -290,14 +249,15 @@ class CGObject extends React.Component<CGDispData,
 			const chdata = JSON.parse(bmap
 					.get('cgviz_chart_gid_data'));
 			if(chdata) {
-				expands = chdata.expands;	
+				// expands = chdata.expands;
+				expands = true;	
 			}
 			if(expands) {
 				if(this.props.cuReqData === null ||
 				  this.props.cuReqData.status 
 					!== 'complete') {
-					this.apservice.sendObj(REMAP_HACK['cg_lat2d_get_graph'], {
-						'gid': this.data.idx
+					this.apservice.sendObj(MessageType.CallGraph.GetGraph, {
+						'graph_id': this.data.idx
 					});
 					this.state.cuReady = true;
 					this.state.dataReady = true;
@@ -547,11 +507,11 @@ export class CallGraphSpace extends
 		super(props);
 		const container = this.props.architecture;
 		const aService = container.getConnectionManager().getNetworkService();
-		aService.hookContext(this,REMAP_HACK['cg_lat2d_status_response']);
-		aService.hookContext(this,REMAP_HACK['cg_lat2d_get_graph']);
-		aService.hookContext(this,REMAP_HACK['cg_lat2d_get_root_graph']);
-		aService.hookContext(this,REMAP_HACK['cg_lat2d_run_graph_node']);
-		aService.hookContext(this,'data.run_result');
+		aService.hookContext(this,MessageType.CallGraph.GetStatus);
+		aService.hookContext(this,MessageType.CallGraph.GetGraph);
+		aService.hookContext(this,MessageType.CallGraph.GetRootGraph);
+		aService.hookContext(this,MessageType.CallGraph.RunGraphNode);
+		aService.hookContext(this,MessageType.Data.RunResult);
 	}
 	
 	serviceHook(asm: AppServiceMessage): void {
@@ -560,7 +520,7 @@ export class CallGraphSpace extends
 		cgServiceHook.trigger(cgspace, asm);
 	}
 
-	traverseGraph(graph: SuperconductingCallGraph, 
+	traverseGraph(graph: CallGraphData, 
 		      rootIdx: string)
 		: CGTreeDisplayData {
 
@@ -602,26 +562,28 @@ export class CallGraphSpace extends
 				.layerElements.push(element);	
 			}
 			//add children
-			for(let i = 0; i < currentCG
-			    .children.length; i++) {
-				const childIdx = currentCG
-					.children[i];
+			// TODO: This probably can be removed? idk?
+			
+			// for(let i = 0; i < currentCG
+			//     .children.length; i++) {
+			// 	const childIdx = currentCG
+			// 		.children[i];
 				
-				if(childIdx && !seenList.has(childIdx)) {
-					seenList.add(childIdx);
-					queue.push([depth+1, idx, 
-						   childIdx]);
-				}
-			}
+			// 	if(childIdx && !seenList.has(childIdx)) {
+			// 		seenList.add(childIdx);
+			// 		queue.push([depth+1, idx, 
+			// 			   childIdx]);
+			// 	}
+			// }
 		}
 
 		return { layerData: traversalData }
 	}
 	
-	identifyRoots(graph: SuperconductingCallGraph): Array<[string, 
-			      SuperconductingCallGraphEntry]> {
+	identifyRoots(graph: CallGraphData): Array<[string, 
+			      CallGraphEntry]> {
 		
-		let rootList: Array<[string, SuperconductingCallGraphEntry]> = [];
+		let rootList: Array<[string, CallGraphEntry]> = [];
 		let seenSet: Set<string> = new Set();
 		for(const [_, cgobj] of graph.graph.entries()) {
 			for(const ck of cgobj.children) {
@@ -713,7 +675,7 @@ export class CallGraphSpace extends
 		const bmap = this.props.stash;
 		//TODO: We need to retrieve the graph information
 		//	and update the details
-		const container = this.props.architecture as any; //WARN: Unsafe assumptions
+		const container = this.props.architecture as any;
 		const graphFromContainer = container.getStateData()
 			.getCallGraphState().getGraphViewData();
 		bmap.stash('graph_ref', graphFromContainer);
@@ -723,7 +685,8 @@ export class CallGraphSpace extends
 		}
     // const rootList = this.identifyRoots(graphFromContainer);
     // TODO: Re-evaluate this operation
-    const rootList = Array.from(graphFromContainer.graph.entries()) as Array<Array<any>>;
+    const rootList = Array.from(graphFromContainer
+    		.graph.entries()) as Array<Array<any>>;
 
 		if(rootList.length !== 0) {
 			
@@ -747,183 +710,45 @@ export class CallGraphSpace extends
 				rootList.map((e) => {
 
 					return this.traverseGraph(graphFromContainer, e[0]) })
-					.map((ldw: CGTreeDisplayData) => { 
+						.map((ldw: CGTreeDisplayData) => { 
 						
-					return ldw.layerData
-					.map((wl: CGTreeLayerData, _lidx: number) => {
-					//TODO: Re-evaluate the computation of lines between callgraph components
-					// const wlLength 
-					// 	= wl.layerElements.length;
-					// calcdHeight += 5;
-					cidx += 1;
-            const wlRes = wl.layerElements.map(
-              (w: CGLayerEntry, _idx: number) => {
-                const wname = waggr.graph.graph.get(w.entryIdx)?.name;
-                /*let yoff = 0;
-						let sidx = idx+1;
-						let xdiff = 100/(wlLength*2);
-						if(lidx === 0) {
-							xdiff = 100/(rootN*2);
-							sidx = cidx+1;
-                  let yAdj = 0;*/
-							/*if(sidx % 2 === 1) {
-								yAdj = 0.5;
-								
-							}*/
+						return ldw.layerData
+							.map((wl: CGTreeLayerData, _lidx: number) => {
+							cidx += 1;
+	            const wlRes = wl.layerElements.map(
+	              (w: CGLayerEntry, _idx: number) => {
+	                const wname = waggr.graph.graph.get(w.entryIdx)?.name;
 
-                  // if(xdiff < 1) {
-								
-                    /*if(sidx % 2 === 1) {*//*
-								if(sidx % 10 > 0) {
-									xdiff = 10+(-0.5);
-									yoff = rowDrop * 0.5;
-										
-								} else {
-									cidx = 0;
-									xdiff = 10+(-0.5);
-									yoff = rowDrop * 0.5;
-									rowDrop+=1;
-									//xdiff = 0.5; 
-										
-								}
-							}
-							yoff += yAdj;
-						}
-						let xperc = xdiff * (cidx+1);
-						//let xdisp = (xperc * (idx +1)) + 
-						///	(xperc * idx);
-						let xdisp = xperc;
-						if(xdisp > 100 && lidx === 0) {
-							const rowOff = Math.floor(xdisp) % 100;	
-							xdisp = rowOff;				
-                }*/
+	              let xdisp = cidx % 10 * 8 + 8;
+	              let yoff = Math.floor(cidx / 10) / rootN * 600;
+							  calcdHeight = Math.max(Math.floor(rootN / 10)*100, calcdHeight);
+								const cuVal = this.state
+								.cunitMap.get(wname !== undefined ? wname
+									: '');
+							const distCU = cuVal !== null 
+							&& cuVal !== undefined ?
+								cuVal : null;
+							const wdispData : CGDispData = {
+								wdaggr: waggr,
+								index: w.entryIdx,
+								x: xdisp,
+								y: yoff,
 
-              let xdisp = cidx % 10 * 8 + 8;
-              let yoff = Math.floor(cidx / 10) / rootN * 600;
-			  calcdHeight = Math.max(Math.floor(rootN / 10)*100, calcdHeight);
-						const cuVal = this.state
-							.cunitMap.get(wname !== undefined ? wname
-								: '');
-						const distCU = cuVal !== null 
-						&& cuVal !== undefined ?
-							cuVal : null;
-						const wdispData : CGDispData = {
-							wdaggr: waggr,
-							index: w.entryIdx,
-							x: xdisp,
-							y: yoff,
-
-							selectedIdx: selectedIndex,
-							cuReqData: distCU,
-							cuId: wname === undefined 
-								? '' :
-								wname,
-							updateTrigger: upTrigger,
-              expands: waggr.graph.graph.get(w.entryIdx)?.expands ?? false
-						};
-
-                // const pIdx = prix;
-                // const pDepth = wl.depth + 1;
-						//if( w.entryIdx) {	
-						/*	this.state.dispPositions.set(
-								w.entryIdx,
-								{
-									x: wdispData.x,
-									y: wdispData.y,
-									depth: pDepth,
-									parent: pIdx
-								}
-							);
-						//
-						prix = w.entryIdx;
-						//if(!cgref.state.srcPositions.has(w.entryIdx)) {
-							cgref.state.srcPositions.set(
-								w.entryIdx,
-								new Map()
-							);
-						//}
-						//if(!cgref.state.destPositions.has(w.entryIdx)) {
-							cgref.state.destPositions.set(
-								w.entryIdx,
-								new Map()
-							);
-						//}*/
-                return <CGObject key={`cgobj_${wname}`} {...wdispData} />;
-              }
-            );
-
-					//prevWlen = wlLength; 
-					// calcdHeight += 10;
-
-					return wlRes;
+								selectedIdx: selectedIndex,
+								cuReqData: distCU,
+								cuId: wname === undefined 
+									? '' :
+									wname,
+								updateTrigger: upTrigger,
+	              expands: waggr.graph.graph.get(w.entryIdx)?.expands ?? false
+							};
+	                return <CGObject key={`cgobj_${wname}`} {...wdispData} />;
+	              }
+	            );
+							return wlRes;
 				})
 			});
 			
-							//Construct svg with lines
-			/*const svgLines = this.state.dispPositions.entries().map((e, _) => {
-				const [k, coords] = e;
-				const x1 = coords.x;
-				const y1 = coords.y;
-				let pname = coords.parent;
-
-				const p = this.state.dispPositions.get(pname)
-				let x2 = x1;
-				let y2 = y1;
-				if(p) {
-					x2 = p.x;
-					y2 = p.y;
-
-				
-				} else {
-					pname = k;
-				}
-				const tFresh = this.state.refresh;
-				let updatableRef: CGUpdatable = new UpdatableLineRef();
-				const upSrcCol = this.state.srcPositions.get(pname);
-				const upDestCol = this.state.destPositions.get(k);
-				let upRefChk = null;
-				if(upSrcCol && !tFresh) {
-					upRefChk = upSrcCol.get(k);
-
-					if(upRefChk) {
-						updatableRef = upRefChk;
-					}
-				} 
-				if(upDestCol && tFresh) {
-
-					upRefChk = upDestCol.get(k);
-					if(upRefChk) {
-						updatableRef = upRefChk;
-					}
-				}
-				
-				const cgobjdata: CGObjectLineData = {
-					idx: k,
-					x1,
-					x2,
-					y1,
-					y2,
-					pairUnit1: '%',
-					pairUnit2: '%',
-					updateable: updatableRef
-				};
-
-				const cgobjRen = <CGObjectLine key={`cgobj_l${k}`} 
-					{...cgobjdata} />;
-				//TODO: Revisit in case
-				//updatableRef.registerContext(cgobjRen);
-				let srcCol = this.state.srcPositions.get(pname);
-				let destCol = this.state.destPositions.get(k);
-				if(srcCol) {
-					srcCol.set(k, updatableRef);
-				}
-				if(destCol) {
-					destCol.set(pname, updatableRef);
-				}
-
-				return cgobjRen;
-			}).toArray();*/
-
 			const mouseDownContainer = (e: React.MouseEvent<HTMLDivElement>) => {
 				const innerState = JSON.parse(bmap.get('inner_mouse_event'));
 				let innerMove = false;
@@ -975,25 +800,20 @@ export class CallGraphSpace extends
 						onMouseMove={(e) => { mouseMoveContainer(e)}}
 						>	
 						{renderedCGs}
-						<svg key={`svg_group`} className={styles
-							.widgetSVGLineStack}>
+						<svg key={`svg_group`} className={styles.widgetSVGLineStack}>
 						</svg>
 					</div>
 					)
 				} else {
 					const requestGraph = () => {
-							
 						bmap.insert('reset_rlist',
 							JSON.stringify({ reset: true }));
 
 						const aps = cgref.appService;
 						cgref.resetState();
-						aps.sendObj(REMAP_HACK['cg_lat2d_get_root_graph'], JSON.stringify(
-							{ gid: 0 }
-						));
-						
+						aps.sendObj(MessageType.CallGraph.GetRootGraph,
+							JSON.stringify({ gid: 0 }));
 					}
-
 				return (
 					<div className={styles.widgetSpace}
 						style={{height:`${calcdHeight}px`}}>

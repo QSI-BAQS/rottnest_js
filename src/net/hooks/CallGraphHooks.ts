@@ -1,46 +1,30 @@
-import { NetParserOperations, RottStatusResponseMSG } from "../../obj/CallGraphNet";
+import { RottStatusResponseMSG } from "../../obj/CallGraphNet";
 import { AppServiceMessage } from "../AppServiceMessage";
 import { CallGraphPacketKind } from "../CallGraphProtocol";
 import { MessageType } from "../Protocol";
-
-
-const CallGraphUnexpectedJSONError = "Unable to deserialize object received";
-const CallGraphUnexpectedError = "Unable to select appropriate method";
+import { WebSocketHookDefault } from "./Common";
 
 /**
   * Hooks/Callbacks that are used within the call graph
   * classes to enable a clean interaction with the callgraph
   * instances
   */
-export class CallGraphWebSocketHooks {
+export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 
-  parserOps = new NetParserOperations();
-  internalMap = {
-    [CallGraphPacketKind.GraphNotReady]: this.graphNotReadyHook,
-    [CallGraphPacketKind.RootGraph]: this.getRootGraphHook,
-    [CallGraphPacketKind.Graph]: this.getGraphHook,
-    [CallGraphPacketKind.GetGraphConfirmation]: this.getGraphConfirmationHook,
-    [CallGraphPacketKind.Node]: this.getNodeStatusHook,
-    [CallGraphPacketKind.RunNodeConfirmation]: this.runNodeHook,
+  constructor() {
+  	super();
+  	this.setInternalMap(
+		  {
+		    [CallGraphPacketKind.GraphNotReady]: super.MakeHookWrapper(this, 'graphNotReadyHook'),
+		    [CallGraphPacketKind.RootGraph]: super.MakeHookWrapper(this, 'getRootGraphHook'),
+		    [CallGraphPacketKind.Graph]: super.MakeHookWrapper(this, 'getGraphHook'),
+		    [CallGraphPacketKind.GetGraphConfirmation]: super.MakeHookWrapper(this, 'getGraphConfirmationHook'),
+		    [CallGraphPacketKind.Node]: super.MakeHookWrapper(this, 'getNodeStatusHook'),
+		    [CallGraphPacketKind.RunNodeConfirmation]: super.MakeHookWrapper(this, 'runNodeHook'),
+		  }
+  	)
   }
   
-  
-  trigger(context: any, asm: AppServiceMessage) {
-    const jsonObj = asm.getJSON();
-    if(jsonObj) {
-      const payload = jsonObj.payload;
-      const subkind = payload.kind;
-      const method = this.internalMap[subkind]
-      if(method) {
-        method(context, jsonObj, asm);
-      } else {
-        console.warn(CallGraphUnexpectedError);
-      }
-    } else {
-      console.warn(CallGraphUnexpectedJSONError);
-    }
-  }
-
   requestRootGraph(context: any) {
     const cgspace = context;
     const container = cgspace.props.wdaggr;
@@ -50,13 +34,13 @@ export class CallGraphWebSocketHooks {
   }
   
 
-  getGraphConfirmationHook(context: any, jsonObj: any, asm: AppServiceMessage) {
+  getGraphConfirmationHook(_context: any, _jsonObj: any, _asm: AppServiceMessage) {
     //TODO: Need to handle confirmation
     console.log("YO!")
   }
   
   getRootGraphHook(context: any, _jsonObj: any, asm: AppServiceMessage) {
-    const parserOps = this.parserOps;
+    const parserOps = super.getParserOps();
     const cgspace = context;
     const container = context.props.architecture;
 
@@ -87,7 +71,7 @@ export class CallGraphWebSocketHooks {
 				//let gid = jsonObj.gid;
 				const cgspace = context;
         const container = context.props.architecture;
-				let parserOps = this.parserOps;
+				let parserOps = super.getParserOps()
 				let graph = parserOps.decodeGraph(asm);
 				let expands = true;
 				let expGid = 'invalid';
@@ -128,7 +112,7 @@ export class CallGraphWebSocketHooks {
     
   }
 
-  graphNotReadyHook(context: any, jsonObj: any, asm: AppServiceMessage) {
+  graphNotReadyHook(_context: any, _jsonObj: any, _asm: AppServiceMessage) {
     // TODO: Need to finish ready hook
   }
 

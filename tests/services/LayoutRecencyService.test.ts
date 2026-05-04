@@ -1,4 +1,4 @@
-import { test, expect, expectTypeOf } from 'vitest';
+import { expect } from 'vitest';
 import { TestDocument } from '../TestDocument';
 import { LayoutRecencyService }
   from '../../src/service/LayoutRecencyService';;
