@@ -36,14 +36,13 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 
   getGraphConfirmationHook(_context: any, _jsonObj: any, _asm: AppServiceMessage) {
     //TODO: Need to handle confirmation
-    //console.log("YO!")
   }
   
   getRootGraphHook(context: any, _jsonObj: any, asm: AppServiceMessage) {
     const parserOps = super.getParserOps();
     const cgspace = context;
     const container = context.props.architecture;
-
+		console.log(context.props);
 		let graph = parserOps.decodeGraph(asm);
 		let expands = true;
 
@@ -54,10 +53,12 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 				JSON.stringify(0));
 
 		if(graph) {
-			container.getStateData()
-			  .getCallGraphState()
-			  .setGraphViewData(graph);
-			
+			// container.getStateData()
+			//   .getCallGraphState()
+			//   .setGraphViewData(graph);
+			container.getServices()
+				.getCallGraphService()
+				.setGraphViewData(graph);
 		}
 		cgspace.resetState();
 		const nState = {...cgspace.state}
@@ -68,7 +69,6 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 
 
   getGraphHook(context: any, _jsonObj: any, asm: AppServiceMessage) {
-				//let gid = jsonObj.gid;
 				const cgspace = context;
         const container = context.props.architecture;
 				let parserOps = super.getParserOps()
@@ -77,9 +77,12 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 				let expGid = 'invalid';
 
 				if(graph) {
-					container.getStateData()
-					  .getCallGraphState()
-					  .setGraphViewData(graph);
+					// container.getStateData()
+					//   .getCallGraphState()
+					//   .setGraphViewData(graph);
+					container.getServices()
+						.getCallGraphService()
+						.setGraphViewData(graph);
 
 					if(graph.graph) {
 						let sz = graph.graph.size;
@@ -89,6 +92,7 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 								values().map((et: any) => {
 									return et;
 								}).toArray()[0];
+
 								expands = e.expands;
 								expGid = e.id;
 							}	
@@ -130,7 +134,7 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 				let modMeta = container.getModulesMeta();
 				if(rkind === "CUIDObj" || rkind === "CUIDTotal") {
 					modMeta.setEnable("CallGraph");
-					modMeta.setEnable("Chart");
+					modMeta.setEnable("RunChart");
 					shouldUpdate = true;
 				}
 					

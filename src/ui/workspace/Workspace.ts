@@ -29,6 +29,9 @@ export interface WorkspaceGroup {
 	MakeGroup(data: WorkspaceProps): Array<React.ReactElement>
 }
 
+/**
+ * Container Properties for workspaces
+ */
 export type WorkspaceContainerProps = {
 	archobj: ArchitectureObject
 }

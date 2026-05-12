@@ -249,16 +249,25 @@ class CGObject extends React.Component<CGDispData,
 			const chdata = JSON.parse(bmap
 					.get('cgviz_chart_gid_data'));
 			if(chdata) {
-				// expands = chdata.expands;
-				expands = true;	
+				 expands = chdata.expands;
+				// expands = true;
+
 			}
+			console.log(chdata);
+			console.log(this.props);
 			if(expands) {
 				if(this.props.cuReqData === null ||
 				  this.props.cuReqData.status 
 					!== 'complete') {
+
+
+					console.log(this.props);
+					
+					// TODO: Check if it is a shim or not
 					this.apservice.sendObj(MessageType.CallGraph.GetGraph, {
 						'graph_id': this.data.idx
 					});
+
 					this.state.cuReady = true;
 					this.state.dataReady = true;
 				}
@@ -277,7 +286,7 @@ class CGObject extends React.Component<CGDispData,
 				this.data.bufferMap.commit();
 			} else {
 				const container = this.props.wdaggr
-					.workspaceData.architecture as any; //WARN: Danger assumptions
+					.workspaceData.architecture as any; //WARN: Dangerous assumption
 
 				const rrBuf = container.getServices().getRunResultService();
 				
@@ -502,6 +511,18 @@ export class CallGraphSpace extends
 
 	}
 	
+	/**
+	 * Will trigger a send to get data of the callgraph
+	 * when initialised - May need to re-initialise it when the
+	 * event triggers
+	 */
+	componentDidMount() {
+		const aps = this.props.architecture.getConnectionManager()
+			.getNetworkService();
+		aps.sendObj(MessageType.CallGraph.GetRootGraph,
+			JSON.stringify({ graph_id: 0 }));
+	}
+
 
 	constructor(props: any) {
 		super(props);
@@ -676,8 +697,11 @@ export class CallGraphSpace extends
 		//TODO: We need to retrieve the graph information
 		//	and update the details
 		const container = this.props.architecture as any;
-		const graphFromContainer = container.getStateData()
-			.getCallGraphState().getGraphViewData();
+		// const graphFromContainer = container.getStateData()
+		// 	.getCallGraphState().getGraphViewData();
+		const graphFromContainer = container.getServices()
+			.getCallGraphService()
+			.getGraphViewData();
 		bmap.stash('graph_ref', graphFromContainer);
 		const waggr: CGAggr = {
 			graph: graphFromContainer,
@@ -707,45 +731,43 @@ export class CallGraphSpace extends
 			// let prix = '';
 			const rootN = rootList.length;
 			const renderedCGs = 
-				rootList.map((e) => {
+				rootList
+					.map((e) => { return this.traverseGraph(graphFromContainer, e[0]) })
+						.map((ldw: CGTreeDisplayData) => { return ldw.layerData
+							.map((wl: CGTreeLayerData, _lidx: number) => { cidx += 1;
+			            const wlRes = wl.layerElements
+		            	.map((w: CGLayerEntry, _idx: number) => {
+		                const wname = waggr.graph.graph.get(w.entryIdx)?.name;
+		                
 
-					return this.traverseGraph(graphFromContainer, e[0]) })
-						.map((ldw: CGTreeDisplayData) => { 
-						
-						return ldw.layerData
-							.map((wl: CGTreeLayerData, _lidx: number) => {
-							cidx += 1;
-	            const wlRes = wl.layerElements.map(
-	              (w: CGLayerEntry, _idx: number) => {
-	                const wname = waggr.graph.graph.get(w.entryIdx)?.name;
+			              let xdisp = cidx % 10 * 8 + 8;
+			              let yoff = Math.floor(cidx / 10) / rootN * 600;
+									  calcdHeight = Math.max(Math.floor(rootN / 10)*100, calcdHeight);
+										const cuVal = this.state
+										.cunitMap.get(wname !== undefined ? wname
+											: '');
+								const distCU = cuVal !== null 
+								&& cuVal !== undefined ?
+									cuVal : null;
+								const wdispData : CGDispData = {
+									wdaggr: waggr,
+									index: w.entryIdx,
+									x: xdisp,
+									y: yoff,
 
-	              let xdisp = cidx % 10 * 8 + 8;
-	              let yoff = Math.floor(cidx / 10) / rootN * 600;
-							  calcdHeight = Math.max(Math.floor(rootN / 10)*100, calcdHeight);
-								const cuVal = this.state
-								.cunitMap.get(wname !== undefined ? wname
-									: '');
-							const distCU = cuVal !== null 
-							&& cuVal !== undefined ?
-								cuVal : null;
-							const wdispData : CGDispData = {
-								wdaggr: waggr,
-								index: w.entryIdx,
-								x: xdisp,
-								y: yoff,
-
-								selectedIdx: selectedIndex,
-								cuReqData: distCU,
-								cuId: wname === undefined 
-									? '' :
-									wname,
-								updateTrigger: upTrigger,
-	              expands: waggr.graph.graph.get(w.entryIdx)?.expands ?? false
-							};
-	                return <CGObject key={`cgobj_${wname}`} {...wdispData} />;
-	              }
-	            );
-							return wlRes;
+									selectedIdx: selectedIndex,
+									cuReqData: distCU,
+									cuId: wname === undefined 
+										? '' :
+										wname,
+									updateTrigger: upTrigger,
+									// expands: 
+		              expands: waggr.graph.graph.get(w.entryIdx)?.expands ?? false
+								};
+		                return <CGObject key={`cgobj_${wname}`} {...wdispData} />;
+		              }
+		            );
+								return wlRes;
 				})
 			});
 			

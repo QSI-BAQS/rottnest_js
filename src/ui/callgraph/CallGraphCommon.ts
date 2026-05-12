@@ -8,6 +8,12 @@ export type CallGraphRootPairs = Array<[string, CallGraphEntry]>;
   */
 export const CallGraphStashMapLabels = {
     // Currently empty
+  BufferMapInnerMouseEvent : "inner_mouse_event",
+  BufferMapRootNode: "root_node",
+  BufferMapNextNode: "next_node",
+  BufferMapVisualData: "viz_sim_data",
+  BufferMapChartGraphId: "cgviz_chart_gid_data",
+  
 };
 
 
@@ -18,6 +24,7 @@ export const CallGraphStashMapLabels = {
 export const CallGraphStashMapConstants = {
   IndexNotSelected: 'Not Selected',
   KindNotSelected : 'Not Ready',
+  
 }
 
 
@@ -36,7 +43,7 @@ export const CallGraphConstants = {
   Node: {
     NotSelected: 'Not Selected',
     NoKind : 'No Kind',
-    NoDescription: '',
+    NoDescription: 'No Description',
     RunNode: 'Run Node',
     RunNodeNotAvailable: 'Not Available'
   },
