@@ -9,6 +9,7 @@ export const CallGraphPacketKind  = {
   GetGraphConfirmation : 'GetGraphConfirmation',
   RunNodeConfirmation : 'RunNodeConfirmation',
   GraphNotReady : 'GraphNotReady',
+  VisualObject : 'VisualObject',
   Compiling : 'NodeCompiling',
   Error : 'Error',
 }

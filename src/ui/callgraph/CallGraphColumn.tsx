@@ -40,6 +40,8 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 	actionOnNode(data: any,
 		    runReady: boolean, simReady: boolean) {
 		if(simReady) {
+			console.log(simReady);
+			console.log(data);
 			this.gotoVisualiserWithData(data);
 		} else if(runReady) {
 			this.runGraphNode(data);
@@ -62,11 +64,16 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		const container = this.props.workspaceData
 			.architecture as any; //WARN: Unsafe assumption
 
+		const workspace = this.props.workspaceData;
+		const context = workspace.archcontext;
+		const refresh = container.getServices().getRefreshService();
+		console.log(container);
 		const bmap = this.props.workspaceData.stash;
-		const bmapViz = JSON.parse(bmap.get('viz_sim_data'));
+		const bmapViz = JSON.parse(bmap.get(BufferMapKey.Visualiser.CurrentData));
 		let simReady = false;
 		if(bmapViz) {
-			simReady = bmapViz.simready;
+			simReady = bmapViz.vis_obj !== undefined ||
+				bmapViz.vis_obj !== null;
 		}
 
 		if(simReady) {
@@ -76,9 +83,11 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 				.getVisState()
 				.getVizData();
 			
-			bmap.insert('current_viz_data', JSON.stringify(vizData)); 
+			bmap.insert(BufferMapKey.Visualiser.CurrentData, JSON.stringify(vizData)); 
 			//TODO: You got to fix this
-			//this.props.workspaceData.container.gotoVizWithData(data);
+			console.log(context);
+			context.move("visualiser", bmapViz.vis_obj);
+			refresh.triggerRefresh();
 		}
 	}
 
@@ -150,8 +159,9 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 			}
 		}
 
-		const bmapViz = JSON.parse(bmap.get(BufferMapKey.Visualiser.SimData));
-
+		const bmapVizRaw = bmap.get(BufferMapKey.Visualiser.SimData);
+		console.log(bmapVizRaw);
+		const bmapViz = JSON.parse(bmapVizRaw);
 		let simReady = false;
 		let runReady = false;
 		let runReqd = false;

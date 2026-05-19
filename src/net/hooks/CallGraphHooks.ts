@@ -1,4 +1,5 @@
 import { RottStatusResponseMSG } from "../../obj/CallGraphNet";
+import { BufferMapKey } from "../../ui/workspace/buffermap/BufferMapCommon";
 import { AppServiceMessage } from "../AppServiceMessage";
 import { CallGraphPacketKind } from "../CallGraphProtocol";
 import { MessageType } from "../Protocol";
@@ -21,6 +22,7 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 		    [CallGraphPacketKind.GetGraphConfirmation]: super.MakeHookWrapper(this, 'getGraphConfirmationHook'),
 		    [CallGraphPacketKind.Node]: super.MakeHookWrapper(this, 'getNodeStatusHook'),
 		    [CallGraphPacketKind.RunNodeConfirmation]: super.MakeHookWrapper(this, 'runNodeHook'),
+		    [CallGraphPacketKind.VisualObject]: super.MakeHookWrapper(this, 'visualObjectHook'),
 		  }
   	)
   }
@@ -119,6 +121,32 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
   graphNotReadyHook(_context: any, _jsonObj: any, _asm: AppServiceMessage) {
     // TODO: Need to finish ready hook
   }
+
+  visualObjectHook(context: any, jsonObj: any, _asm: AppServiceMessage) {
+  	// TODO: Need to handle the visual object case
+  	// NOTE: We have the data and we can then set it!
+  	const stash = context.props.stash;
+  	console.log(context);
+
+  	const workspaceArch = context.props.architecture;
+  	const visobj = jsonObj.payload.result;
+  	const obj = {
+  		simready:true,
+  		runready:true,
+  		runrequested:true,
+  		runfinished:true
+  	};
+
+  	const parsedObj = JSON.stringify(visobj);
+  	
+		stash.insert(BufferMapKey.Visualiser.SimData, JSON.stringify(obj));
+  	stash.insert(BufferMapKey.Visualiser.CurrentData, parsedObj);
+
+  	workspaceArch.getStateData()
+  		.getVisState()
+  		.setVizData(visobj);
+  	
+	}
 
   runNodeHook(context: any, jsonObj: any, _asm: AppServiceMessage) {
         const cgspace = context;
