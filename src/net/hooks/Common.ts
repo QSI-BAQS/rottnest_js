@@ -33,7 +33,10 @@ export class WebSocketHookDefault implements WebSocketHookObject  {
   }
 
   MakeHookWrapper(ctxObj: any, hookName: string) {
-    return (context: any, jsonObj: any, asm: AppServiceMessage) => {
+    return (
+      context: any,
+      jsonObj: any,
+      asm: AppServiceMessage) => {
       ctxObj[hookName](context, jsonObj, asm);
     }
 

@@ -1,25 +1,68 @@
 import { NetworkService } from "./NetworkService";
 import { RefreshService } from "./RefreshService";
 import { PluginData } from "../obj/plugin/Generic";
-import { ArchAPIMap, ArchitecturePlugin, ArchitecturePluginConfig,
-	ArchitecturesToEntry, ArchPackage, ArchPluginDefault, ArchSet, ArchSetDefault, 
-    ArchStorageEntry}
+import {
+	ArchAPIMap,
+	ArchitecturePlugin,
+	ArchitecturePluginConfig,
+	ArchitecturesToEntry,
+	ArchPackage,
+	ArchPluginDefault,
+	ArchSet,
+	ArchSetDefault, 
+  ArchStorageEntry }
 	from "../obj/plugin/Architecture";
-// import { MSG_GLOBAL_MAP } from "../net/MessageRemap";
 import { MessageType } from "../net/Protocol";
-
-///TODO: Move the interfaces into a separate module
-// import { Services } from "./Services";
-import { ArchitectureSchema } from "rottnest-plugin/schema/ArchSchema";
-import { ArchPluginLoader } from "rottnest-plugin/schema/ArchPlugin";
+import { ArchitectureSchema }
+	from "rottnest-plugin/schema/ArchSchema";
+import { ArchPluginLoader }
+	from "rottnest-plugin/schema/ArchPlugin";
 import { PluginEntry } from "../obj/PluginEntry";
-// import { Services } from "./Services";
 
-//import StorageDB from "../db/StorageDB";
 // Temporary callbacks
 export type ArchUpdateTrigger = (arch: ArchitectureSchema) => void;
 
+export class ArchitectureProjectBuffer {
 
+	buffer:any = null;
+	isSet: boolean = false;
+
+	/**
+	 * Constructor for the architecture project buffer
+	 */
+	constructor(buffer: any = null) {
+		this.buffer = buffer;
+		this.isSet = buffer != null;	
+	}
+
+	/**
+	 * Sets the buffer and overwrites anything that was there
+	 */
+	setBuffer(buffer: any) {
+		this.buffer = buffer;
+		this.isSet = true;
+	}
+
+	/**
+	 * Extracts the buffer but replaces it with null
+	 */
+	extractBuffer() {
+		const buf = this.buffer;
+		this.buffer = null;
+		return buf;
+	}
+
+	/**
+	 * Checks to see if a buffer is available
+	 */
+	available() {
+		return this.isSet;
+	}
+}
+
+/**
+ * ArchPluginDataSet
+ */
 export type ArchPluginDataSet = {
 	name: string
 	apimap: {
@@ -61,6 +104,9 @@ export class ArchPluginStorage {
 		_pluginConfigs: ArchitecturePluginConfig) {
 	}
 
+	/**
+	 * Constructor for the architecture plugin service
+	 */
 	constructor() {
 		this.core = new Map();
 		this.plugins = new Map();
@@ -111,6 +157,7 @@ export class ArchPluginService {
   netservice: NetworkService;
   refservice: RefreshService;
 	update: ArchUpdateTrigger;
+	buffer: ArchitectureProjectBuffer = new ArchitectureProjectBuffer(null);
 
 	static plgservice: ArchPluginService | null = null;
 
@@ -220,6 +267,13 @@ export class ArchPluginService {
 	}
 
 	/**
+	 * Current project buffer for when a load occurs
+	 */
+	projectBuffer() {
+		return this.buffer;
+	}
+
+	/**
 	 * Stores the configuration
 	 */
   storeConfig(config: string) {
@@ -264,6 +318,15 @@ export class ArchPluginService {
 	}
 
 	/**
+	 * Sets the architecture with a buffer associated
+	 * Buffer is the project buffer which will immediately be used when loaded
+	 */
+	setArchitectureWithBuffer(data: PluginData, projectData: any) {
+		this.buffer.setBuffer(projectData);
+		this.saveArchData(data);
+	}
+
+	/**
 	 * Retrieves the architecture that is currently in the list
 	 * using a key and maps it to an existing key
 	 * if not found, it will not save
@@ -271,45 +334,10 @@ export class ArchPluginService {
 	saveArchData(data: PluginData) {
 		const netService = this.netservice;
 
-		// netService.sendObject(MessageType.Arch.SetCurrent,
-		// 	data.plgKey
-		netService.request(MessageType.Arch.SetCurrent, 'architecture_key', data.plgKey);
+		netService.request(MessageType.Arch.SetCurrent,
+			'architecture_key', data.plgKey);
 			
 	}
-	// NOTE: Old mechanism
-	// saveArchData(data: PluginData) {
-		// const archKey = data.plgKey;
-		// const archMap = this.storage.core.get(data.plgKey);
-		// if(archMap) {
-		// 	let arch = {
-		// 		name: archMap.schema.name,
-		// 		createArchitecture: (services: Services) => {
-		// 			return archMap.schema.createArchitecture(services)
-		// 		}
-		// 	};
-			
-		// 	this.current = {
-		// 		identifier: archMap.schema.name,
-		// 		api_map: archMap.apimap
-		// 	}
-		// 	if(arch) {
-		// 		this.update(arch);
-		// 	} else {
-		// 		console.error("Unable to swap architecture, metadata listed, plugin missing");
-		// 	}
-		// 	this.netservice.getNetworkService().sendObj(MessageType.Arch.SetCurrent, {
-		// 		'arch_name': archKey
-		// 	})
-		// 	//this.update()
-		// 	this.refservice.triggerRefresh();
-			
-		// } else {
-		// 	console.error("Unable to save architecture")
-		// }
-			
-	// }
-
-
 
 	/**
 	 * Uses the network service to request all

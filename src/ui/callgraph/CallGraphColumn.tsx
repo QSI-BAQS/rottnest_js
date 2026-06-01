@@ -160,7 +160,6 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		}
 
 		const bmapVizRaw = bmap.get(BufferMapKey.Visualiser.SimData);
-		console.log(bmapVizRaw);
 		const bmapViz = JSON.parse(bmapVizRaw);
 		let simReady = false;
 		let runReady = false;
@@ -251,11 +250,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 			(<div className={styles.nodePanel}>
 			 	<header>
 				<div>Id: {nName} </div> 
-				<div>Type: {nKind} </div>
 				</header>
-				<div>
-				{nDescription}
-				</div>
 				<div className={styles
 					.dataSegment}>
 					<header>

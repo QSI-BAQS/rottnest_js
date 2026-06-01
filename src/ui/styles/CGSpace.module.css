@@ -105,6 +105,10 @@
 	border: 1px solid #35332f;
 }
 
+.widgetSpaceNoBorder {
+	border: 0px solid #35332f;
+}
+
 .nodePanel {
 	word-wrap: break-word;
 }

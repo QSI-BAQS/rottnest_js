@@ -1,4 +1,5 @@
 import { RottStatusResponseMSG } from "../../obj/CallGraphNet";
+import { CallGraphRequestState } from "../../ui/callgraph/CallGraphDefaults";
 import { BufferMapKey } from "../../ui/workspace/buffermap/BufferMapCommon";
 import { AppServiceMessage } from "../AppServiceMessage";
 import { CallGraphPacketKind } from "../CallGraphProtocol";
@@ -16,6 +17,7 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
   	super();
   	this.setInternalMap(
 		  {
+		    [CallGraphPacketKind.GraphUnavailable]: super.MakeHookWrapper(this, 'getGraphUnavailable'),
 		    [CallGraphPacketKind.GraphNotReady]: super.MakeHookWrapper(this, 'graphNotReadyHook'),
 		    [CallGraphPacketKind.RootGraph]: super.MakeHookWrapper(this, 'getRootGraphHook'),
 		    [CallGraphPacketKind.Graph]: super.MakeHookWrapper(this, 'getGraphHook'),
@@ -38,13 +40,29 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 
   getGraphConfirmationHook(_context: any, _jsonObj: any, _asm: AppServiceMessage) {
     //TODO: Need to handle confirmation
+
   }
-  
+
+	/**
+	 * Outlines if the graph is unavailable for the context given
+	 */
+	getGraphUnavailable(context: any, jsonObj: any, _asm: AppServiceMessage) {
+
+		const graphConfirmKind = jsonObj.payload.kind;
+    if(graphConfirmKind === "GraphUnavailable") {
+    	context.setRequestState(CallGraphRequestState.Unavailable);
+    }
+
+		
+	}
+
+  /**
+   * getRootGraphHook - Gets the root graph
+   */
   getRootGraphHook(context: any, _jsonObj: any, asm: AppServiceMessage) {
     const parserOps = super.getParserOps();
     const cgspace = context;
     const container = context.props.architecture;
-		console.log(context.props);
 		let graph = parserOps.decodeGraph(asm);
 		let expands = true;
 
@@ -55,9 +73,6 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 				JSON.stringify(0));
 
 		if(graph) {
-			// container.getStateData()
-			//   .getCallGraphState()
-			//   .setGraphViewData(graph);
 			container.getServices()
 				.getCallGraphService()
 				.setGraphViewData(graph);
@@ -79,9 +94,6 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 				let expGid = 'invalid';
 
 				if(graph) {
-					// container.getStateData()
-					//   .getCallGraphState()
-					//   .setGraphViewData(graph);
 					container.getServices()
 						.getCallGraphService()
 						.setGraphViewData(graph);
@@ -111,22 +123,28 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 						idx: expGid
 					}));
 			
+				let refresh = container.getServices().getRefreshService();
 				cgspace.resetState();
 				const nState = {...cgspace.state}
 				nState.refresh = true;
-				cgspace.setState(nState);
-    
+				context.setRequestState(CallGraphRequestState.Available);
+
+				refresh.triggerRefresh();    
+		
   }
 
-  graphNotReadyHook(_context: any, _jsonObj: any, _asm: AppServiceMessage) {
+  graphNotReadyHook(context: any, jsonObj: any, _asm: AppServiceMessage) {
     // TODO: Need to finish ready hook
+		const graphConfirmKind = jsonObj.payload.kind;
+    if(graphConfirmKind === "GraphNotReady") {
+    	context.setRequestState(CallGraphRequestState.Fetching);
+    }
   }
 
   visualObjectHook(context: any, jsonObj: any, _asm: AppServiceMessage) {
   	// TODO: Need to handle the visual object case
   	// NOTE: We have the data and we can then set it!
   	const stash = context.props.stash;
-  	console.log(context);
 
   	const workspaceArch = context.props.architecture;
   	const visobj = jsonObj.payload.result;
@@ -138,7 +156,6 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
   	};
 
   	const parsedObj = JSON.stringify(visobj);
-  	
 		stash.insert(BufferMapKey.Visualiser.SimData, JSON.stringify(obj));
   	stash.insert(BufferMapKey.Visualiser.CurrentData, parsedObj);
 
@@ -188,7 +205,6 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 
   getNodeStatusHook(context: any, _jsonObj: any, asm: AppServiceMessage) {
     const cgspace = context;
-    // const container = context.props.architecture;
 		const containerMsg = new RottStatusResponseMSG();
 		const rData = asm.parseDataTo(containerMsg);
 		if(rData) {

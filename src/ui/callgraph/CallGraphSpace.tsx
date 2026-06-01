@@ -1,110 +1,42 @@
 import React, {CSSProperties} from "react";
-import {CallGraphData, CallGraphEntry, CUReqResult, RottCallGraphEntryDefault }
+import {
+	CallGraphData,
+	CallGraphEntry,
+	RottCallGraphEntryDefault }
 	from "../../obj/CallGraph.ts";
-import { CallGraphWebSocketHooks }
+import {
+	CallGraphWebSocketHooks }
 	from "../../net/hooks/CallGraphHooks.ts";
-import { AppServiceMessage }
-	from "../../net/AppServiceMessage.ts";
-import { ArchStashMap, ArchWorkspaceData }
-	from "rottnest-plugin/schema/ArchWorkspace";
+import { AppServiceMessage } from "../../net/AppServiceMessage.ts";
+import { ArchStashMap,
+	ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
 import { MessageType } from "../../net/Protocol.ts";
 
+
+import {
+	ASContextHook,
+	CGAggr,
+	CGDispData,
+	CGLayerEntry,
+	CGLinePositionData,
+	CGObjectData,
+	CGObjectLineData,
+	CGObjectLineUpdatable,
+	CGPositionData,
+	CGTreeDisplayData,
+	CGTreeLayerData,
+	CGUpdateableContext,
+	CGViewState } from "./CallGraphObjects.ts";
+
 import styles from '../styles/CGSpace.module.css';
-
-
-interface CGUpdateableContext {	
-	pushPositionUpdate(pdata: CGLinePositionData): void
-	getCoords(): CGObjectLineUpdatable 
-}
-
-interface CGUpdatable {	
-	pushPositionUpdate(pdata: CGLinePositionData): void
-	registerContext(ctx: CGUpdateableContext): void
-	getCoords(): CGObjectLineUpdatable	
-}
-
-export interface ASContextHook {
-	serviceHook(asm: AppServiceMessage): void
-}
-
-type CGPositionData = {
-	x: number
-	y: number
-	depth: number
-	parent: string
-}
-
-type CGViewState = { 
-	dispPositions: Map<string, CGPositionData>
-	
-	//The x1, y1 position
-	srcPositions: Map<string, Map<string, CGUpdatable>>
-
-	//The x2, y2 position
-	destPositions: Map<string, Map<string, CGUpdatable>>
-	cunitMap: Map<string, CUReqResult>
-	
-	//registerMap: Map<string, CGObjectLine>
-	refresh: boolean
-	xOff: number
-	yOff: number
-	moveMode: boolean
-}
-
-type CGLayerEntry = {
-	entryIdx: string 
-	parentIdx: string
-}
-
-type CGTreeLayerData = {
-	depth: number
-	layerElements: Array<CGLayerEntry>
-}
-
-
-type CGTreeDisplayData = {
-	layerData: Array<CGTreeLayerData>
-}
-
-
-/**
- * This will be aggregation of all the widget data,
- * we will have a selected index that allows the
- * component to select it and represent it
- *
- */
-type CGAggr = {
-	graph: CallGraphData
-	workspaceData: ArchWorkspaceData
-}
-
-/**
- * CGDispData
- * 
- */
-type CGDispData = {
-	wdaggr: CGAggr
-	index: string 
-	selectedIdx: string
-	cuId: string
-	x: number
-	y: number
-	cuReqData: CUReqResult | null
-	updateTrigger: (idx: string, data: CGPositionData) => void
-  expands: boolean;
-};
-
-/**
- * CGObjectData
- */
-type CGObjectData = {
-	x: number
-	y: number
-	actualPosition: boolean
-	moveMode: boolean
-	cuReady: boolean
-	dataReady: boolean
-}
+import { CallGraphRequestState,
+	CallGraphRequestStateKey,
+	CallGraphSpaceStrings,
+	CallGraphUnavailableMessage,
+	RequestGraphDefaultZero,
+	RequestGraphReset,
+	RequestIsAvailable,
+	RequestIsFetching } from "./CallGraphDefaults.ts";
 
 /**
  * CGObject, 
@@ -253,15 +185,12 @@ class CGObject extends React.Component<CGDispData,
 				// expands = true;
 
 			}
-			console.log(chdata);
-			console.log(this.props);
 			if(expands) {
 				if(this.props.cuReqData === null ||
 				  this.props.cuReqData.status 
 					!== 'complete') {
 
 
-					console.log(this.props);
 					
 					// TODO: Check if it is a shim or not
 					this.apservice.sendObj(MessageType.CallGraph.GetGraph, {
@@ -366,16 +295,11 @@ class CGObject extends React.Component<CGDispData,
 		return (
 			<div style={sObj}
 				className={styles.widgetObject}
-				onMouseEnter={(_) => { 
-					this.onHoverTrigger()}}
-				onMouseDown={(e) => { this
-					.onNodeMouseDown(e)}}
-				onMouseUp={(e) => {this
-					.onNodeMouseUp(e)}}
-				onMouseMove={(e) => this
-					.onNodeMove(e)}>
-				<header 
-					className={
+				onMouseEnter={(_) => { this.onHoverTrigger()}}
+				onMouseDown={(e) => { this.onNodeMouseDown(e)}}
+				onMouseUp={(e) => {this.onNodeMouseUp(e)}}
+				onMouseMove={(e) => this.onNodeMove(e)}>
+				<header className={
 						styles
 						.widgetObjectHeader}>
 					Id: {cuId}
@@ -394,39 +318,10 @@ class CGObject extends React.Component<CGDispData,
 
 }
 
-type CGLinePositionData = {
-	x1: number
-	x2: number
-	y1: number
-	y2: number
-	pairUnit1: string
-	pairUnit2: string
-
-}
-
-
-
-type CGObjectLineData = {
-	idx: string
-	updateable: CGUpdatable
-	pairUnit1: string 
-	pairUnit2: string 
-	x1: number
-	x2: number
-	y1: number
-	y2: number
-}
-
-type CGObjectLineUpdatable = {
-	updateable: CGUpdatable
-	pairUnit1: string 
-	pairUnit2: string 
-	x1: number
-	x2: number
-	y1: number
-	y2: number
-}
-
+/**
+ * Object Line is to provide connections between
+ * the different call graph objects
+ */
 export class CGObjectLine extends React.Component<CGObjectLineData, CGObjectLineUpdatable> 
 	implements CGUpdateableContext {
 
@@ -463,7 +358,6 @@ export class CGObjectLine extends React.Component<CGObjectLineData, CGObjectLine
 	}
 
 	render() {
-		//this.state.updateable.registerContext(this);
 		const { idx } = this.props;
 		const { x1, x2, y1, y2, pairUnit1, pairUnit2 } = this.state;
 		let styPropUpdate: CSSProperties = {};
@@ -484,12 +378,20 @@ export class CGObjectLine extends React.Component<CGObjectLineData, CGObjectLine
 }
 
 
+/**
+ * CallGraphSpace component, provides a mapping for callgraph objects
+ * that can be loaded from the backend
+ */
 export class CallGraphSpace extends 
 	React.Component<ArchWorkspaceData, CGViewState> 
 	implements ASContextHook {
 	
-	appService = this.props.architecture.getConnectionManager()
-		.getNetworkService();	
+	callgraphHooks = new CallGraphWebSocketHooks();
+	appService = this.props
+		.architecture
+		.getConnectionManager()
+		.getNetworkService();
+			
 	state: CGViewState = {
 		cunitMap: new Map(),
 		dispPositions: new Map(),
@@ -499,16 +401,25 @@ export class CallGraphSpace extends
 		xOff: 0,
 		yOff: 0,
 		moveMode: false,
+		requestState: CallGraphRequestState.Unavailable
 	}
 
-	callgraphHooks = new CallGraphWebSocketHooks();
+	setRequestState(requestState:
+		CallGraphRequestStateKey) {
 
+		const newState = {...this.state};
+		newState.requestState = requestState;
+		this.setState(newState);
+	}
+
+	/**
+	 * Resets the state of the callgraph
+	 */
 	resetState() {
 		this.state.cunitMap = new Map();
 		this.state.dispPositions = new Map();
 		this.state.srcPositions = new Map();
 		this.state.destPositions = new Map();
-
 	}
 	
 	/**
@@ -519,40 +430,47 @@ export class CallGraphSpace extends
 	componentDidMount() {
 		const aps = this.props.architecture.getConnectionManager()
 			.getNetworkService();
-		aps.sendObj(MessageType.CallGraph.GetRootGraph,
-			JSON.stringify({ graph_id: 0 }));
+		if(this.state.requestState === CallGraphRequestState.Unavailable) {
+			aps.sendObj(MessageType.CallGraph.GetRootGraph,
+				RequestGraphDefaultZero);
+			// this.setRequestState(CallGraphRequestState.Fetching);
+		}
 	}
 
-
+	/**
+	 * Constructor for the callgraph space
+	 */
 	constructor(props: any) {
 		super(props);
 		const container = this.props.architecture;
-		const aService = container.getConnectionManager().getNetworkService();
+		const aService = container
+			.getConnectionManager()
+			.getNetworkService();
+
 		aService.hookContext(this,MessageType.CallGraph.GetStatus);
 		aService.hookContext(this,MessageType.CallGraph.GetGraph);
 		aService.hookContext(this,MessageType.CallGraph.GetRootGraph);
 		aService.hookContext(this,MessageType.CallGraph.RunGraphNode);
-		aService.hookContext(this,MessageType.Data.RunResult);
+			
+		if(this.state.requestState === CallGraphRequestState.Unavailable) {
+			this.state.requestState = CallGraphRequestState.Fetching;
+			aService.sendObj(MessageType.CallGraph.GetRootGraph,
+				RequestGraphDefaultZero);
+		}
 	}
 	
 	serviceHook(asm: AppServiceMessage): void {
-		const cgServiceHook = this.callgraphHooks;
 		const cgspace = this;	
+		const cgServiceHook = this.callgraphHooks;
 		cgServiceHook.trigger(cgspace, asm);
 	}
 
-	traverseGraph(graph: CallGraphData, 
-		      rootIdx: string)
-		: CGTreeDisplayData {
+	traverseGraph(graph: CallGraphData,rootIdx:string): CGTreeDisplayData {
 
 		const collection = graph.graph;
-		//depth, parentIdx, entryIdx	
-		let queue: Array<[number, string, string]> 
-			=[[0,'', rootIdx]];
-		// let seenList: Set<string> = new Set(); //TODO: May need to fix!
+		let queue: Array<[number, string, string]>  =[[0,'', rootIdx]];
 		let traversalData: Array<CGTreeLayerData> = [];
-		let current: [number, string, string] 
-			| undefined = undefined;
+		let current: [number, string, string] | undefined = undefined;
 
 		while(queue.length > 0) {
 			current = queue.shift();
@@ -582,22 +500,7 @@ export class CallGraphSpace extends
 				traversalData[depth]!
 				.layerElements.push(element);	
 			}
-			//add children
-			// TODO: This probably can be removed? idk?
-			
-			// for(let i = 0; i < currentCG
-			//     .children.length; i++) {
-			// 	const childIdx = currentCG
-			// 		.children[i];
-				
-			// 	if(childIdx && !seenList.has(childIdx)) {
-			// 		seenList.add(childIdx);
-			// 		queue.push([depth+1, idx, 
-			// 			   childIdx]);
-			// 	}
-			// }
 		}
-
 		return { layerData: traversalData }
 	}
 	
@@ -690,33 +593,31 @@ export class CallGraphSpace extends
 
 	render() {
 		let calcdHeight = 0;
-		//const zoomValue = this.props.container.state.appStateData.zoomValue;
 		const zoomValue = 100;
+		const requestState = this.state.requestState;
 		const cgref = this;
 		const bmap = this.props.stash;
-		//TODO: We need to retrieve the graph information
-		//	and update the details
 		const container = this.props.architecture as any;
-		// const graphFromContainer = container.getStateData()
-		// 	.getCallGraphState().getGraphViewData();
 		const graphFromContainer = container.getServices()
 			.getCallGraphService()
 			.getGraphViewData();
-		bmap.stash('graph_ref', graphFromContainer);
+
+		bmap.stash(CallGraphSpaceStrings.Stash.GraphRef,
+			graphFromContainer);
+
 		const waggr: CGAggr = {
+
 			graph: graphFromContainer,
 			workspaceData: this.props
 		}
-    // const rootList = this.identifyRoots(graphFromContainer);
-    // TODO: Re-evaluate this operation
+
     const rootList = Array.from(graphFromContainer
     		.graph.entries()) as Array<Array<any>>;
 
-		if(rootList.length !== 0) {
-			
+		if(rootList.length !== 0 && RequestIsAvailable(requestState)) {			
 			let selectedIndex = rootList[0]![0];
 			const selectedData = JSON.parse(
-				bmap.get('root_node'));
+				bmap.get(CallGraphSpaceStrings.Stash.RootNode));
 			if(selectedData !== null) {
 				//First index is the key
 				selectedIndex = selectedData[0];
@@ -727,8 +628,6 @@ export class CallGraphSpace extends
 			};
 
 			let cidx = 0;
-			// let rowDrop = 0;
-			// let prix = '';
 			const rootN = rootList.length;
 			const renderedCGs = 
 				rootList
@@ -745,10 +644,11 @@ export class CallGraphSpace extends
 									  calcdHeight = Math.max(Math.floor(rootN / 10)*100, calcdHeight);
 										const cuVal = this.state
 										.cunitMap.get(wname !== undefined ? wname
-											: '');
+											: CallGraphSpaceStrings.EmptyString);
 								const distCU = cuVal !== null 
 								&& cuVal !== undefined ?
 									cuVal : null;
+
 								const wdispData : CGDispData = {
 									wdaggr: waggr,
 									index: w.entryIdx,
@@ -758,7 +658,7 @@ export class CallGraphSpace extends
 									selectedIdx: selectedIndex,
 									cuReqData: distCU,
 									cuId: wname === undefined 
-										? '' :
+										? CallGraphSpaceStrings.EmptyString :
 										wname,
 									updateTrigger: upTrigger,
 									// expands: 
@@ -772,8 +672,11 @@ export class CallGraphSpace extends
 			});
 			
 			const mouseDownContainer = (e: React.MouseEvent<HTMLDivElement>) => {
-				const innerState = JSON.parse(bmap.get('inner_mouse_event'));
 				let innerMove = false;
+				const innerState = JSON.parse(
+					bmap.get(CallGraphSpaceStrings
+					.Stash.InnerMouseEvent));
+
 				if(innerState) {
 					innerMove = innerState.innerMove;
 				}
@@ -794,7 +697,8 @@ export class CallGraphSpace extends
 				}
 			};
 			const mouseMoveContainer = (e: React.MouseEvent<HTMLDivElement>) => {
-				const innerState = JSON.parse(bmap.get('inner_mouse_event'));
+				const innerState = JSON.parse(bmap.get(CallGraphSpaceStrings
+					.Stash.InnerMouseEvent));
 				let innerMove = false;
 				if(innerState) {
 					innerMove = innerState.innerMove;
@@ -811,46 +715,109 @@ export class CallGraphSpace extends
 			const cxoff = this.state.xOff;
 			const cyoff = this.state.yOff;
 			this.state.refresh = false;
-				return (
-					<div className={styles.widgetSpace}
-					style={{height: `${zoomValue}%`, width:`${zoomValue}%`,
-						fontSize: `${(11*(zoomValue/100))}pt`,
-						top: `${cyoff}px`, left: `${cxoff}px` 
-						}}
-						onMouseDown={(e) => { mouseDownContainer(e)}}
-						onMouseUp={(e) => { mouseUpContainer(e)}}
-						onMouseMove={(e) => { mouseMoveContainer(e)}}
-						>	
-						{renderedCGs}
-						<svg key={`svg_group`} className={styles.widgetSVGLineStack}>
-						</svg>
-					</div>
-					)
-				} else {
-					const requestGraph = () => {
-						bmap.insert('reset_rlist',
-							JSON.stringify({ reset: true }));
-
-						const aps = cgref.appService;
-						cgref.resetState();
-						aps.sendObj(MessageType.CallGraph.GetRootGraph,
-							JSON.stringify({ graph_id: 0 }));
-						
-					}
-				return (
-					<div className={styles.widgetSpace}
-						style={{height:`${calcdHeight}px`}}>
-						<div className={styles.badGraph}>
-						Unable to load call-graph
-						<div><button className={styles.retryButton}
-							onClick={(_) => requestGraph()}>
-						Retry
-						</button></div>
-						</div>	
-					</div>
-
-				)
-			}
-	
+			return CallGraphLoaded({
+				cxoff, cyoff, zoomValue, mouseDownContainer, mouseMoveContainer,
+				mouseUpContainer, renderedCGs
+			});
+		} else if(RequestIsFetching(requestState)) {
+			return CallGraphUnavailable({height: calcdHeight, cgref, bmap,
+				message: CallGraphUnavailableMessage.Fetching,
+				fetching: true })
+		} else {
+			return CallGraphUnavailable({height: calcdHeight, cgref, bmap,
+				message: CallGraphUnavailableMessage.Unavailable,
+				fetching: false })
 		}
+	
 	}
+}
+
+/**
+ * Props for when it is loaded
+ */
+export type CallGraphLoadedProps = {
+	zoomValue: number,
+	mouseDownContainer: (e: any) => void,
+	mouseUpContainer: (e: any) => void,
+	mouseMoveContainer: (e: any) => void,
+	renderedCGs: any,
+	cyoff: number,
+	cxoff: number
+}
+
+/**
+ * CallGraphLoaded component
+ */
+export const CallGraphLoaded = (props: CallGraphLoadedProps) => {
+	const zoomValue = props.zoomValue;
+	const mouseDownContainer = props.mouseDownContainer;
+	const mouseUpContainer = props.mouseUpContainer;
+	const mouseMoveContainer = props.mouseMoveContainer;
+	const cyoff = props.cyoff;
+	const cxoff = props.cxoff;
+	const renderedCGs = props.renderedCGs;
+	
+	return (
+		<div className={`${styles.widgetSpace} ${styles.widgetSpaceNoBorder}`}
+			style={{height: `${zoomValue}%`, width:`${zoomValue}%`,
+				fontSize: `${(11*(zoomValue/100))}pt`,
+				top: `${cyoff}px`, left: `${cxoff}px` 
+				}}
+				onMouseDown={(e) => { mouseDownContainer(e)}}
+				onMouseUp={(e) => { mouseUpContainer(e)}}
+				onMouseMove={(e) => { mouseMoveContainer(e)}}>	
+				{renderedCGs}
+				<svg key={CallGraphSpaceStrings.SVGGroup}
+					className={styles.widgetSVGLineStack}>
+				</svg>
+			</div>
+		)
+}
+
+/**
+ * NotLoaded Props component
+ */
+export type CallGraphNotLoadedProps = {
+	height: number,
+	bmap: ArchStashMap,
+	cgref: CallGraphSpace,
+	message: string,
+	fetching: boolean
+
+}
+
+
+/**
+ * Simplifies the component logic and makes it easier to test
+ */
+export const CallGraphUnavailable = ({height, bmap, cgref, message, fetching
+	}:
+	CallGraphNotLoadedProps) => {
+
+	const requestGraph = () => {
+		const aps = cgref.appService;
+		bmap.insert(CallGraphSpaceStrings.Stash.ResetRenderList, RequestGraphReset);
+		cgref.resetState();
+
+		aps.sendObj(MessageType.CallGraph.GetRootGraph,
+			RequestGraphDefaultZero);
+		cgref.setRequestState(CallGraphRequestState.Fetching);
+	}
+
+	const retryButton = fetching ? <></> : (
+				<button className={styles.retryButton}
+				onClick={(_) => requestGraph()}>
+					Retry
+				</button>);
+	
+	return (
+		<div className={`${styles.widgetSpace} ${styles.widgetSpaceNoBorder}`}
+			style={{height:`${height}px`}}>
+			<div className={styles.badGraph}>
+			{message}
+			<div>
+				{retryButton}
+			</div>
+			</div>	
+		</div>)
+}

@@ -31,7 +31,6 @@ export class ArchitectureWebSocketHooks extends WebSocketHookDefault {
 			const { name, api, jsData, cssData } = asm.getJSON().payload;
 			const styService = context.getServices().getStyleService();
 			const archService = context.getServices().getArchPluginService();
-
 			styService.appendToRootInline(cssData)
 			archService.setArchitectureContext({ name, apimap: api,
 				plugin: {

@@ -1,5 +1,6 @@
 import { CGHashResult, CGResult, CGStatus, CUHashHex, CUResultKind, CUResultMixed } from "../obj/chart/Metrics";
 import { RunChartContainer } from "../ui/runchart/RunChart";
+import { RefreshService } from "./RefreshService";
 
 
 
@@ -52,12 +53,7 @@ export class RunResultService {
 		this.volumeSet = [];
 		this.endComps = [];
 	}
-  /**
-   * 
-   */
-  getCurrentResults() {
-    
-  }
+
   
 	requestRun(gid: string) {
 		this.runsRequested.add(gid);
@@ -131,10 +127,10 @@ export class RunResultService {
 	 * Decodes the message received by the network component
 	 * and makes a decision where to stash the data and how
 	 */
-	decodeAndSort(jsonObj: any): [RunResultKind, any] {
+	decodeAndSort(jsonObj: any, refreshService: RefreshService | null = null): [RunResultKind, any] {
 		//We need to make a decision aboututhem
 		let msgKind: RunResultKind = "Invalid";
-		if(this.isVisualResult(jsonObj)) {
+		if(this.isVisualResult(jsonObj)) { //NOTE: Not currently used
 			msgKind = 'VisualResult';
 			//this.runResults.set(jsonObj.cu_id, jsonObj);
 		} else if(this.isCUIDTotal(jsonObj)) {
@@ -147,9 +143,11 @@ export class RunResultService {
 				npQubits: jsonObj.np_qubits
 			});
 			msgKind = "CUIDTotal";
+			console.log("CUID Total");
 
-		} else if(this.isCUIDEndComp(jsonObj)) {
+		} else if(this.isCUIDEndComp(jsonObj)) { //NOTE: Not currently used
 			msgKind = "CUIDEndComp";
+
 			this.endComps.push({
 				volumes: jsonObj.volumes,
 				tSource: jsonObj.t_source,
@@ -158,7 +156,7 @@ export class RunResultService {
 				status: jsonObj.status,
 				npQubits: jsonObj.np_qubits
 			});
-		} else if(this.isCUIDObj(jsonObj)) {
+		} else if(this.isCUIDObj(jsonObj)) { //NOTE: Not currently used
 			msgKind = "CUIDObj";
 			const volData = {
 					volumes: jsonObj.volumes,
@@ -179,7 +177,7 @@ export class RunResultService {
 					npQubits: jsonObj.np_qubits
 				}
 			this.volumeSet.push(volMixedData);
-			if(this.withCUID.has(jsonObj.cu_id)) {
+			if(this.withCUID.has(jsonObj.cu_id)) { //NOTE: Not currently used
 				const volarray = this.withCUID
 					.get(jsonObj.cu_id);
 
@@ -195,7 +193,7 @@ export class RunResultService {
 							   volarray);
 			}
 		} else if(this.isHashVolumes(jsonObj)) {
-			const volMixedData = {
+				const volMixedData = {
 					kind: "CUCacheData" as CUResultKind,
 					mxid: this.volumeSet.length,
 					volumes: jsonObj.volumes,
@@ -244,6 +242,9 @@ export class RunResultService {
 			console.warn(JSON.stringify(jsonObj));
 		}
 
+		if(refreshService !== null) {
+			refreshService.triggerRefresh();
+		}
 
 		return [msgKind, jsonObj]	
 	}

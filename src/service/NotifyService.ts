@@ -30,6 +30,19 @@ export const NotifyID = {
       title: "Program Set",
       message: "Retrieved the current executable from the server"
     }
+  },
+  ProjectIO: {
+    LoadError: {
+       ID: "load-err",
+       title: "Load Operation",
+       message: "The file did not deserialize correctly" 
+    },
+    LoadSuccess: {
+       ID: "load-good",
+       title: "Load Operation",
+       message: "The file has been loaded" 
+    }
+    
   }
 }
 

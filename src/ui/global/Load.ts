@@ -1,6 +1,8 @@
 import RottnestApplication from "../container/RottnestApplication"
 import { LoadComponent } from "./LoadExtra";
 import { PluginEntry } from "../../obj/PluginEntry";
+import { NotifyID } from "../../service/NotifyService";
+import { ConsoleMessage } from "../../debug/ConsoleMessages";
 
 
 /**
@@ -81,17 +83,15 @@ function findSuitableArchitecture(name: string, archList: Array<PluginEntry>) {
 		'Active Volume': 'Active Volume'
 	}
 	const mapResult: string | undefined = archMap[name];
-	//console.log(mapResult);
 	if(mapResult !== undefined) {
-		//Check archList now
-
 		const result = archList.find(e => e.plgName === mapResult);
-
 		return result;
 	} else {
 		return undefined;
 	}
 }
+
+
 
 /**
  * Quirky version to embed an input procedure on the loader
@@ -112,7 +112,6 @@ export const hiddenInputProc = async(e: any, rott: RottnestApplication) => {
 	return archserv.requestWithHook(() => {
 		if(currentArchObj) {
 			const serialiser = currentArchObj.getSerializer();
- 
 			const currentArchName = currentArchObj.getName();
 				if(serialiser) {	
 					reader.addEventListener('load', () => {
@@ -121,55 +120,47 @@ export const hiddenInputProc = async(e: any, rott: RottnestApplication) => {
 
 					if(DeserialFailMarkerCheck(result)) {
 						const projectArch = result.header.architecture;
-						if(findInRemap(currentArchName) !== findInRemap(projectArch)) {
+						if(findInRemap(currentArchName)
+							!== findInRemap(projectArch)) {
 							const archList = getArchitectureList(rott);
-							const suitable = findSuitableArchitecture(projectArch, archList);
+							const suitable = findSuitableArchitecture(
+								projectArch, archList);
+
 							if(suitable !== undefined) {
-								// Trigger a move to a new arch and with the project associated.
-								// Get arch schema
-								// Use rott to swap
-								// Update project
-								archserv.saveArchData({
-									plgKey: suitable.plgName,
-									plgValue: suitable.plgName,
-									params: suitable.params
-								})
-								/// Probably the old one?
-								const newArchObj = rott.getAppState().getArchitectureObject();
-								//Needs to be re-interpreted!
-								const newSerializer = newArchObj.getSerializer();
-								if(newSerializer) {
-									
-									const newObj = newSerializer.deserialize(CheckedDeserialize(reader.result));
-									if(newObj) {
-										newArchObj.setProject(newObj);
-										
-									}
-								} 
+								archserv.setArchitectureWithBuffer(
+									{
+										plgKey: suitable.plgName,
+										plgValue: suitable.plgName,
+										params: suitable.params
+									},
+									reader.result
+								);
 							}						
 						} else {
 							currentArchObj.setProject(result as any);
-							
 						}
-										
 					} else {
-						console.warn("Fail marker detected, outputting notification to user");
+						console.warn(ConsoleMessage.Warning.ProjectIO.Load);
 					}
 				},false);
 	
 				if(toLoad) {
 					reader.readAsText(toLoad);
 				}
-				notify.makeMessageWithId("load-good", "Load Operation",
-				"The file has been loaded");
+				notify.makeMessageWithId(
+					NotifyID.ProjectIO.LoadSuccess.ID,
+					NotifyID.ProjectIO.LoadSuccess.title,
+					NotifyID.ProjectIO.LoadSuccess.message);
 				refserv.triggerRefresh();
 				return true;
 			}
 		}
 
 		console.warn("Unable to deserialize project");
-		notify.makeMessageWithId("load-err", "Load Operation",
-			"The file did not deserialize correctly");
+		notify.makeMessageWithId(
+			NotifyID.ProjectIO.LoadError.ID,
+			NotifyID.ProjectIO.LoadError.title,
+			NotifyID.ProjectIO.LoadError.message);
 	
 		refserv.triggerRefresh();
 		return false

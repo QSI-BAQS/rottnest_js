@@ -24,30 +24,44 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 	setCurrentArch: {
 		evkey: MessageType.Arch.SetCurrent,
     evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-
+			// Check to see if a project is to be loaded
 			
 			const { name, api, jsData, cssData } = m.getJSON().payload;
 			const styService = obj.getServices().getStyleService();
+			const refService = obj.getServices().getRefreshService();
 			const archService = obj.getServices().getArchPluginService();
-
 
 			styService.appendToRootInline(cssData)
 
-			//TODO: We need to change this type
-			archService.setArchitectureContext({ name, apimap: api,
+
+			
+			await archService.setArchitectureContext({ name, apimap: api,
 				plugin: {
 					jsData,
 					cssData,
 				},
 				schema: '',
 			});
+
+			
+			
+			if(archService.projectBuffer().available()) {
+
+				const project = archService.projectBuffer().extractBuffer();
+				const architecture = obj.getAppState().getArchitectureObject();
+				const newSerializer = architecture.getSerializer();
+				const decodedProject = newSerializer.deserialize(project);
+				architecture.setProject(decodedProject);
+
+				refService.triggerRefresh();
+			}
+			
 			
     }
 	},
 	setCurrentExec: {
 		evkey: MessageType.Executable.SetCurrent,
     evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-
 			const prg = m.getJSON().payload;
 			let prgservice = obj.getServices().getProgramPluginService();
 			prgservice.saveProgramData({

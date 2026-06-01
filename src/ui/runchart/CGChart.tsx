@@ -262,20 +262,17 @@ const GenerateNodes = (
 		const selStyle = !isCuidObj ? style.cuObjectNotCuidSelected : selectedObj ? 
 			style.cuObjectSelected : '';
 		let measuredValue = data.aggrMap[selKey][i];
-
-		const onNodeHoverTrigger = (isCuid: boolean) => {
-			//console.log(measuredValue, mxid, i);
-			//console.log(data.aggrMap[selKey])
-			if(isCuid) {
-				bmap.insert('current_node',
-				JSON.stringify({
-					// idx: sample.cuid //NOTE: This has been disabled
-				}));
-			}
+		const onNodeHoverTrigger = (_isCuid: boolean) => {
+			// console.log(isCuid)
+			// if(isCuid) {
+			bmap.insert('current_node',
+			JSON.stringify({
+				idx: i //NOTE: This has been disabled
+			}));
 			bmap.insert('current_chart_idx', 
 			JSON.stringify({
 				idx: i,
-				// refIdx: sample.mxid, //NOTE: This has been disabled
+				refIdx: sample.mxid, //NOTE: This has been disabled
 				selKey: selKey,
 				lineIdx: lIdent,
 			}));
@@ -307,7 +304,6 @@ const GenerateNodes = (
 		}
 
 		const yValue = yScale(measuredValue);
-				
 		return (<circle
 			key={`circ_${i}`}
 			cx={xScale(mxid)}
@@ -377,7 +373,6 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	const [cacheref, setCacheRef] = useState<CUScaleKeyRef>({keyvalue: 'ON'});
 	const cacheIncluded = cacheref.keyvalue === 'ON';
 	const data = ToggleCacheData(props.graphData, cacheIncluded);
-	const gMinY = data.globalMinMax.minY;
 	const gMaxY = data.globalMinMax.maxY;
 	const keyset = Object.keys(data.aggrMap);
 	const [enableSet, setEnableSet] = useState<Array<boolean>>(
@@ -392,9 +387,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	const [keyref, setKeyRef] = useState<CUDataKeyRef>({ keyvalue: String(props.selKey) });
 
 	const [scaleref, setScaleRef] = useState<CUScaleKeyRef>({keyvalue: 'Linear'});
-	const [lineCol, _setLineCol] = useState<Array<string>>(nLins);
-	const [nodeCol, _setNodeCol] = useState<Array<string>>(nCols);
-	const chartRef = useRef() as React.MutableRefObject<SVGSVGElement>;
+	const chartRef = useRef({}) as React.MutableRefObject<SVGSVGElement>;
 	const margins = props.dimensions.margins;
 
 	const left = margins.left;
@@ -496,9 +489,8 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 
 			const refKey = keyref.keyvalue === 'ALL' ? keyset[idx] : keyref.keyvalue;
 			const akey = refKey as keyof DataAggrMap;
-			
 			if(keyref.keyvalue === 'ALL' || d === data.aggrMap[akey]) { 	
-			   return GenerateNodes(idx, data, xScale, yScale, scaleFnStr, akey, lineCol[idx], bmap)
+			   return GenerateNodes(idx, data, xScale, yScale, scaleFnStr, akey, nCols[idx], bmap)
 			} else {
 				return <></>
 			}
@@ -510,7 +502,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 			const refKey = keyref.keyvalue === 'ALL' ? keyset[idx] : keyref.keyvalue;
 			const akey = refKey as keyof DataAggrMap;
 			if(keyref.keyvalue === 'ALL' || d === data.aggrMap[akey]) { 	
-				return GenerateLine(data, xScale, yScale, akey, nodeCol[idx], key, idx);
+				return GenerateLine(data, xScale, yScale, akey, nLins[idx], key, idx);
 			} else {
 				return <></>
 			}
