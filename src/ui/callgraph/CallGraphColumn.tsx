@@ -98,6 +98,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		const rrbuf = container.getServices().getRunResultService();
 
 		const gvolumes = rrbuf.getTotalArray();
+		console.log(gvolumes);
 		if(gvolumes.length > 0) {
 			const lastVol = gvolumes[gvolumes.length-1]!;
 
@@ -250,7 +251,11 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 			(<div className={styles.nodePanel}>
 			 	<header>
 				<div>Id: {nName} </div> 
+				<div>Type: {nKind} </div>
 				</header>
+				<div>
+				{nDescription}
+				</div>
 				<div className={styles
 					.dataSegment}>
 					<header>

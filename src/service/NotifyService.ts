@@ -7,6 +7,11 @@ export type NotifyTuple = {
 }
 
 
+export const CommonTitles = {
+  NetworkCommunications: "Network Communications",
+  LoadOperation: "Load Operation",
+}
+
 export const NotifyID = {
   ArchUnavailable: {
     ID: "arch-unavailable",
@@ -43,6 +48,18 @@ export const NotifyID = {
        message: "The file has been loaded" 
     }
     
+  },
+  ArchService: {
+    SendArchSuccess: {
+      ID: "send-arch-good",
+      title: CommonTitles.NetworkCommunications,
+      message: "Object has been sent to process-poll"
+    },
+    SendArchError: {
+      ID: "send-arch-good",
+      title: CommonTitles.NetworkCommunications,
+      message: "Object has been sent to process-poll"
+    }
   }
 }
 
@@ -102,6 +119,12 @@ export class NotifyService {
     if(!this._notifyQueue.messageQueue.find((e: NotifyMessage) => e.mid === mid)) {
       this.makeNotification(msg);
     }
-    
+  }
+
+  /**
+   * Makes the code shorter with the messages by composing them
+   */
+  makeMessageWithTuple(tuple: NotifyTuple) {
+    this.makeMessageWithId(tuple.ID, tuple.title, tuple.message);
   }
 }

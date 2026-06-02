@@ -1,6 +1,7 @@
 import { ArchCapabilityQuery } from "rottnest-plugin/schema/ArchContext";
 import RottnestApplication from "../container/RottnestApplication";
 import { MessageType } from "../../net/Protocol";
+import { NotifyID } from "../../service/NotifyService";
 
 const leftClick = (container: RottnestApplication) => {
 
@@ -8,8 +9,10 @@ const leftClick = (container: RottnestApplication) => {
 	const ctx = rott.getUIContext().getCurrentContext()
 	const notify = rott.getServices().getNotifyService();
 	const refserv = rott.getServices().getRefreshService();
-	//console.log("Run");
 	if(ctx.queryCapability(ArchCapabilityQuery.MakeQuery("CanNetwork")).Yes()) {
+
+		const rrService = rott.getServices().getRunResultService();
+		rrService.reset();
 
 		const projNet = rott.getAppState()
 			.getArchitectureObject()
@@ -24,25 +27,14 @@ const leftClick = (container: RottnestApplication) => {
 			.getConnectionManager()
 			.getNetworkService();
 
-		// const netmap = rott.getAppState()
-		// 	.getArchitectureObject()
-		// 	.getConnectionManager()
-		// 	.getNetworkMap();
-
-
-		//TODO: Marked for changes to ensure
-		//   
 		const archremap = MessageType.Layout.Run;
 		const obj = { "layout" : projNet.forNetwork(fmt) };
 		//console.log(obj, projNet)
 		appnet.sendObj(archremap, obj);
-
-		notify.makeMessageWithId('send-arch-good', "Network Communications",
-			"Object has been sent to process-pool");
+		notify.makeMessageWithTuple(NotifyID.ArchService.SendArchSuccess);
 		refserv.triggerRefresh();
 	} else {
-		notify.makeMessageWithId('send-arch-err', "Network Communications",
-			"Unable to send object to process-pool");
+		notify.makeMessageWithTuple(NotifyID.ArchService.SendArchError);
 		refserv.triggerRefresh();
 	}
 

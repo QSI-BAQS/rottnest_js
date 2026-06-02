@@ -4,8 +4,29 @@ import { RefreshService } from "./RefreshService";
 
 
 
-export type RunResultKind = "CUIDObj" | "CUIDTotal" | "CUIDEndComp" | "VolumeWithHash" | 
-	"CacheHashOnly" | "StatusItem" | "VisualResult" | "Invalid";
+export const RunResultTag = "result_tag";
+
+export const RunResultKeyKind = {
+	RESULT_ENTRY: "RESULT_ENTRY",
+	FINAL_RESULT: "FINAL_RESULT",
+};
+
+export const ResultEntryInvalidMsg = "Invalid";
+
+export const ResultMessage = {
+	Entry: "ResultEntry",
+	Total: "TotalEntry"
+};
+
+
+export type RunResultKey =
+	typeof RunResultKeyKind.RESULT_ENTRY |
+	typeof RunResultKeyKind.RESULT_ENTRY;
+
+export type RunResultKind = "CUIDObj" | "CUIDTotal"
+| "CUIDEndComp" | "VolumeWithHash"
+| "CacheHashOnly" | "StatusItem"
+| "VisualResult" | "Invalid";
 
 
 /**
@@ -123,11 +144,65 @@ export class RunResultService {
 		return noCUID && hasVolumes && keyIsCache;
 	}
 
+	decodeAndSort(jsonObj: any, refreshService: RefreshService | null = null): [
+		RunResultKey, any] {
+
+		const result_kind = jsonObj[RunResultTag];
+		let msgKind: RunResultKind = ResultEntryInvalidMsg;
+		let result: [RunResultKey, any] = [msgKind, {}];
+		if(result_kind === RunResultKeyKind.FINAL_RESULT) {
+			result = [
+				ResultMessage.Total,
+				jsonObj
+			];
+			this.withTotal.push({
+				volumes: jsonObj.volumes,
+				tSource: jsonObj.t_source,
+				tocks: jsonObj.tocks,
+				cuID: jsonObj.cu_id,
+				status: jsonObj.status,
+				npQubits: jsonObj.np_qubits
+			});
+			this.endComps.push({
+				volumes: jsonObj.volumes,
+				tSource: jsonObj.t_source,
+				tocks: jsonObj.tocks,
+				cuID: jsonObj.cu_id,
+				status: jsonObj.status,
+				npQubits: jsonObj.np_qubits
+			});
+		} else if(result_kind === RunResultKeyKind.RESULT_ENTRY) {
+			result = [
+				ResultMessage.Total,
+				jsonObj
+			];
+			const volMixedData = {
+					kind: "CUResultData" as CUResultKind,
+					mxid: this.volumeSet.length,
+					volumes: jsonObj.volumes,
+					tSource: jsonObj.t_source,
+					tocks: jsonObj.tocks,
+					cuID: jsonObj.cu_id,
+					status: jsonObj.status,
+					npQubits: jsonObj.np_qubits
+				}
+			this.volumeSet.push(volMixedData);
+		}
+
+		
+		if(refreshService !== null) {
+			refreshService.triggerRefresh();
+		}
+				
+		return result;
+	}
+
 	/**
 	 * Decodes the message received by the network component
 	 * and makes a decision where to stash the data and how
+	 * Deprecated and relisted one as `Old`
 	 */
-	decodeAndSort(jsonObj: any, refreshService: RefreshService | null = null): [RunResultKind, any] {
+	decodeAndSortOld(jsonObj: any, refreshService: RefreshService | null = null): [RunResultKind, any] {
 		//We need to make a decision aboututhem
 		let msgKind: RunResultKind = "Invalid";
 		if(this.isVisualResult(jsonObj)) { //NOTE: Not currently used
