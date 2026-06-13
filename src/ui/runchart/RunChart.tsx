@@ -140,7 +140,7 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 
 export const RunChartSpace = (props: CallGraphSpaceData): ReactElement => {
 	
-	const cgstatsSpace = useRef<any>();
+	const cgstatsSpace = useRef<any>({});
 	const [width, setWidth] = useState(600);
 	const [height, setHeight] = useState(600);
 	const [isReady, setReady] = useState(false);

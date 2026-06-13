@@ -132,6 +132,10 @@ export class Services implements ServicesHolder {
     return this.rrservice;
   }
 
+  /**
+   * Component service that will 
+   * have components that are able to be used by plugins
+   */
   getComponentService() {
     return ComponentService.GetInstance()
   }
@@ -223,7 +227,9 @@ export class NoServicesHolder implements ServicesHolder {
    * Returns the program plugin service
    */
   getProgramPluginService(): ProgramPluginService {
-    throw new Error("Program Plugin Service is not Implemented")
+    return new ProgramPluginService(this.getRefreshService(),
+      this.getNetworkService());
+    // throw new Error("Program Plugin Service is not Implemented")
   }
 
 
@@ -231,7 +237,9 @@ export class NoServicesHolder implements ServicesHolder {
    * Returns the arch plugin service
    */
   getArchPluginService(): ArchPluginService {
-    throw new Error("Arch Plugin Service is not Implemented")
+    return new ArchPluginService([], () => {}, this.getRefreshService(),
+      this.getNetworkService());
+    // throw new Error("Arch Plugin Service is not Implemented")
   }
 
   /**

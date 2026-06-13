@@ -35,6 +35,7 @@ export type RunResultKind = "CUIDObj" | "CUIDTotal"
  */
 export class RunResultService {
 
+	identifierOnEnd: number = 0;
 
 	withCUID: Map<string, Array<CGResult>> = new Map();
 	withTotal: Array<CGResult> = []

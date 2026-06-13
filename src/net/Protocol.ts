@@ -80,6 +80,11 @@ export class MessageType {
   	GetState: 'rottnest.procedure.get_state',
   	ListAll: 'rottnest.procedure.list_all',
   }
+
+  static Sync: {
+  	Set: "rottnest.sync.set",
+  	Get: "rottnest.sync.get",
+  }
 }
 
 

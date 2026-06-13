@@ -16,6 +16,7 @@ import { useEffect, useRef, useState, useMemo,
 } from 'react';
 import { ArchWorkspaceZone } from '../ui/workspace/WorkspaceZone';
 import { RunChartContainer } from '../ui/runchart/RunChart';
+import { RunChartNodeColumn } from '../ui/runchart/RunChartColumn';
 import { ReactComponentExports } from 'rottnest-plugin/schema/ServicesHolder';
 import { MessageType } from '../net/Protocol';
 import { CallGraphSpace } from '../ui/callgraph/CallGraphSpace';
@@ -50,7 +51,8 @@ export class ComponentService {
     RunChartContainer: RunChartContainer,
     CallGraphSpace: CallGraphSpace,
     CGGraphColumn: CGGraphColumn,
-    CGNodeColumn: CGNodeColumn
+    CGNodeColumn: CGNodeColumn,
+    RunChartNodeColumn: RunChartNodeColumn
   }
 
   static instance: ComponentService | null = null;
