@@ -10,6 +10,7 @@ export type NotifyTuple = {
 export const CommonTitles = {
   NetworkCommunications: "Network Communications",
   LoadOperation: "Load Operation",
+  SyncState: "State Synchronised",
 }
 
 export const NotifyID = {
@@ -59,6 +60,23 @@ export const NotifyID = {
       ID: "send-arch-good",
       title: CommonTitles.NetworkCommunications,
       message: "Object has been sent to process-poll"
+    }
+  },
+  Sync: {
+    StateSynchronised: {
+      ID: "sync-state-good",
+      title: CommonTitles.SyncState,
+      message: "Setting last valid state",
+    },
+    StateInvalid: {
+      ID: "sync-state-bad",
+      title: CommonTitles.SyncState,
+      message: "Not able to synchronise",
+    },
+    StateUpdated: {
+      ID: "sync-state-update",
+      title: CommonTitles.SyncState,
+      message: "Updated state"
     }
   }
 }

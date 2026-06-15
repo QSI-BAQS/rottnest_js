@@ -76,6 +76,11 @@ export class RunResultService {
 		this.endComps = [];
 	}
 
+
+	setSyncState(data: any) {
+		this.identifierOnEnd = data.runIdentifier;
+		this.volumeSet = data.runData;
+	}
   
 	requestRun(gid: string) {
 		this.runsRequested.add(gid);

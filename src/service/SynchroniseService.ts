@@ -5,15 +5,30 @@ import { RottnestApplicationState } from "../ui/context/global/ApplicationState"
 import { NetworkService } from "./NetworkService";
 import { Services } from "./Services";
 
+
+
 /** Is used to refer to the opfs and localstorage part */
 export const RottnestSynchroniseKey = "RottnestSync.sync";
 
 /** Specifies the digest kind */
 export const SyncHashDigestKind = "SHA-256";
 
+
+/** The result from the pull could be valid, invalid or conflicted  */
+export const SyncPullResult = {
+  SyncValid: "SyncValid",
+  SyncInvalid: "SyncInvalid",
+  SyncConflict: "SyncConflict"
+};
+
+export type SyncPullResultKind = typeof SyncPullResult.SyncValid |
+  typeof SyncPullResult.SyncInvalid |
+  typeof SyncPullResult.SyncConflict;
+
+
+
 /**
   * HashedResult
-  * 
   */
 export type HashedResult = {
   hash: string,
@@ -29,7 +44,8 @@ export class SynchroniseService {
 
   storage: StateStorage;
 
-  lastState: RottnestSyncState | null = null;
+  lastLocalState: RottnestSyncState | null = null;
+  lastRemoteState: RottnestSyncStateDescriptor | null = null;  
 
   constructor() {
     this.storage = StateStorage.GetInstance();
@@ -59,6 +75,39 @@ export class SynchroniseService {
   }
 
   /**
+    * Gets the last local state
+    * that has been read from a storage medium
+    */
+  getLastLocalState() {
+    return this.lastLocalState;
+  }
+
+
+  /**
+    * Gets the last remote state that
+    * has been saved locally
+    */
+  getLastRemoteState() {
+    return this.lastRemoteState;
+  }
+  
+  /**
+    * Sets the localstate to a new variant
+    */
+  setLocalState(state: RottnestSyncState) {
+    this.lastLocalState = state;
+  }
+
+
+  /**
+    * Sets the last remote state from the
+    * server, this allows for a comparison between remote and local
+    */
+  setRemoteState(state: RottnestSyncStateDescriptor) {
+    this.lastRemoteState = state;
+  }
+
+  /**
     * From the application state
     * This will extract each object required
     */
@@ -71,7 +120,7 @@ export class SynchroniseService {
     const layout = applicationState
       .getArchitectureObject()
       .getProject();
-
+ =
     const executable = services
       .getProgramPluginService()
       .getCurrentName();
@@ -113,13 +162,72 @@ export class SynchroniseService {
   }
 
   /**
+    * Upon a retrieval of a remote
+    * and the expectation of the state being loaded from local
+    * We should be able to valid the last artifacts
+    */
+  validate() {
+    const local = this.lastLocalState;
+    const remote = this.lastRemoteState;
+
+    let matches = SyncPullResult.SyncInvalid;
+
+    if(local !== null && remote !== null) {
+      matches =
+        (local.architecture.hash == remote.architecture.hash &&
+        local.layout.hash == remote.layout.hash &&
+        local.executable.hash == remote.executable.hash &&
+        local.runchart.hash == remote.runchart.hash &&
+        local.timestamp == remote.timestamp) ?
+        SyncPullResult.SyncValid : SyncPullResult.SyncInvalid;
+    }
+    
+    return matches;
+  }
+
+  /**
+    * If validate is true or returns a relevant result
+    */
+  setFromLocal(applicationState: RottnestApplicationState) {
+    const local = this.lastLocalState;
+
+    if(local === null) { return; }
+    
+    const services = applicationState
+      .getArchitectureObject()
+      .getServices() as Services;
+      
+ 
+    services
+      .getProgramPluginService()
+      .setCurrentExecutable(local?.executable.data);
+
+    services
+      .getArchPluginService()
+      .setArchitectureWithBuffer(local.architecture.data, local.layout.data);
+
+    services
+      .getRunResultService()
+      .setSyncState(local.runchart.data);
+
+
+  }
+
+  /**
     * Will pull from both server and local
     * It will reconcile and figure out if local is valid or out of sync
     * It will then reset the server if it is out of sync or set the UI
     * to be in sync
     */
-  async pull() {
-    /// Not implemented yet
+  async pull(applicationState: RottnestApplicationState) {
+    
+    const networkService = (applicationState.getArchitectureObject()
+      .getServices() as Services)
+      .getNetworkService();
+
+    const localData = await this.pullFromStorage();
+    this.lastLocalState = localData; // Sets the localstate information
+    this.pullFromServer(networkService);    
   }
 
   /**
@@ -194,14 +302,24 @@ export class SynchroniseService {
 
   /**
     * Will pull from localstorage or indexdb or opfs storage
-    * locations to 
+    * locations to memory - This can be used to build/resume state
     */
   async pullFromStorage() {
-    
+    const storage = this.storage;
+    const storageData = JSON.parse(await storage.read(RottnestSynchroniseKey));
+
+    return storageData;
   }
 
-  pullFromServer() {
-    
+  /**
+    * Pulls the data from the server
+    * This information will be used to check the current hashes
+    * from storage with those on the server
+    */
+  pullFromServer(networkService: NetworkService) {
+    const syncMessage = MessageType.Sync.Get;
+    const client = networkService.getNetworkService();
+    client.sendMessage(syncMessage); 
   }
 
   

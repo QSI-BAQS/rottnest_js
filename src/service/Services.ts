@@ -14,6 +14,7 @@ import { ComponentService } from "./ComponentService";
 import { ServicesHolder } from "rottnest-plugin/schema/ServicesHolder";
 import { UtilityService } from "./UtilityService";
 import { CallGraphService } from "./CallGraphService";
+import { SynchroniseService } from "./SynchroniseService";
 
 type AppTarget = UpdateTrigger & ZoomModuleParent;
 
@@ -36,6 +37,7 @@ export class Services implements ServicesHolder {
   utilityService: UtilityService;
   help: HelpService;
   callgraphService: CallGraphService = new CallGraphService();
+  synchroniseService: SynchroniseService = new SynchroniseService();
 
   constructor(refreshTarget: AppTarget, _container: ServicesHolder,
     archUpdate: ArchUpdateTrigger, schemas: Array<ArchStorageEntry>) {
@@ -158,6 +160,10 @@ export class Services implements ServicesHolder {
 
   getCallGraphService(): CallGraphService {
     return this.callgraphService;
+  }
+
+  getSynchroniseService(): SynchroniseService {
+    return this.synchroniseService;
   }
 }
 

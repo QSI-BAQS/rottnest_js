@@ -8,6 +8,7 @@ import { CommEventOps, CommOpQueue, CommsActions } from '../ops/CommsOps.ts';
 import { MessageType } from '../../../../net/Protocol.ts';
 import RottnestApplication from "../../../container/RottnestApplication.tsx";
 import { NotifyID } from "../../../../service/NotifyService.ts";
+import { SyncPullResult } from "../../../../service/SynchroniseService.ts";
 
 export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvErr: {
@@ -207,6 +208,38 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 		}
   },
 
+  getSyncState: {
+    evkey: MessageType.Sync.Get,
+    evtrigger: (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
+    	const applicationState = obj.getAppState();
+			const syncService = obj.getServices().getSynchroniseService();
+			const refService = obj.getServices().getRefreshService();
+			const notifyService = obj.getServices().getNotifyService();
+			const newRemoteState = m;
+			syncService.setRemoteState(newRemoteState);
+
+			if(syncService.validate() === SyncPullResult.SyncValid) {
+				syncService.setFromLocal(applicationState);
+				notifyService.makeMessageWithTuple(NotifyID.Sync.StateSynchronised);
+			} else {
+				notifyService.makeMessageWithTuple(NotifyID.Sync.StateInvalid);
+			}
+			refService.triggerRefresh();		
+		}
+  },
+  setSyncState: {
+    evkey: MessageType.Sync.Set,
+    evtrigger: (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
+			const refService = obj.getServices().getRefreshService();
+			const notifyService = obj.getServices().getNotifyService();
+			const syncService = obj.getServices().getSynchroniseService();
+			syncService.setRemoteState(m);
+
+			notifyService.makeMessageWithTuple(NotifyID.Sync.StateUpdated);
+			refService.triggerRefresh();		
+			// Specify notification - TODO: This just needs outline that it is in sync
+		}
+  },
 }
 
 

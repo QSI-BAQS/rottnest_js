@@ -2,7 +2,6 @@
 
 /**
   * Outlines the state of the layout
-  *
   */
 export type SyncStateLayout = {
   data: any,
