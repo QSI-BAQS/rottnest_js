@@ -74,17 +74,21 @@ export class MessageType {
   static Error: string = "rottnest.err";
 
 	// Procedure Symbol list
-  static Procedure: {
+  static Procedure = {
+  	Command: 'rottnest.procedure.command',
   	RunImmediate: 'rottnest.procedure.run_immediate',
   	RunDefer: 'rottnest.procedure.run_defer',
   	GetState: 'rottnest.procedure.get_state',
   	ListAll: 'rottnest.procedure.list_all',
-  }
+  };
 
-  static Sync: {
+	// Allows for setting and getting of synchronisation state
+  static Sync = {
   	Set: "rottnest.sync.set",
   	Get: "rottnest.sync.get",
-  }
+  };
+
+  
 }
 
 

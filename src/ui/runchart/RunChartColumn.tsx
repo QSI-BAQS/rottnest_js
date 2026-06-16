@@ -25,7 +25,11 @@ type CGNodeData = {
 	nodeData: NodeData | null
 }
 
-class RunChartSelectedNodeBox extends React.Component<CGNodeData, {}>  {
+/**
+  * RunChartSelectedNodeBox
+  *
+  */
+export class RunChartSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 
 	cuId = RunChartConstants.UnitId;
 

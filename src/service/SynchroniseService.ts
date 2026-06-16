@@ -120,7 +120,7 @@ export class SynchroniseService {
     const layout = applicationState
       .getArchitectureObject()
       .getProject();
- =
+ 
     const executable = services
       .getProgramPluginService()
       .getCurrentName();
@@ -306,7 +306,7 @@ export class SynchroniseService {
     */
   async pullFromStorage() {
     const storage = this.storage;
-    const storageData = JSON.parse(await storage.read(RottnestSynchroniseKey));
+    const storageData = await storage.read(RottnestSynchroniseKey);
 
     return storageData;
   }

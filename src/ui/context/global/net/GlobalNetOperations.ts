@@ -237,7 +237,6 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 
 			notifyService.makeMessageWithTuple(NotifyID.Sync.StateUpdated);
 			refService.triggerRefresh();		
-			// Specify notification - TODO: This just needs outline that it is in sync
 		}
   },
 }

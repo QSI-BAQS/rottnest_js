@@ -1,11 +1,14 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 import style from '../styles/CGChart.module.css';
 import * as d3 from "d3";
-import {WorkspaceBufferMap} from "../workspace/WorkspaceBufferMap";
+import { ScaleLinear, ScaleLogarithmic } from 'd3-scale';
+import { WorkspaceBufferMap } from "../workspace/WorkspaceBufferMap";
 import { CallGraphStatsData, CUAggrKey, CUDataKeyRef, CUScaleKeyRef, 
 	DataAggregate, DataAggrIdentifier, DataAggrMap } from "./ChartData";
 
 type ScaleKey = "Linear" | "Log";
+
+
 
 const onNodeClick = () => {
 	//TODO: Clean this up
@@ -21,7 +24,7 @@ const LineColorList: Array<string> = [
 	'#C26A77',
 	'#9F4A96',
 	'#7E2954',
-]
+];
 
 const CircleColorList: Array<string> = [
 	'#DDDDDD',
@@ -33,30 +36,8 @@ const CircleColorList: Array<string> = [
 	'#C26A77',
 	'#9F4A96',
 	'#7E2954',
-]
+];
 
-/*const WidgetSelector = (props: WidgetSelectorProps): ReactElement => {
-	const selected = props.currentKeyRef.keyvalue;
-	const keyRefUpdate = props.keyRefUpdate;
-
-	const onOptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		keyRefUpdate(Number(e.currentTarget.value));
-	};
-	
-	const options = props.optPairs.map((e, i) => {
-		return (
-			<option key={`cline_${i}`} 
-				value={e.value}>{e.display}</option>
-		);
-	});
-
-	return (<div className={style.chartSel}>
-		<select value={selected} onChange={onOptionChange}
-			className={style.optionStyle}>
-			{options}
-		</select>
-	       </div>)
-}*/
 type CacheSelectorProps = {
 	currentKeyRef: CUScaleKeyRef 
 	keyRefUpdate: (key: string) => void
@@ -91,6 +72,10 @@ const CacheSelector = (props: CacheSelectorProps): ReactElement => {
 	       </div>)
 }
 
+/**
+  * ScaleProperties for the runchart
+  *
+  */
 type ScaleProps = {
 	currentKeyRef: CUScaleKeyRef 
 	keyRefUpdate: (key: string) => void
@@ -135,12 +120,13 @@ type ChartSelectorProps = {
 	}>
 }
 
-
+/**
+  * ChartSelector
+  * This selects the chart select type
+  */
 const ChartSelector = (props: ChartSelectorProps): ReactElement => {
 
-
 	const selected = props.currentKeyRef.keyvalue;
-	
 	const keyRefUpdate = props.keyRefUpdate;
 
 	const onOptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -163,6 +149,11 @@ const ChartSelector = (props: ChartSelectorProps): ReactElement => {
 
 }
 
+/**
+  * GenerateLegend
+  * This presents the different kinds of types that can be displayed
+  * for the runchart
+  */
 const GenerateLegend = (
 	names: Array<string>,
 	colors: Array<string>,
@@ -202,10 +193,14 @@ const GenerateLegend = (
 	)
 }
 
+/**
+  * GenerateLine
+  * Line to be drawn on the runchart
+  */
 const GenerateLine = (
 	data: DataAggregate,
-	xScale: d3.ScaleLinear<number, number>,
-	yScale: d3.ScaleLinear<number, number> | d3.ScaleLogarithmic<number, number>, 
+	xScale: ScaleLinear<number, number>,
+	yScale: ScaleLinear<number, number> | ScaleLogarithmic<number, number>, 
 	selKey: CUAggrKey,
 	colorStr: string,
 	key: string, _idx: number):  ReactElement => {	
@@ -228,6 +223,10 @@ const GenerateLine = (
 		/>)
 }
 
+/**
+  * GenerateNodes
+  * Places the points within space
+  */
 const GenerateNodes = (
 	lIdent: number,
 	data: DataAggregate,
@@ -297,6 +296,7 @@ const GenerateNodes = (
 		if((isNaN(measuredValue) || measuredValue == 0) && scaleKey === 'Log') {
 			measuredValue = 1;
 		}
+
 		if(selKey === 'BELL_IDLE_VOLUME') {
 			if(measuredValue > 150) {
 				count++;
@@ -321,6 +321,10 @@ const GenerateNodes = (
 }
 
 
+/**
+  * ChartOptionsPairs
+  * Used for 
+  */
 const ChartOptionPairs = [
 	{ value: 'ALL', display: 'All'},
 	{ value: 'REGISTER_VOLUME', display: 'Register Volume'},
@@ -331,12 +335,20 @@ const ChartOptionPairs = [
 	{ value: 'BELL_ROUTING_VOLUME', display: 'Bell-Routing Volume'}
 ];
 
-type HDatKind = {
+/**
+  * HDatKind
+  * Horizontal line to be drawn
+  */
+export type HDatKind = {
 	hlen: number
 	hArr: Array<number> 
 	hIdx: number
 }
 
+/**
+  * ToggleCacheData
+  * 
+  */
 function ToggleCacheData(data: DataAggregate, cacheOn: boolean): DataAggregate {
 	if(cacheOn) {
 		return data;
