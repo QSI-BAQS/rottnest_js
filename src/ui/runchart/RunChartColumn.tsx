@@ -27,7 +27,7 @@ type CGNodeData = {
 
 /**
   * RunChartSelectedNodeBox
-  *
+  * 
   */
 export class RunChartSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 
@@ -44,6 +44,11 @@ export class RunChartSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		}
 	}
 
+	/**
+	  * Runs the graph node for the
+	  * If a visualiser object already exists in this system
+	  * Then the object should 
+	  */
 	runGraphNode(data: any) {
 		const container = this.props.workspaceData
 			.architecture as any; //WARN: Unsafe assumption
