@@ -145,7 +145,7 @@ const ChartSelector = (props: ChartSelectorProps): ReactElement => {
 			className={style.optionStyle}>
 			{options}
 		</select>
-	       </div>)
+		</div>)
 
 }
 
@@ -390,10 +390,14 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	const [enableSet, setEnableSet] = useState<Array<boolean>>(
 		ChartOptionPairs.map((_) => true) 
 	);
-	const nCols = data.idxs.map((_, idx) => CircleColorList[idx %
-						CircleColorList.length])
-	const nLins = data.idxs.map((_, idx) => LineColorList[idx % 
-				    		LineColorList.length])
+	console.log(data.idxs);
+	console.log(data);
+	// const nCols = data.idxs.map((_, idx) => CircleColorList[idx %
+	// 					CircleColorList.length])
+	const nCols = CircleColorList;
+	const nLins = LineColorList;
+	// const nLins = data.idxs.map((_, idx) => LineColorList[idx % 
+	// 			    		LineColorList.length])
 	
 	const bmap = props.workspaceData.stash;
 	const [keyref, setKeyRef] = useState<CUDataKeyRef>({ keyvalue: String(props.selKey) });

@@ -6,6 +6,7 @@ import { RollbackOutlined, CheckCircleOutlined, DisconnectOutlined }
   
 import styles from '../styles/GlobalBar.module.css';
 import { MessageType } from '../../net/Protocol.ts';
+import { NotifyID } from '../../service/NotifyService.ts';
 
 const MAX_RECONNECTS: number = 10;
 
@@ -60,8 +61,6 @@ const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ container, on
     			const nstate = {...connectionState};
     			nstate.reconnectAttempts += 1;
     			nstate.state = ConnectionStateKind.CONNECTING;
-    			// container.getServices().getNotifyService()
-    			//   .makeMessage("Connection Status", "Attempting to connect to backend");
     			container.getServices().getRefreshService().triggerRefresh();
     			setConnectionState(nstate);
   		}
@@ -111,22 +110,16 @@ const ConnectionStatusButton: React.FC<ConnectionStatusProps> = ({ container, on
 			nstate.state = ConnectionStateKind.CONNECTED;
       const notify = container.getServices().getNotifyService();
       const refresh = container.getServices().getRefreshService();
-      notify.makeMessageWithId('connection-success', "Network",
-        "Connected to workpool");
-      // appService.onConnect();
+      notify.makeMessageWithTuple(NotifyID.ConnectionState.Success);
       appService.sendMessage(MessageType.Arch.GetCurrent);
       appService.sendMessage(MessageType.Executable.GetCurrent);
       refresh.triggerRefresh();
-  		//setConnectionState(nstate);
   	};
 
   	const handleDisconnect = () => {
 			const nstate = {...connectionState};
 			nstate.state = ConnectionStateKind.DISCONNECTED;
-      // const notify = container.getServices().getNotifyService();
       const refresh = container.getServices().getRefreshService();
-      // notify.makeMessageWithId('connection-failed', "Network",
-      //   "You have been disconnected");
       refresh.triggerRefresh();
   		setConnectionState(nstate);
   	};

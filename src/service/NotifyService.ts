@@ -20,6 +20,18 @@ export const NotifyID = {
     message: "Architectures are unavailable" },
   ZoomInUnavailable: "zoom-in-unavailable",
   ZoomOutUnavailable: "zoom-out-unavailable",
+  ConnectionState: {
+    Success: {
+      ID: "connection-success",
+      title: "Network",
+      message: "Connected to workpool"
+    },
+    Disconnected: {
+      ID: "connection-failure",
+      title: "Network",
+      message: "Disconnected from workpool"
+    },
+  },
   Executable: {
     SetCurrent: {
       ID: "prg-set",

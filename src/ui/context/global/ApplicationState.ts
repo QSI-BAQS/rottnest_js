@@ -56,6 +56,7 @@ export type RottnestState = {
 	appState: RottnestApplicationState,
 }
 
+/* NoArch is the default  */
 const NOARCH_SCHEMA = new NoArchSchema();
 
 /**
@@ -132,8 +133,6 @@ export class RottnestApplicationState {
 
 		const refresh = this.modstate.getServices().getRefreshService();
 		this.architectureSchema = schema;
-		//console.log(schema);
-		// This is an issue?
 		this.architectureObject = schema.createArchitecture(this
 			.modstate.getServices())
 		this.appContext = new ArchitectureUIContext(this.architectureObject);

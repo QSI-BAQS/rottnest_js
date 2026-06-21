@@ -22,6 +22,38 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 			obj.triggerUpdate();
 		}
 	},
+	getCurrentArhc: {
+		evkey: MessageType.Arch.GetCurrent,
+		evtrigger: async(_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
+			
+			const { name, api, jsData, cssData } = m.getJSON().payload;
+			const styService = obj.getServices().getStyleService();
+			const refService = obj.getServices().getRefreshService();
+			const archService = obj.getServices().getArchPluginService();
+
+			styService.appendToRootInline(cssData)
+			await archService.setArchitectureContext({ name, apimap: api,
+				plugin: {
+					jsData,
+					cssData,
+				},
+				schema: '',
+			});
+
+			
+			
+			if(archService.projectBuffer().available()) {
+
+				const project = archService.projectBuffer().extractBuffer();
+				const architecture = obj.getAppState().getArchitectureObject();
+				const newSerializer = architecture.getSerializer();
+				const decodedProject = newSerializer.deserialize(project);
+				architecture.setProject(decodedProject);
+
+				refService.triggerRefresh();
+			}
+		}
+	},
 	setCurrentArch: {
 		evkey: MessageType.Arch.SetCurrent,
     evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {

@@ -42,13 +42,27 @@ export type HashedResult = {
   */
 export class SynchroniseService {
 
-  storage: StateStorage;
+  static #instance: SynchroniseService | null = null;
 
+  storage: StateStorage;
   lastLocalState: RottnestSyncState | null = null;
   lastRemoteState: RottnestSyncStateDescriptor | null = null;  
 
   constructor() {
     this.storage = StateStorage.GetInstance();
+  }
+
+
+  /**
+    * Gets the singleton instance
+    * for this service itself, doesn't require multiple instance
+    * to be spawned
+    */
+  static GetInstance(): SynchroniseService {
+    if(SynchroniseService.#instance === null) {
+      SynchroniseService.#instance = new SynchroniseService();
+    }
+    return SynchroniseService.#instance;
   }
 
   

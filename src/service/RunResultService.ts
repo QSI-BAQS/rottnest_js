@@ -1,7 +1,7 @@
 import { CGHashResult, CGResult, CGStatus, CUHashHex, CUResultKind, CUResultMixed } from "../obj/chart/Metrics";
 import { RunChartContainer } from "../ui/runchart/RunChart";
 import { RefreshService } from "./RefreshService";
-
+import { StateStorage } from "../store/StateStorage";
 
 
 export const RunResultTag = "result_tag";
@@ -49,8 +49,14 @@ export class RunResultService {
 	runsRequested: Set<string> = new Set();
 	runsFinished: Set<string> = new Set();
 	endComps: Array<CGResult> = [];
+
+	storageRef: StateStorage;
   
 	//runResults: Map<string, CGVisualResult> = new Map();
+
+	constructor() {
+		this.storageRef = StateStorage.GetInstance();
+	}
 
 	/**
 	 * Returns the container class (not an instance)
