@@ -15,7 +15,8 @@ export const ResultEntryInvalidMsg = "Invalid";
 
 export const ResultMessage = {
 	Entry: "ResultEntry",
-	Total: "TotalEntry"
+	Total: "TotalEntry",
+	Cached: "ResultEntryCached",
 };
 
 
@@ -45,6 +46,7 @@ export class RunResultService {
 	statusItems: Set<CGStatus> = new Set();
 
 	volumeSet: Array<CUResultMixed> = [];
+	volumeSetWithCacheTag: Array<number> = [];
 
 	runsRequested: Set<string> = new Set();
 	runsFinished: Set<string> = new Set();
@@ -199,6 +201,9 @@ export class RunResultService {
 					npQubits: jsonObj.np_qubits
 				}
 			this.volumeSet.push(volMixedData);
+			if(jsonObj.cached) {
+				this.volumeSetWithCacheTag.push(this.volumeSet.length-1);
+			}
 		}
 
 		
@@ -264,6 +269,10 @@ export class RunResultService {
 					npQubits: jsonObj.np_qubits
 				}
 			this.volumeSet.push(volMixedData);
+			if(jsonObj.cached) {
+				this.volumeSetWithCacheTag.push(this.volumeSet.length-1);
+			}
+			
 			if(this.withCUID.has(jsonObj.cu_id)) { //NOTE: Not currently used
 				const volarray = this.withCUID
 					.get(jsonObj.cu_id);
@@ -289,6 +298,9 @@ export class RunResultService {
 					cacheHash: jsonObj.cache_hash_hex
 				}
 			this.volumeSet.push(volMixedData);
+			if(jsonObj.cached) {
+				this.volumeSetWithCacheTag.push(this.volumeSet.length-1);
+			}
 
 			if(this.volumesWithHashes.has(jsonObj.cache_hash_hex)) {
 				const volarray = this.volumesWithHashes
@@ -338,6 +350,10 @@ export class RunResultService {
 
 	getVolumeSet(): Array<CUResultMixed> {
 		return this.volumeSet;
+	}
+
+	getVolumeSetCacheTags(): Array<number> {
+		return this.volumeSetWithCacheTag;
 	}
 
 	getCUIDMap(): Map<string, Array<CGResult>> {

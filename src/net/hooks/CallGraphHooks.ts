@@ -86,50 +86,50 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 
 
   getGraphHook(context: any, _jsonObj: any, asm: AppServiceMessage) {
-				const cgspace = context;
-        const container = context.props.architecture;
-				let parserOps = super.getParserOps()
-				let graph = parserOps.decodeGraph(asm);
-				let expands = true;
-				let expGid = 'invalid';
+		const cgspace = context;
+    const container = context.props.architecture;
+		let parserOps = super.getParserOps()
+		let graph = parserOps.decodeGraph(asm);
+		let expands = true;
+		let expGid = 'invalid';
 
-				if(graph) {
-					container.getServices()
-						.getCallGraphService()
-						.setGraphViewData(graph);
+		if(graph) {
+			container.getServices()
+				.getCallGraphService()
+				.setGraphViewData(graph);
 
-					if(graph.graph) {
-						let sz = graph.graph.size;
-						if(sz) {	
-							if(sz === 1) {
-								const e = graph.graph.
-								values().map((et: any) => {
-									return et;
-								}).toArray()[0];
+			if(graph.graph) {
+				let sz = graph.graph.size;
+				if(sz) {	
+					if(sz === 1) {
+						const e = graph.graph.
+						values().map((et: any) => {
+							return et;
+						}).toArray()[0];
 
-								expands = e.expands;
-								expGid = e.id;
-							}	
-							
-						}
-
-					}
+						expands = e.expands;
+						expGid = e.id;
+					}	
+					
 				}
-				cgspace.props.stash.insert('node_column',
-						JSON.stringify(0));
-				cgspace.props.stash.insert('cgviz_chart_gid_data',JSON.stringify({
-						expands,
-						gid: expGid,
-						idx: expGid
-					}));
-			
-				let refresh = container.getServices().getRefreshService();
-				cgspace.resetState();
-				const nState = {...cgspace.state}
-				nState.refresh = true;
-				context.setRequestState(CallGraphRequestState.Available);
 
-				refresh.triggerRefresh();    
+			}
+		}
+		cgspace.props.stash.insert('node_column',
+				JSON.stringify(0));
+		cgspace.props.stash.insert('cgviz_chart_gid_data',JSON.stringify({
+				expands,
+				gid: expGid,
+				idx: expGid
+			}));
+	
+		let refresh = container.getServices().getRefreshService();
+		cgspace.resetState();
+		const nState = {...cgspace.state}
+		nState.refresh = true;
+		context.setRequestState(CallGraphRequestState.Available);
+
+		refresh.triggerRefresh();    
 		
   }
 

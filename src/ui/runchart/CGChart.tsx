@@ -102,12 +102,13 @@ const ScaleSelector = (props: ScaleProps): ReactElement => {
 		);
 	});
 
-	return (<div className={style.chartSel}>
+	return (
+	<div className={style.chartSel}>
 		<select value={selected} onChange={onOptionChange}
 			className={style.optionStyle}>
 			{options}
 		</select>
-	       </div>)
+  </div>)
 }
 
 type ChartSelectorProps = {
@@ -377,6 +378,7 @@ function ToggleCacheData(data: DataAggregate, cacheOn: boolean): DataAggregate {
 			daggr.idxs.push(idref);
 		}
 	}
+	console.log(daggr)
 	return daggr;
 }
 
@@ -390,15 +392,8 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	const [enableSet, setEnableSet] = useState<Array<boolean>>(
 		ChartOptionPairs.map((_) => true) 
 	);
-	console.log(data.idxs);
-	console.log(data);
-	// const nCols = data.idxs.map((_, idx) => CircleColorList[idx %
-	// 					CircleColorList.length])
 	const nCols = CircleColorList;
-	const nLins = LineColorList;
-	// const nLins = data.idxs.map((_, idx) => LineColorList[idx % 
-	// 			    		LineColorList.length])
-	
+	const nLins = LineColorList;	
 	const bmap = props.workspaceData.stash;
 	const [keyref, setKeyRef] = useState<CUDataKeyRef>({ keyvalue: String(props.selKey) });
 

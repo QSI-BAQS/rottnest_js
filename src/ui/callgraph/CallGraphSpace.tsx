@@ -37,6 +37,7 @@ import { CallGraphRequestState,
 	RequestGraphReset,
 	RequestIsAvailable,
 	RequestIsFetching } from "./CallGraphDefaults.ts";
+import { CallGraphConstants } from "./CallGraphCommon.ts";
 
 /**
  * CGObject, 
@@ -91,7 +92,6 @@ class CGObject extends React.Component<CGDispData,
 	}
 
 	onLineUpdate(offLeft: number, offTop: number) {
-		//const xdiff = offLeft - this.state.x);
 		this.updateFn(this.data.idx, {
 			x: this.state.x - offLeft,
 			y: this.state.y - offTop,
@@ -242,13 +242,11 @@ class CGObject extends React.Component<CGDispData,
 
 	render() {
 		//TODO: Update this with a zoom service
-		//const rottContainer = this.props.wdaggr.workspaceData.architecture;
 		const zoomService = this.props.wdaggr.workspaceData.architecture
 			.getServices().getZoomService();
 		const zoomValue = zoomService.getZoomValue();
-		let widgetObj = this.props.wdaggr
-			.graph.graph.get(
-			this.props.index);
+		let widgetObj = this.props.wdaggr.graph
+			.graph.get(this.props.index);
 		const widget = widgetObj !== null ?
 			widgetObj : RottCallGraphEntryDefault();
 		
@@ -281,12 +279,12 @@ class CGObject extends React.Component<CGDispData,
 
 		}
 		
-		let description = '';
-		let cuId = 'X_X';
-		let compName = 'Compiling';
+		let description = CallGraphConstants.Node.NoDescription;
+		let cuId = CallGraphConstants.Node.DefaultID;
+		let compName = CallGraphConstants.CompilationState.Compiling;
 		if(widget) {
 			compName = widget.name;
-			cuId = widget.id;
+			cuId = widget.handle_id;
 			if(widget.description) {
 				description = widget.description;
 			}
@@ -300,9 +298,8 @@ class CGObject extends React.Component<CGDispData,
 				onMouseUp={(e) => {this.onNodeMouseUp(e)}}
 				onMouseMove={(e) => this.onNodeMove(e)}>
 				<header className={
-						styles
-						.widgetObjectHeader}>
-					Id: {cuId}
+						styles.widgetObjectHeader}>
+					{cuId}
 				</header>
 				<div className={styles
 					.widgetObjectBody}>

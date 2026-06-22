@@ -6,12 +6,12 @@
  * allow mapping for it
  */
 export type CallGraphEntry = {
-	// cu_id: string
 	id: string
 	name: string
 	description: string
 	children: Array<string>
 	expands: boolean
+	handle_id: string
 	// compute_unit: boolean
 }
 
@@ -104,7 +104,8 @@ export function RottCallGraphEntryDefault() {
 		children: [],
 		compute_unit: false,
 		id: 'd_d',
-		name: '0..0'
+		name: '0..0',
+		handle_id: '0..0'
 	}
 
 }

@@ -24,7 +24,6 @@ export const CallGraphStashMapLabels = {
 export const CallGraphStashMapConstants = {
   IndexNotSelected: 'Not Selected',
   KindNotSelected : 'Not Ready',
-  
 }
 
 
@@ -43,9 +42,11 @@ export const CallGraphConstants = {
   Node: {
     NotSelected: 'Not Selected',
     NoKind : 'No Kind',
-    NoDescription: 'No Description',
+    NoDescription: '',
     RunNode: 'Run Node',
-    RunNodeNotAvailable: 'Not Available'
+    RunNodeNotAvailable: 'Not Available',
+    DefaultID: 'X_X',
+    DefaultDescription: "",
   },
   Visualiser: {
     RunRequested: 'Currently Running',
@@ -56,7 +57,7 @@ export const CallGraphConstants = {
     GlobalVolumes: "Global Volumes:",
     RegisterVolume: "Reg. Vol:"
     
-  }
+  },
   
 }
 

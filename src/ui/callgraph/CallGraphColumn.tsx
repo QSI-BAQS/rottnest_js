@@ -125,11 +125,6 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		const ndata = this.props;	
 		//const cuObj = this.props.cuReqData;
 		const bmap = this.props.workspaceData.stash;	
-		/*let tsourceInfo = { 
-			contents: false,
-			info: 'No Info',
-			mappedData: new Map()
-		};*/
 		let cuResults = this.getGlobalVolumes();
 		let cuVolume = cuResults.volumes;
 		let cuTocks = cuResults.tocks;
@@ -139,7 +134,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		let nName = CallGraphConstants.Node.NotSelected;
 		let nDescription = CallGraphConstants.Node.NoDescription;
 		let nKind = CallGraphConstants.Node.NoKind;
-
+		console.log(ndata);
 		let compStr = this.getCompilationFinished();
 		if(ndata.nodeData !== null 
 		   && ndata.nodeData !== undefined) {
@@ -462,7 +457,7 @@ class RootListItem
 
 			this.bufferMap
 				.insert('root_node',nstr);
-			aps.sendObj(MessageType.CallGraph.GetGraph,  {gid: this.rootIdx });
+			aps.sendObj(MessageType.CallGraph.GetGraph,  {graph_id: this.rootIdx });
 			//this.refresh(nSet);
 			this.bufferMap.commit();
 		}

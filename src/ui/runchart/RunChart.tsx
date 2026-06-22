@@ -5,13 +5,14 @@ import {CallGraphStatsSpace} from "./CGChart";
 import style from '../styles/CGChart.module.css';
 import {CUVolume} from "../../obj/chart/Metrics.ts";
 import { ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
+import { RunResultService } from "../../service/RunResultService.ts";
 
 /**
  * Generates a data for testing
  */
 export function GenData(n: number): Array<CGSample> {
 	const data: Array<CGSample> = [];
-	const nodesRan = [ //NOTE: We need to check this!
+	const nodesRan = [ 
 		'0_0',
 		'0_0s',
 		'0_1'
@@ -87,16 +88,21 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 
 	}	
 	//TODO: When fixing the lat2d implementation, we need to provide this information
-	const rrService = workspaceData.architecture.getServices().getRunResultService();
+	const rrService = workspaceData.architecture.getServices()
+	.getRunResultService() as RunResultService; // TODO: Fix this
 	const rrBuf = rrService;
-	//console.log(rrBuf);
 	const cuidObjs = rrBuf.getVolumeSet();
+	const cacheTags = rrBuf.getVolumeSetCacheTags();
 	//TODO: Temporary, could likely do it directly but not wanting to play games
 	//at the moment.
 	let gMinY = +Infinity;
 	let gMinX = +Infinity;
 	let gMaxY = 0;
 	let gMaxX = 0;
+	let counter = 0;
+
+	// console.log(cacheTags);
+
 	for(const cmr of cuidObjs) {
 		const cvol = cmr.volumes;
 		if(cmr.mxid > gMaxX) {
@@ -105,9 +111,11 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 		if(cmr.mxid < gMinX) {
 			gMinX = cmr.mxid;
 		}
+		
 		daggr.idxs.push({
 			mxid: cmr.mxid,
-			cuid: cmr.cuID === undefined ? null : cmr.cuID,
+			// cuid: cmr.cuID === undefined ? null : cmr.cuID,
+			cuid: cacheTags[counter] === cmr.mxid ? counter : null,
 			hash: cmr.cacheHash === undefined ? null : cmr.cacheHash.hashhex,
 		});
 		for(const ckey in cvol) {
