@@ -97,6 +97,10 @@ export type CUReqResult = {
 	t_source: CUSource
 }
 
+/**
+  * RottCallGraphEntryDefault
+  * 
+  */
 export function RottCallGraphEntryDefault() {
 	return {
 		cu_id: '0..0', 
@@ -107,7 +111,6 @@ export function RottCallGraphEntryDefault() {
 		name: '0..0',
 		handle_id: '0..0'
 	}
-
 }
 
 export function CUVolumeDummy() {

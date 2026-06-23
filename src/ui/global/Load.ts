@@ -3,19 +3,19 @@ import { LoadComponent } from "./LoadExtra";
 import { PluginEntry } from "../../obj/PluginEntry";
 import { NotifyID } from "../../service/NotifyService";
 import { ConsoleMessage } from "../../debug/ConsoleMessages";
+import { noop } from "../../util/Noop";
 
+
+const LOAD_BAD_DESERIALIZATION = "Unable to deserialize project";
+/**
+ * No-op
+ */
+const leftClick = (_: RottnestApplication) => noop
 
 /**
  * No-op
  */
-const leftClick = (_: RottnestApplication) => {
-	
-}
-
-/**
- * No-op
- */
-const auxEvent = (_: RottnestApplication) => { }
+const auxEvent = (_: RottnestApplication) => noop
 
 /**
  * Return type for onload
@@ -74,8 +74,12 @@ function findInRemap(name: string) {
 	}
 }
 
+/**
+  * Attempts to find a suitable architecture
+  * if it does not map correctly - This is due to some old naming
+  * of particular objects
+  */
 function findSuitableArchitecture(name: string, archList: Array<PluginEntry>) {
-	//TODO: Make this mapping dynamic
 	const archMap: { [key:string]: string } = {
 		'lat2d': 'Four Stage Superconducting',
 		'Superconducting': 'Four Stage Superconducting',
@@ -97,74 +101,69 @@ function findSuitableArchitecture(name: string, archList: Array<PluginEntry>) {
  * Quirky version to embed an input procedure on the loader
  */
 export const hiddenInputProc = async(e: any, rott: RottnestApplication) => {
-	const reader = new FileReader();
-	let toLoad = e.target.files[0];
 
-	
+	let toLoad = e.target.files[0];
+	const reader = new FileReader();
+	const netserv = rott.getServices().getNetworkService().getClient();	
 	const notify = rott.getServices().getNotifyService();
 	const archserv = rott.getServices().getArchPluginService();
 	const refserv = rott.getServices().getRefreshService();
-
-	
 	const currentArchObj = rott.getAppState().getArchitectureObject();
 
+	if(!netserv.isConnected()) {
+		notify.makeMessageWithTuple(NotifyID.ProjectIO.LoadConnectionError);		
+	} else {
+		return archserv.requestWithHook(() => {
+			if(currentArchObj) {
+				const serialiser = currentArchObj.getSerializer();
+				const currentArchName = currentArchObj.getName();
+					if(serialiser) {	
+						reader.addEventListener('load', () => {
+						let result = serialiser
+							.deserialize(CheckedDeserialize(reader.result));
 
-	return archserv.requestWithHook(() => {
-		if(currentArchObj) {
-			const serialiser = currentArchObj.getSerializer();
-			const currentArchName = currentArchObj.getName();
-				if(serialiser) {	
-					reader.addEventListener('load', () => {
-					let result = serialiser
-						.deserialize(CheckedDeserialize(reader.result));
+						if(DeserialFailMarkerCheck(result)) {
+							const projectArch = result.header.architecture;
+							if(findInRemap(currentArchName)
+								!== findInRemap(projectArch)) {
+								const archList = getArchitectureList(rott);
+								const suitable = findSuitableArchitecture(
+									projectArch, archList);
 
-					if(DeserialFailMarkerCheck(result)) {
-						const projectArch = result.header.architecture;
-						if(findInRemap(currentArchName)
-							!== findInRemap(projectArch)) {
-							const archList = getArchitectureList(rott);
-							const suitable = findSuitableArchitecture(
-								projectArch, archList);
-
-							if(suitable !== undefined) {
-								archserv.setArchitectureWithBuffer(
-									{
-										plgKey: suitable.plgName,
-										plgValue: suitable.plgName,
-										params: suitable.params
-									},
-									reader.result
-								);
-							}						
+								if(suitable !== undefined) {
+									archserv.setArchitectureWithBuffer(
+										{
+											plgKey: suitable.plgName,
+											plgValue: suitable.plgName,
+											params: suitable.params
+										},
+										reader.result
+									);
+								}						
+							} else {
+								currentArchObj.setProject(result as any);
+							}
 						} else {
-							currentArchObj.setProject(result as any);
+							console.warn(ConsoleMessage.Warning.ProjectIO.Load);
 						}
-					} else {
-						console.warn(ConsoleMessage.Warning.ProjectIO.Load);
+					},false);
+	
+					if(toLoad) {
+						reader.readAsText(toLoad);
 					}
-				},false);
-	
-				if(toLoad) {
-					reader.readAsText(toLoad);
+					notify.makeMessageWithTuple(NotifyID.ProjectIO.LoadSuccess);
+					refserv.triggerRefresh();
+					return true;
 				}
-				notify.makeMessageWithId(
-					NotifyID.ProjectIO.LoadSuccess.ID,
-					NotifyID.ProjectIO.LoadSuccess.title,
-					NotifyID.ProjectIO.LoadSuccess.message);
-				refserv.triggerRefresh();
-				return true;
 			}
-		}
 
-		console.warn("Unable to deserialize project");
-		notify.makeMessageWithId(
-			NotifyID.ProjectIO.LoadError.ID,
-			NotifyID.ProjectIO.LoadError.title,
-			NotifyID.ProjectIO.LoadError.message);
+			console.warn(LOAD_BAD_DESERIALIZATION);
+			notify.makeMessageWithTuple(NotifyID.ProjectIO.LoadError);
 	
-		refserv.triggerRefresh();
-		return false
-	})
+			refserv.triggerRefresh();
+			return false
+		})
+	}
 }
 
 

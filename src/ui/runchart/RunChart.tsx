@@ -114,7 +114,6 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 		
 		daggr.idxs.push({
 			mxid: cmr.mxid,
-			// cuid: cmr.cuID === undefined ? null : cmr.cuID,
 			cuid: cacheTags[counter] === cmr.mxid ? counter : null,
 			hash: cmr.cacheHash === undefined ? null : cmr.cacheHash.hashhex,
 		});

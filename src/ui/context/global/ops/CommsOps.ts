@@ -53,7 +53,7 @@ export class CommsActions<T> {
    * Applies an individual binding to the given context
    */
   ApplyBinding(appService: AppServiceClient, rtc: T, rtcopr: CommOperation<T>) {
-    appService.registerReciverKinds(rtcopr.evkey, (m: any) => {
+    appService.registerRecieverKinds(rtcopr.evkey, (m: any) => {
       rtcopr.evtrigger(appService, rtc, m);
     })
   }

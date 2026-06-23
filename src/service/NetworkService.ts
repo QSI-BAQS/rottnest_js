@@ -33,31 +33,17 @@ export class NetworkService {
 	}
 
   /**
-   * Starts the network service
-   */
-  // startService() {
-		/*const appReady = AppServiceModule
-			.ConnectionReady();
-		const appService = AppServiceModule
-			.GetAppServiceInstance();
-		const selfRef = this;
-		
-		if(appReady) { return; }
-
-		selfRef.rtcCommsActions.ApplyInternal(
-			selfRef.commData.appService, selfRef);
-
-		appService.registerOpenFn(() => { selfRef
-			.rtcCommsDispatch.applyAll(appService, selfRef); });
-		
-		this.commData.appService.connect();*/
-  // }
-
-  /**
    * Stops the service from continuing, will ignore instructions (not implemented)
    */
   stopService() {
     // NO-OP
+  }
+
+	/**
+	  * Gets the application service
+	  */
+  getClient() {
+  	return this.appService;
   }
 
   /**

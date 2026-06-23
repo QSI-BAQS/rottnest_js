@@ -22,7 +22,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 			obj.triggerUpdate();
 		}
 	},
-	getCurrentArhc: {
+	getCurrentArch: {
 		evkey: MessageType.Arch.GetCurrent,
 		evtrigger: async(_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
 			

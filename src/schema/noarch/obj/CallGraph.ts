@@ -104,7 +104,8 @@ export function RottCallGraphEntryDefault() {
 		children: [],
 		compute_unit: false,
 		id: 'd_d',
-		name: '0..0'
+		name: '0..0',
+		handle_id: ''
 	}
 
 }

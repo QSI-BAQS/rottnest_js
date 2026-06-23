@@ -19,7 +19,10 @@ import { ArchPluginLoader }
 	from "rottnest-plugin/schema/ArchPlugin";
 import { PluginEntry } from "../obj/PluginEntry";
 
-// Temporary callbacks
+const MODULE_SWAP_FAILURE = "Unable to swap architecture, metadata listed, plugin missing";
+
+const MODULE_NOT_SPECIFIED_WARNING = "Module has not been specified: Ignore if this is a first time run";
+
 export type ArchUpdateTrigger = (arch: ArchitectureSchema) => void;
 
 export class ArchitectureProjectBuffer {
@@ -295,11 +298,10 @@ export class ArchPluginService {
 
 		const module: any = await this.constructSchema(archData);
 		
-		if(module === null) {
-			//TODO: Notify that it failed to load the schema
+		if(module === null || module === undefined || module.default === undefined) {
+			console.warn(MODULE_NOT_SPECIFIED_WARNING)
 			return;
 		}
-		// TODO: Fix up the constructor issue here
 		const schema = new module.default();
 
 		this.current = {
@@ -310,10 +312,9 @@ export class ArchPluginService {
 		if(schema) {
 			this.update(schema);
 		} else {
-			console.error("Unable to swap architecture, metadata listed, plugin missing");
+			console.warn(MODULE_SWAP_FAILURE);
 		}
 		
-
 		refService.triggerRefresh();
 	}
 
@@ -348,6 +349,10 @@ export class ArchPluginService {
 			.sendMessage(MessageType.Arch.GetList);
 	}
 
+	/**
+	  * Requests the architecture list
+	  * but with a callback on when a response occurs
+	  */
 	requestWithHook(hook: () => void) {
 		this.netservice.getNetworkService()
 			.sendMessageWithHookOnce(

@@ -1,5 +1,6 @@
 import { ArchCapabilityQuery } from "rottnest-plugin/schema/ArchContext";
 import RottnestApplication from "../container/RottnestApplication"
+import { noop } from "../../util/Noop";
 
 
 const leftClick = (rott: RottnestApplication, _e?: any) => {
@@ -22,7 +23,7 @@ const leftClick = (rott: RottnestApplication, _e?: any) => {
 	}
 }
 
-const auxEvent = (_: RottnestApplication) => { }
+const auxEvent = (_: RottnestApplication) => noop
 
 
 export default { leftClick, auxEvent }

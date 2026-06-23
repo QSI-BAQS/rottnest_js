@@ -1,8 +1,5 @@
 import {AppServiceClient, GetAppServiceInstance} from './AppService'
 
-
-//let appService: AppServiceClient | null = null 
-
 /**
  * Gets an application service instance
  * Will attempt to connect once requested
@@ -10,14 +7,6 @@ import {AppServiceClient, GetAppServiceInstance} from './AppService'
 export function GetNetworkInstance(): AppServiceClient {
 	return GetAppServiceInstance();
 }
-
-/**
- * Will close the application service for
- * the network
- */
-/*export function CloseAppService() {
-	//appService.shutdown();
-}*/
 
 /**
  * Checks to see if the connection is ready
@@ -33,7 +22,11 @@ export function ConnectionReady(): boolean {
 	}
 }
 
-
+/**
+  * Gets the functions to check to see
+  * if a connection is ready or get the singleton
+  * instance of the connection
+  */
 export default {
 	GetNetworkInstance,
 	ConnectionReady

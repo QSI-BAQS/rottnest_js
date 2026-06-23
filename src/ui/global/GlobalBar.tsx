@@ -10,7 +10,6 @@ import ZoomOutEvent from './ZoomOut.ts';
 import SettingsEvent from './Settings.ts';
 import NewProjectEvent from './NewProject.ts';
 import RunEvents from './Run.ts';
-import PrepareEvents from './Prepare.ts';
 import ReconnectEvent from './ReconnectEvent.ts';
 import NullEvents from './NullEvents.ts';
 import LogoEvents from './LogoEvents.ts';
@@ -29,7 +28,6 @@ import {
 	PlaySquareOutlined,
 	RollbackOutlined,
 } from '@ant-design/icons';
-
 
 import { ProgramPluginGetName } from '../../obj/plugin/Program.ts';
 import { PluginPackage, PluginObject, PluginObjectProps, PluginSettings }
@@ -104,14 +102,14 @@ const BarItem: React.FC<BarItemData> = (props) => {
 	const tooltip = description.toolTip;
 	const extra = props.description.extra;
 	const extraProps = { rott: props.containerRef };
-	const extraComponent = extra ? extra(extraProps) : <></>;
+	//NOTE: Will need to check the `extraProps` here
+	const extraComponent = extra ? extra(extraProps) as any : <></>;
 
 	const usableKey = capabilityKey ? capabilityKey : 'Allowed';
 
 	const ctx = props.containerRef.getUIContext().getCurrentContext()
 	const usable = ctx.queryCapability(ArchCapabilityQuery.MakeQuery(usableKey)).Yes()
 		|| usableKey === 'Allowed';
-	//TODO: Something is triggering this twice
 	return (
 		<li 
 			key={ident}

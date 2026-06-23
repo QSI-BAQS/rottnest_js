@@ -7,6 +7,7 @@ const WebHookUnexpectedError = "Unable to select appropriate method";
 
 export type WebSocketHookCallback = (context: any, jsonObj: any,
    asm: AppServiceMessage) => void;
+
 export type WebSocketHookInternalMap = { [key: string]: WebSocketHookCallback; };
 
 /**
@@ -55,6 +56,13 @@ export class WebSocketHookDefault implements WebSocketHookObject  {
    */
   setInternalMap(internalMap: WebSocketHookInternalMap) {
     this.internalMap = internalMap;
+  }
+
+  /**
+    * Gets the internal map that is used
+    */
+  getInternalMap() {
+    return this.internalMap;
   }
 
   /**

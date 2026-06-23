@@ -2,6 +2,7 @@
 import RottnestApplication from "../container/RottnestApplication"
 import { SaveProject } from "../../util/FileDownload";
 import { ArchCapabilityQuery } from "rottnest-plugin/schema/ArchContext";
+import { noop } from "../../util/Noop";
 
 
 /**
@@ -48,7 +49,7 @@ const leftClick = (rott: RottnestApplication) => {
 }
 
 
-const auxEvent = (_: RottnestApplication) => { }
+const auxEvent = (_: RottnestApplication) => noop;
 
 
 

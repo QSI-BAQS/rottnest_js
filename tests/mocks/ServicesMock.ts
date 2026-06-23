@@ -12,7 +12,7 @@ export class NetworkService {
     return false;
   }
 
-  registerReciverKinds(...data: any) {
+  registerRecieverKinds(..._data: any) {
     
   }
 

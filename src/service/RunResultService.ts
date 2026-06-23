@@ -235,7 +235,6 @@ export class RunResultService {
 				npQubits: jsonObj.np_qubits
 			});
 			msgKind = "CUIDTotal";
-			console.log("CUID Total");
 
 		} else if(this.isCUIDEndComp(jsonObj)) { //NOTE: Not currently used
 			msgKind = "CUIDEndComp";

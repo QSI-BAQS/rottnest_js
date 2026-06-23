@@ -1,3 +1,4 @@
+import { noop } from "../util/Noop.ts";
 import { AppServiceMessage } from "./AppServiceMessage.ts"; 
 import { RottRunResultMSG} from "./Messages.ts";
 import { MessageType } from "./Protocol.ts";
@@ -7,8 +8,8 @@ export const APP_URL: string = "ws://localhost:8080/websocket";
 const WS_ONMESSAGE: string = "message";
 const WS_ONSEND: string = "send";
 const WS_ONOPEN: string = "open";
-//const WS_ONERROR: string = "error";
-//const WS_ONCLOSE: string = "close";
+const WS_ONERROR: string = "error";
+const WS_ONCLOSE: string = "close";
 
 export interface ASContextHook {
 	serviceHook(asm: AppServiceMessage): void
@@ -36,20 +37,19 @@ export class AppServiceClient {
 	bufferCapacity: number = 256;
 
 	sendQueue: Array<string> = [];
-	
-	receiveTriggers: Map<string, 
-		ASRecvCallback> = new Map();
-
+	receiveTriggers: Map<string, ASRecvCallback> = new Map();
 	receiveOnceMap: Map<string, ASRecvCallback> = new Map();
-
 	onOpenTrigger: ASOpenCallback | null = null;
-	
 	onDisconnectTrigger: ASDisconnectCallback | null = null;
 
 	constructor(url: string | null) {
 		this.url = url;
 	}
 
+	/**
+	  * Queues messages
+	  * @deprecated
+	  */
 	queue(msg: AppServiceMessage): boolean {
 		if(this.buffer.length < this.bufferCapacity) {
 			this.buffer.push(msg);
@@ -70,10 +70,20 @@ export class AppServiceClient {
 		return null;
 	}
 
+	/**
+	  * Reconnects to the backend server
+	  * This is used by a connection status mechanism
+	  * but can be reinitialised by the user
+	  */
 	reconnect() {
 		this.connect();
 	}
 
+	/**
+	  * Closes the connection
+	  * Will be used to shutdown/disconnect the websocket when
+	  * required
+	  */
 	close(): boolean {
 		if(this.socket !== null) {
 			if(this.isConnected()) {	
@@ -83,6 +93,11 @@ export class AppServiceClient {
 		return false;
 	}
 
+	/**
+	  * IsConnected
+	  * Checks to outline the status of the websocket
+	  * connection
+	  */
 	isConnected(): boolean {
 		if(this.socket) {
 			return this.socket.readyState
@@ -92,6 +107,10 @@ export class AppServiceClient {
 		}
 	}
 
+	/**
+	  * Outlines if the websocket is currently
+	  * connecting to the backend
+	  */
 	isConnecting(): boolean {
 		if(this.socket) {
 			return this.socket.readyState
@@ -100,11 +119,19 @@ export class AppServiceClient {
 			return false;
 		}
 	}
-	
+
+	/**
+	  * Enqueues the messages
+	  * that are to be sent to the backend server
+	  */
 	enqueueMessage(message: string) {
 		this.sendQueue.push(message);
 	}
 
+	/**
+	  * Consumes the messages
+	  * that have been supplied to the send queue
+	  */
 	consumeFromQueue(): boolean {
 		const message = this.sendQueue.shift();
 		if(message !== undefined) {
@@ -204,8 +231,7 @@ export class AppServiceClient {
 			}
 		}
 
-		const onSendHandler = (_: any) => {}
-		
+		const onSendHandler = noop;
 		const onOpenHandler = (_: any) => {
 			if(self.onOpenTrigger) {
 				self.onOpenTrigger();
@@ -226,25 +252,22 @@ export class AppServiceClient {
 
 		if(this.url) {
 			this.socket = new WebSocket(this.url);
-			//Attach the events
-			this.socket.addEventListener(
-				WS_ONOPEN, onOpenHandler);
-			this.socket.addEventListener(
-				WS_ONMESSAGE, onMsgHandler);
-			this.socket.addEventListener(
-				WS_ONSEND, onSendHandler);
-			this.socket.addEventListener(
-				"error", onErrorHandler);
-			this.socket.addEventListener(
-				"close", onCloseHandler);
+			this.socket.addEventListener(WS_ONOPEN, onOpenHandler);
+			this.socket.addEventListener(WS_ONMESSAGE, onMsgHandler);
+			this.socket.addEventListener(WS_ONSEND, onSendHandler);
+			this.socket.addEventListener(WS_ONERROR, onErrorHandler);
+			this.socket.addEventListener(WS_ONCLOSE, onCloseHandler);
 		}
 		
 		return this.isConnecting() ||
 			this.isConnected();
 	}
 
-	registerReciverKinds(evKind: string, 
-			     callback: ASRecvCallback) {
+	/**
+	  * Registers the receiver kinds
+	  * This is to create event hooks that the app service is to utilise
+	  */
+	registerRecieverKinds(evKind: string, callback: ASRecvCallback) {
 		this.receiveTriggers.set(evKind, callback);
 	}
 
@@ -279,20 +302,22 @@ export class AppServiceClient {
 	}
 }
 
-// Static function to check if connection is ready
+/** Static function to check if connection is ready */
 export function ConnectionReady(): boolean {
   	const instance = GetAppServiceInstance();
   	return instance.isConnected();
 }
 
-// Singleton instance
+/** Singleton instance  */
 let _appServiceInstance: AppServiceClient | null = null;
 
-// Function to get or create the AppServiceClient instance
+/**
+ * Function to get or create the AppServiceClient instance
+ * It is to return the service client
+ */
 export function GetAppServiceInstance(): AppServiceClient {
-  	if (!_appServiceInstance) {
-    		_appServiceInstance = new AppServiceClient(APP_URL);
-  	}
-  	
+	if (!_appServiceInstance) {
+  		_appServiceInstance = new AppServiceClient(APP_URL);
+	}
 	return _appServiceInstance;
 }

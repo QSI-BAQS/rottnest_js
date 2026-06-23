@@ -14,18 +14,29 @@ export class ArchitectureWebSocketHooks extends WebSocketHookDefault {
     super();
     this.setInternalMap(
       {
-        [MessageType.Arch.GetList]: this.getList,
-        [MessageType.Arch.GetCurrent]: this.noResponse,
-        [MessageType.Arch.GetConfig]: this.getConfig,
-        [MessageType.Arch.SetConfig]: this.noResponse,
-        [MessageType.Arch.SetCurrent]: this.setCurrent,
-        [MessageType.Arch.SaveConfig]: this.noResponse,
-        [MessageType.Arch.GetConfig]: this.noResponse,
+        [MessageType.Arch.GetList]: super
+          .MakeHookWrapper(this, 'getList'),
+        [MessageType.Arch.GetCurrent]: super
+          .MakeHookWrapper(this, 'noResponse'),
+        [MessageType.Arch.GetConfig]: super
+        .MakeHookWrapper(this, 'getConfig'),
+        [MessageType.Arch.SetConfig]: super
+          .MakeHookWrapper(this, 'noResponse'),
+        [MessageType.Arch.SetCurrent]: super
+          .MakeHookWrapper(this, 'setCurrent'),
+        [MessageType.Arch.SaveConfig]: super
+          .MakeHookWrapper(this, 'noResponse'),
+        [MessageType.Arch.GetConfig]: super
+          .MakeHookWrapper(this, 'noResponse'),
       }
     )
     
   }
 
+  /**
+    * setCurrent
+    * Sets the current architecture
+    */
   setCurrent(context: any, _jsonObj: any, asm: AppServiceMessage) {
     
 			const { name, api, jsData, cssData } = asm.getJSON().payload;
@@ -41,6 +52,10 @@ export class ArchitectureWebSocketHooks extends WebSocketHookDefault {
 			});
   }
 
+  /**
+    * getConfig
+    * Gets the config for the architecture
+    */
   getConfig(context: any, _jsonObj: any, asm: AppServiceMessage) {
     
     	let appService = context.getServices().getNetworkService();
@@ -51,6 +66,10 @@ export class ArchitectureWebSocketHooks extends WebSocketHookDefault {
 			appService.consumeFromQueue();
   }
 
+  /**
+    * getList
+    * This retrieves the list of the architectures
+    */
   async getList(context: any, _jsonObj: any, asm: AppServiceMessage) {
 			const refService = context.getServices().getRefreshService();
 			const archService = context.getServices().getArchPluginService();
@@ -63,9 +82,13 @@ export class ArchitectureWebSocketHooks extends WebSocketHookDefault {
 				// const cssFile = adetails.cssData;
 				// const jsFile = adetails.jsData;
 				// styService.appendToRootInline(cssFile)
-				await archService.mapArch(aname, { kind: "Serialised",
-					data: '',
-					apimap: { mask: '', routes: [] }
+				await archService.mapArch(aname,
+				  { kind: "Serialised",
+					  data: '',
+					  apimap: {
+					    mask: '',
+					    routes: []
+					  }
 				});
 
 			}

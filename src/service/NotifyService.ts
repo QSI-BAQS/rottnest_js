@@ -59,6 +59,11 @@ export const NotifyID = {
        ID: "load-good",
        title: "Load Operation",
        message: "The file has been loaded" 
+    },
+    LoadConnectionError: {
+      ID: "load-err",
+      title: "Load Operation",
+      message: "Cannot load project when disconnected"
     }
     
   },

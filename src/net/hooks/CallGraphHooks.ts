@@ -21,14 +21,19 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 		    [CallGraphPacketKind.GraphNotReady]: super.MakeHookWrapper(this, 'graphNotReadyHook'),
 		    [CallGraphPacketKind.RootGraph]: super.MakeHookWrapper(this, 'getRootGraphHook'),
 		    [CallGraphPacketKind.Graph]: super.MakeHookWrapper(this, 'getGraphHook'),
-		    [CallGraphPacketKind.GetGraphConfirmation]: super.MakeHookWrapper(this, 'getGraphConfirmationHook'),
+		    [CallGraphPacketKind.GetGraphConfirmation]: super.MakeHookWrapper(this,
+		    		'getGraphConfirmationHook'),
 		    [CallGraphPacketKind.Node]: super.MakeHookWrapper(this, 'getNodeStatusHook'),
 		    [CallGraphPacketKind.RunNodeConfirmation]: super.MakeHookWrapper(this, 'runNodeHook'),
 		    [CallGraphPacketKind.VisualObject]: super.MakeHookWrapper(this, 'visualObjectHook'),
 		  }
   	)
   }
-  
+
+	/**
+	  * Requests Root Graph
+	  * Will attempt to request the root graph
+	  */
   requestRootGraph(context: any) {
     const cgspace = context;
     const container = cgspace.props.wdaggr;
@@ -37,23 +42,22 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
     appService.sendObj(MessageType.CallGraph.GetRootGraph, JSON.stringify({}))
   }
   
-
+	/**
+	  * getGraphConfirmationHook
+	  * - noResposne occurs here for now
+	  */
   getGraphConfirmationHook(_context: any, _jsonObj: any, _asm: AppServiceMessage) {
-    //TODO: Need to handle confirmation
-
+  	super.noResponse(_context, _jsonObj, _asm);
   }
 
 	/**
 	 * Outlines if the graph is unavailable for the context given
 	 */
 	getGraphUnavailable(context: any, jsonObj: any, _asm: AppServiceMessage) {
-
 		const graphConfirmKind = jsonObj.payload.kind;
     if(graphConfirmKind === "GraphUnavailable") {
     	context.setRequestState(CallGraphRequestState.Unavailable);
     }
-
-		
 	}
 
   /**
@@ -84,7 +88,10 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 
   }
 
-
+	/**
+	  * 
+	  *
+	  */
   getGraphHook(context: any, _jsonObj: any, asm: AppServiceMessage) {
 		const cgspace = context;
     const container = context.props.architecture;
@@ -106,7 +113,6 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 						values().map((et: any) => {
 							return et;
 						}).toArray()[0];
-
 						expands = e.expands;
 						expGid = e.id;
 					}	
