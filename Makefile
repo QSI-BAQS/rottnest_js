@@ -6,6 +6,8 @@ run:
 	npm run dev
 
 build:
+	rm -f package-lock.json
+	rm -rf node_modules
 	npm i	
 
 test:
