@@ -263,8 +263,6 @@ const GenerateNodes = (
 			style.cuObjectSelected : '';
 		let measuredValue = data.aggrMap[selKey][i];
 		const onNodeHoverTrigger = (_isCuid: boolean) => {
-			// console.log(isCuid)
-			// if(isCuid) {
 			bmap.insert('current_node',
 			JSON.stringify({
 				idx: i //NOTE: This has been disabled
@@ -378,7 +376,6 @@ function ToggleCacheData(data: DataAggregate, cacheOn: boolean): DataAggregate {
 			daggr.idxs.push(idref);
 		}
 	}
-	console.log(daggr)
 	return daggr;
 }
 

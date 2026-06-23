@@ -46,7 +46,7 @@ export class RunResultService {
 	statusItems: Set<CGStatus> = new Set();
 
 	volumeSet: Array<CUResultMixed> = [];
-	volumeSetWithCacheTag: Array<number> = [];
+	volumeSetNonCached: Array<number> = [];
 
 	runsRequested: Set<string> = new Set();
 	runsFinished: Set<string> = new Set();
@@ -201,8 +201,8 @@ export class RunResultService {
 					npQubits: jsonObj.np_qubits
 				}
 			this.volumeSet.push(volMixedData);
-			if(jsonObj.cached) {
-				this.volumeSetWithCacheTag.push(this.volumeSet.length-1);
+			if(!jsonObj.cached) {
+				this.volumeSetNonCached.push(this.volumeSet.length-1);
 			}
 		}
 
@@ -268,8 +268,8 @@ export class RunResultService {
 					npQubits: jsonObj.np_qubits
 				}
 			this.volumeSet.push(volMixedData);
-			if(jsonObj.cached) {
-				this.volumeSetWithCacheTag.push(this.volumeSet.length-1);
+			if(!jsonObj.cached) {
+				this.volumeSetNonCached.push(this.volumeSet.length-1);
 			}
 			
 			if(this.withCUID.has(jsonObj.cu_id)) { //NOTE: Not currently used
@@ -297,8 +297,8 @@ export class RunResultService {
 					cacheHash: jsonObj.cache_hash_hex
 				}
 			this.volumeSet.push(volMixedData);
-			if(jsonObj.cached) {
-				this.volumeSetWithCacheTag.push(this.volumeSet.length-1);
+			if(!jsonObj.cached) {
+				this.volumeSetNonCached.push(this.volumeSet.length-1);
 			}
 
 			if(this.volumesWithHashes.has(jsonObj.cache_hash_hex)) {
@@ -351,8 +351,8 @@ export class RunResultService {
 		return this.volumeSet;
 	}
 
-	getVolumeSetCacheTags(): Array<number> {
-		return this.volumeSetWithCacheTag;
+	getVolumeSetNonCached(): Array<number> {
+		return this.volumeSetNonCached;
 	}
 
 	getCUIDMap(): Map<string, Array<CGResult>> {

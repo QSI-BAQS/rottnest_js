@@ -92,7 +92,7 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 	.getRunResultService() as RunResultService; // TODO: Fix this
 	const rrBuf = rrService;
 	const cuidObjs = rrBuf.getVolumeSet();
-	const cacheTags = rrBuf.getVolumeSetCacheTags();
+	const nonCachedIndices = rrBuf.getVolumeSetNonCached();
 	//TODO: Temporary, could likely do it directly but not wanting to play games
 	//at the moment.
 	let gMinY = +Infinity;
@@ -101,7 +101,6 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 	let gMaxX = 0;
 	let counter = 0;
 
-	// console.log(cacheTags);
 
 	for(const cmr of cuidObjs) {
 		const cvol = cmr.volumes;
@@ -114,9 +113,10 @@ const ResolveGraphData = (workspaceData: ArchWorkspaceData): DataAggregate => {
 		
 		daggr.idxs.push({
 			mxid: cmr.mxid,
-			cuid: cacheTags[counter] === cmr.mxid ? counter : null,
+			cuid: nonCachedIndices[counter] === cmr.mxid ? counter++ : null,
 			hash: cmr.cacheHash === undefined ? null : cmr.cacheHash.hashhex,
 		});
+
 		for(const ckey in cvol) {
 			const cv = cvol[ckey as keyof CUVolume];
 			const akey = ckey as keyof DataAggrMap;

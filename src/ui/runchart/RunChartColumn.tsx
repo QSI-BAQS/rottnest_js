@@ -99,7 +99,6 @@ export class RunChartSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		const rrbuf = container.getServices().getRunResultService();
 
 		const gvolumes = rrbuf.getTotalArray();
-		console.log(gvolumes);
 		if(gvolumes.length > 0) {
 			const lastVol = gvolumes[gvolumes.length-1]!;
 
