@@ -201,7 +201,7 @@ export class RunResultService {
 					npQubits: jsonObj.np_qubits
 				}
 			this.volumeSet.push(volMixedData);
-			if(!jsonObj.cached) {
+			if(!jsonObj.cached || !jsonObj.CACHED) {
 				this.volumeSetNonCached.push(this.volumeSet.length-1);
 			}
 		}
@@ -268,7 +268,7 @@ export class RunResultService {
 					npQubits: jsonObj.np_qubits
 				}
 			this.volumeSet.push(volMixedData);
-			if(!jsonObj.cached) {
+			if(!jsonObj.cached || !jsonObj.CACHED) {
 				this.volumeSetNonCached.push(this.volumeSet.length-1);
 			}
 			
@@ -297,7 +297,7 @@ export class RunResultService {
 					cacheHash: jsonObj.cache_hash_hex
 				}
 			this.volumeSet.push(volMixedData);
-			if(!jsonObj.cached) {
+			if(!jsonObj.cached || !jsonObj.CACHED) {
 				this.volumeSetNonCached.push(this.volumeSet.length-1);
 			}
 

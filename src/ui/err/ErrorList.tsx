@@ -52,7 +52,10 @@ type ErrorListing = {
  */
 class ErrorItem extends React.Component<ErrorItemData, {}> {
 
-
+	/**
+	  * Renders the react component
+	  * This will be used 
+	  */
 	render() {
 		const idx = this.props.idx;
 		const ident = this.props.errorData.code;

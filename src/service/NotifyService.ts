@@ -1,5 +1,9 @@
 import { NotifyQueue, NotifyMessage } from "../ui/global/notify/NotifyMessage";
 
+/**
+  * Tuple that can be used
+  * Within the notifications service
+  */
 export type NotifyTuple = {
   ID: string,
   title: string,
@@ -7,12 +11,21 @@ export type NotifyTuple = {
 }
 
 
+/**
+  * CommonTitles that may be used throughout
+  * the codebase to ensure we can keep titles consistent
+  */
 export const CommonTitles = {
   NetworkCommunications: "Network Communications",
   LoadOperation: "Load Operation",
   SyncState: "State Synchronised",
 }
 
+/**
+  * Registry of notification tuples and strings
+  * Making it a little easier to handle/reference strings under a
+  * symbol
+  */
 export const NotifyID = {
   ArchUnavailable: {
     ID: "arch-unavailable",
