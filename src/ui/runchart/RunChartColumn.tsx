@@ -612,7 +612,6 @@ export class RunChartSelectedNodeBox extends React.Component<CGNodeData, RunChar
 				</header>
 				</>
 			)
-
 		const tDisp = tdata === null ?
 			<></> :
 			<RunChartGlobalData header={RunChartConstants.Headers.TSource}

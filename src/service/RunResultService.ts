@@ -280,7 +280,8 @@ export class RunResultService {
 	  * about the run result entry
 	  */
 	deriveVolumeDescription(jsonObj: any) {
-		this.volumesAccumulator.derive(jsonObj);
+
+		this.volumesAccumulator.derive(jsonObj.volumes);
 	}
 
 	/**
@@ -289,7 +290,7 @@ export class RunResultService {
 	  * about the run result entry
 	  */
 	deriveTocksDescription(jsonObj: any) {
-		this.tocksAccumulator.derive(jsonObj);
+		this.tocksAccumulator.derive(jsonObj.tocks);
 	}
 
 	/**
@@ -431,8 +432,8 @@ export class RunResultService {
 				this.volumeSet.length, "CUResultData", jsonObj.status, jsonObj.np_qubits);
 				this.volumeSet.push(volMixedData);
 
-			this.updateLastEntry(jsonObj);
 
+			this.updateLastEntry(jsonObj);
 			if(!jsonObj.CACHED) {
 				this.volumeSetNonCached.push(this.volumeSet.length-1);
 			}
@@ -673,8 +674,10 @@ export class RunResultAccumulator {
     for(const key in obj) {
       const keyStr = key as string;
       description.add(keyStr);
+      this.currentTotal[keyStr] = 0;
     }
     this.description = description;
+    this.descriptionDerived = true;
 	}
 
 	/**
