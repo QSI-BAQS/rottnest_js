@@ -38,6 +38,7 @@ import { CallGraphRequestState,
 	RequestIsAvailable,
 	RequestIsFetching } from "./CallGraphDefaults.ts";
 import { CallGraphConstants } from "./CallGraphCommon.ts";
+import { NotifyID, NotifyService } from "../../service/NotifyService.ts";
 
 /**
  * CGObject, 
@@ -155,7 +156,10 @@ class CGObject extends React.Component<CGDispData,
 
 	onNodeMouseDown(e: React.MouseEvent<HTMLDivElement>) {
 		const btn = e.button;
-			
+		const notifyService = this.props.wdaggr.workspaceData.architecture
+			.getServices().getNotifyService() as NotifyService;
+		const refreshService = this.props.wdaggr.workspaceData.architecture
+			.getServices().getRefreshService();
 		const bmap = this.props.wdaggr.workspaceData.stash;
 		if(btn === 1) {
 			bmap.insert('inner_mouse_event', JSON.stringify({
@@ -196,6 +200,12 @@ class CGObject extends React.Component<CGDispData,
 					this.apservice.sendObj(MessageType.CallGraph.GetGraph, {
 						'graph_id': this.data.idx
 					});
+
+					
+					notifyService.makeMessageWithTuple(
+						NotifyID.CallGraph.GetGraphRequest);
+
+					refreshService.triggerRefresh();
 
 					this.state.cuReady = true;
 					this.state.dataReady = true;
@@ -427,9 +437,14 @@ export class CallGraphSpace extends
 	componentDidMount() {
 		const aps = this.props.architecture.getConnectionManager()
 			.getNetworkService();
+		const notifyService = this.props.architecture
+			.getServices().getNotifyService() as NotifyService;
 		if(this.state.requestState === CallGraphRequestState.Unavailable) {
 			aps.sendObj(MessageType.CallGraph.GetRootGraph,
 				RequestGraphDefaultZero);
+			
+			notifyService.makeMessageWithTuple(
+				NotifyID.CallGraph.GetRootGraphRequest);
 			// this.setRequestState(CallGraphRequestState.Fetching);
 		}
 	}

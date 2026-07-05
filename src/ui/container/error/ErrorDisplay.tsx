@@ -1,8 +1,9 @@
 import React from 'react';
-import { NullObject } from '../../util/NullObject.ts';
-import styles from '../styles/ErrorDisplay.module.css';
-import { RefreshService } from '../../service/RefreshService.ts';
-import { ErrorState } from '../context/global/modules/ErrorState.ts';
+import { RefreshService } from '../../../service/RefreshService.ts';
+import { ErrorState } from '../../context/global/modules/ErrorState.ts';
+import { Util } from '../../../util';
+import { ErrorMessage, ErrorStyle } from './ErrorCommon.ts';
+import styles from '../../styles/ErrorDisplay.module.css';
 
 /**
  * Settings Properties, initialises
@@ -22,7 +23,7 @@ export type ErrorProps = {
  * Settings form component, will be always present
  * in the display but turned off and on when needed
  */
-export default class ErrorDisplay extends React.Component<ErrorProps, NullObject> {
+export default class ErrorDisplay extends React.Component<ErrorProps, Util.Empty> {
 	
 
 	errorState = this.props.errorState;
@@ -46,25 +47,21 @@ export default class ErrorDisplay extends React.Component<ErrorProps, NullObject
 			const msgSpl = msg.split("\n").map((e) => {
 				return <pre className={styles.preFormatDump}>{e}</pre>
 			});
-			//console.log(msgSpl);
 			return (
 				<div className={styles.errorDisplay} 
-					style={{position:'absolute'}}>
+					style={ErrorStyle}>
 					<header className={styles.errorHeader}>An issue occurred</header>
-					<div>
-					Either a message from the backend
-					or an event did not trigger correctly.
-					</div>
-					<div>JSON Dump: </div>
+					<div>{ErrorMessage.BodyTemplate.message}</div>
+					<div>{ErrorMessage.Dump.Header}</div>
 					<div className={styles.preFormatDump}>{msgSpl}</div>
 					<button onClick={() => {this.clearError() }}
 					className={styles.errorButton}>
-					Got it
+						{ErrorMessage.Button.message}
 					</button>
 				</div>
 			);
 		} else {
-			console.warn("No error set but attempt to render was made")
+			console.warn(ErrorMessage.NoError.message);
 			return (<></>);
 		}
 	}

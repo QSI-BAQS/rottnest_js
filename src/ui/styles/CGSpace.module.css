@@ -13,7 +13,7 @@
 }
 
 .widgetBoxContent {
-	margin-top: 0.25em;
+	/* margin-top: 0.25em; */
 	text-align: center;
 }
 
@@ -125,9 +125,8 @@
 }
 
 .dataSegment {
-	padding-top: 0.5em;
 	padding-bottom: 0.5em;
-	margin-top: 1em;
+	/* margin-top: 1em; */
 	border-top: 1px #35332f solid;
 	border-bottom: 1px #35332f solid;
 }
@@ -165,4 +164,21 @@
 .widgetObject:hover .widgetObjectHeader {
 
 	border-color: #85442f;
+}
+
+.runchartDataHeader {
+	background-color: #232122;
+	border: 1px #35332f solid;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+}
+
+.dataEntrySegmentHeader {
+	background-color: #333132;
+	display: inline-block;
+	width: 100%;
+	border: 1px #35332f solid;
+	border-left: none;
+	border-right: none;
 }

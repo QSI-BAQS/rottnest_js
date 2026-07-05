@@ -8,6 +8,8 @@ import { MessageType } from "../../net/Protocol.ts";
 import styles from '../styles/CGSpace.module.css'
 import { CallGraphConstants } from "./CallGraphCommon.ts";
 import { BufferMapKey } from "../workspace/buffermap/BufferMapCommon.ts";
+import { RunChartGlobalData } from "../runchart/RunChartColumn.tsx";
+import { RunChartConstants } from "../runchart/RunChartConstants.ts";
 
 
 type NodeData = {
@@ -33,15 +35,33 @@ type CGNodeData = {
 	nodeData: NodeData | null
 }
 
-class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
+export type CallGraphDataViewState = {
+	sciNotation: boolean
+}
+
+class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewState>  {
+
+	state: CallGraphDataViewState = {
+		sciNotation: false
+	}
 
 	cuId = CallGraphConstants.ComputeUnitId;
+
+
+	/**
+	  * Toggles if the scientific notation is enabled or not
+	  */
+	toggleNotation() {
+		const nState = {
+			sciNotation: !this.state.sciNotation
+		};
+
+		this.setState(nState);
+	}
 
 	actionOnNode(data: any,
 		    runReady: boolean, simReady: boolean) {
 		if(simReady) {
-			console.log(simReady);
-			console.log(data);
 			this.gotoVisualiserWithData(data);
 		} else if(runReady) {
 			this.runGraphNode(data);
@@ -67,7 +87,6 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		const workspace = this.props.workspaceData;
 		const context = workspace.archcontext;
 		const refresh = container.getServices().getRefreshService();
-		console.log(container);
 		const bmap = this.props.workspaceData.stash;
 		const bmapViz = JSON.parse(bmap.get(BufferMapKey.Visualiser.CurrentData));
 		let simReady = false;
@@ -84,8 +103,6 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 				.getVizData();
 			
 			bmap.insert(BufferMapKey.Visualiser.CurrentData, JSON.stringify(vizData)); 
-			//TODO: You got to fix this
-			console.log(context);
 			context.move("visualiser", bmapViz.vis_obj);
 			refresh.triggerRefresh();
 		}
@@ -96,16 +113,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 		const container = this.props.workspaceData
 			.architecture as any; //WARN unsafe assumption
 		const rrbuf = container.getServices().getRunResultService();
-
-		const gvolumes = rrbuf.getTotalArray();
-		console.log(gvolumes);
-		if(gvolumes.length > 0) {
-			const lastVol = gvolumes[gvolumes.length-1]!;
-
-			return lastVol;
-		} else {
-			return CGResultDummy();
-		}
+		return rrbuf.getResultSummary();
 	}
 
 	getCompilationFinished(): string {
@@ -122,19 +130,18 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 	}
 
 	render() {
-		const ndata = this.props;	
-		//const cuObj = this.props.cuReqData;
+		const ndata = this.props;
+		const expo = this.state.sciNotation;
 		const bmap = this.props.workspaceData.stash;	
 		let cuResults = this.getGlobalVolumes();
 		let cuVolume = cuResults.volumes;
 		let cuTocks = cuResults.tocks;
-	        let tsourceInfo = cuResults.tSource;
+    let tsourceInfo = cuResults.tSource;
 		let cuDetailsReady = false;
 
 		let nName = CallGraphConstants.Node.NotSelected;
 		let nDescription = CallGraphConstants.Node.NoDescription;
 		let nKind = CallGraphConstants.Node.NoKind;
-		console.log(ndata);
 		let compStr = this.getCompilationFinished();
 		if(ndata.nodeData !== null 
 		   && ndata.nodeData !== undefined) {
@@ -184,64 +191,97 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 					</span>
 
 			</div>)
-		const tDisp = tdata === null ? 
-			<></>:
-			<div className={styles.dataSegment}>
-				<header>Last Run - T Source Info:</header>
-				{tdata}
-			</div>
-		const tockDisp = cuTocks === null ? 
-			<></>:
-			<div className={styles.dataSegment}>
-				<header>Last Run - Tocks Info:</header>
-				<div>
-					<span>
-					Graph-State
-					</span>
-					<span>: </span>
-					<span>
-					{cuTocks.graph_state}
-					</span>
-				</div>
-				<div>
-					<span>
-					Bell Input 
-					</span>
-					<span>: </span>
-					<span>
-					{cuTocks.bell}
-					</span>
-				</div>
-				<div>
-					<span>
-					T-Schedule
-					</span>
-					<span>: </span>
-					<span>
-					{cuTocks.t_schedule}
-					</span>
-				</div>
-				<div>
-					<span>
-					Bell Output
-					</span>
-					<span>: </span>
-					<span>
-					{cuTocks.bell2}
-					</span>
-				</div>
-				<div>
-					<span>
-					Total 
-					</span>
-					<span>: </span>
-					<span>
-					{cuTocks.total}
-					</span>
-				</div>
-			</div>
+		// const tockDisp = cuTocks === null ? 
+		// 	<></>:
+		// 	<div className={styles.dataSegment}>
+		// 		<header>Last Run - Tocks Info:</header>
+		// 		<div>
+		// 			<span>
+		// 			Graph-State
+		// 			</span>
+		// 			<span>: </span>
+		// 			<span>
+		// 			{cuTocks.graph_state}
+		// 			</span>
+		// 		</div>
+		// 		<div>
+		// 			<span>
+		// 			Bell Input 
+		// 			</span>
+		// 			<span>: </span>
+		// 			<span>
+		// 			{cuTocks.bell}
+		// 			</span>
+		// 		</div>
+		// 		<div>
+		// 			<span>
+		// 			T-Schedule
+		// 			</span>
+		// 			<span>: </span>
+		// 			<span>
+		// 			{cuTocks.t_schedule}
+		// 			</span>
+		// 		</div>
+		// 		<div>
+		// 			<span>
+		// 			Bell Output
+		// 			</span>
+		// 			<span>: </span>
+		// 			<span>
+		// 			{cuTocks.bell2}
+		// 			</span>
+		// 		</div>
+		// 		<div>
+		// 			<span>
+		// 			Total 
+		// 			</span>
+		// 			<span>: </span>
+		// 			<span>
+		// 			{cuTocks.total}
+		// 			</span>
+		// 		</div>
+		// 	</div>
 
 		
+		let lastTEntry = '';
+    if(tsourceInfo) {
+			for(const k in tsourceInfo) {
+				const tdat = tsourceInfo[k];
+				tdata.push(
+					<div key={`tdat_${k}`}>
+					{k}:{tdat}	
+					</div>
+				);
+				lastTEntry = `${k}:${tdat}`;	
+			}
+		}
+		const tDisp = tdata === null ?
+			<></> :
+			<RunChartGlobalData header={RunChartConstants.Headers.TSource}
+				normalKey={false}
+				fuzzyWordLengths={[1, 2, 3]}
+				toExponential={false}
+				data={{ "Source" : lastTEntry }}
+			/>;
+
+		const tocksDisp = cuTocks === null ?
+			<></> :
+			<RunChartGlobalData header={RunChartConstants.Headers.Tocks}
+				normalKey={true}
+				fuzzyWordLengths={[9, 9, 9]}
+				toExponential={expo}
+				data={cuTocks}
+			/>
+
+		const volumesData =(
+			<RunChartGlobalData
+				header={CallGraphConstants.Headers.GlobalVolumes}
+				fuzzyWordLengths={[4, 8, 4]}
+				normalKey={true}
+				toExponential={expo}
+				data={cuVolume}
+			/>
+		);
 		const renResult = !cuDetailsReady ? 
 			(<div className={styles.nodePanel}>
 			 	<header>
@@ -253,42 +293,11 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 				</div>
 				<div className={styles
 					.dataSegment}>
-					<header>
-					{ CallGraphConstants.Headers.GlobalVolumes }
-					</header>
 
-					<div><span>Reg.Vol: </span>
-					<span>{cuVolume
-						.REGISTER_VOLUME}
-					</span></div>
-					<div><span>Fac.Vol: </span>
-					<span>{cuVolume
-						.FACTORY_VOLUME}
-					</span></div>
-					<div><span>Rout.Vol: </span>
-					<span>{cuVolume
-						.ROUTING_VOLUME}
-					</span></div>
-					<div><span>TIdle.Vol: </span>
-					<span>{cuVolume
-						.T_IDLE_VOLUME}
-					</span></div>
-					<div><span>Bell-Rout.Vol: </span>
-					<span>{cuVolume
-						.BELL_ROUTING_VOLUME}
-					</span></div>
-					<div><span>Bell-Idle.Vol: </span>
-					<span>{cuVolume
-						.BELL_IDLE_VOLUME}
-					</span></div>
-					<div><span>Non-Part.Vol: </span>
-					<span>{cuVolume
-						.NP_VOLUME}
-					</span></div>
 				</div>
-				{compInfo}
+				{volumesData}
+				{tocksDisp}
 				{tDisp}
-				{tockDisp}
 				<div>
 					<button className={`${styles
 						.vizButton} ${vzReadyStyle}`}

@@ -1,4 +1,4 @@
-import { RottnestSyncState } from "./SyncObject";
+import { SyncMetaObject, SyncObject, SyncStateOperations } from "./SyncObject";
 import { SyncStoreOperations, LocalStorageOperations } from "./SyncStoreInterface";
 
 export type StateStorageKind = "localstorage" | "opfs";
@@ -102,17 +102,41 @@ export class StateStorage {
     * Writes to the target
     * May need to be re-evaluated later on
     */
-  write(target: string, data: RottnestSyncState) {
+  write<T>(target: string, data: SyncObject<T>) {
     this.config.operations.write(target, data);
+  }
+  
+  /**
+    * Writes the metadata to a target
+    * May need to be re-evaluated later on
+    */
+  writeMeta(target: string, data: SyncMetaObject) {
+    this.config.operations.metaWrite(target, data);
+  }
+
+  /**
+    * Reads the metadata
+    * that is associated with the target
+    */
+  async readMeta(target: string): Promise<SyncObject<SyncMetaObject>> {
+    return await (this.config.operations.metaRead(target));
   }
 
   /**
     * Reads from the target
     * If the data exists, it will return the results
     */
-  async read(target: string): Promise<RottnestSyncState> {
+  async read<T>(target: string): Promise<SyncObject<T>> {
     return await (this.config.operations.read(target));
   }
 
-  
+  /**
+    * Appends to the target location
+    * This is to try to maintain a reasonable list that can be collated
+    * properly
+    */
+  append<T>(target: string, data: T) {
+    this.config.operations.append<T>(target,
+      SyncStateOperations.newSyncAppendObject(data));
+  }
 }

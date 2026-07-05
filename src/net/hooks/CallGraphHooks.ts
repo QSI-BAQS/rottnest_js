@@ -1,4 +1,5 @@
 import { RottStatusResponseMSG } from "../../obj/CallGraphNet";
+import { NotifyID } from "../../service/NotifyService";
 import { CallGraphRequestState } from "../../ui/callgraph/CallGraphDefaults";
 import { BufferMapKey } from "../../ui/workspace/buffermap/BufferMapCommon";
 import { AppServiceMessage } from "../AppServiceMessage";
@@ -67,6 +68,8 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
     const parserOps = super.getParserOps();
     const cgspace = context;
     const container = context.props.architecture;
+    const notifyService = container.getServices().getNotifyService();
+    
 		let graph = parserOps.decodeGraph(asm);
 		let expands = true;
 
@@ -81,6 +84,9 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 				.getCallGraphService()
 				.setGraphViewData(graph);
 		}
+
+		notifyService.makeMessageWithTuple(NotifyID.CallGraph.GetRootGraphReceived);
+		
 		cgspace.resetState();
 		const nState = {...cgspace.state}
 		nState.refresh = true;
@@ -95,6 +101,7 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
   getGraphHook(context: any, _jsonObj: any, asm: AppServiceMessage) {
 		const cgspace = context;
     const container = context.props.architecture;
+    const notifyService = container.getServices().getNotifyService();
 		let parserOps = super.getParserOps()
 		let graph = parserOps.decodeGraph(asm);
 		let expands = true;
@@ -135,6 +142,7 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 		nState.refresh = true;
 		context.setRequestState(CallGraphRequestState.Available);
 
+		notifyService.makeMessageWithTuple(NotifyID.CallGraph.GetGraphReceived);
 		refresh.triggerRefresh();    
 		
   }

@@ -83,7 +83,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, {}>  {
 			.architecture as any;
 		const rrbuf = container.getServices().getRunResultService();
 
-		const gvolumes = rrbuf.getTotalArray();
+		const gvolumes = rrbuf.getCurrentVolumesSummary();
 		if(gvolumes.length > 0) {
 			const lastVol = gvolumes[gvolumes.length-1]!;
 

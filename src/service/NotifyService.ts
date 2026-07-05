@@ -45,6 +45,29 @@ export const NotifyID = {
       message: "Disconnected from workpool"
     },
   },
+  CallGraph: {
+    GetRootGraphRequest: {
+      ID: "get-root-graph-request",
+      title: "Retrieving Graph",
+      message: "Retrieving root of the callgraph"
+    },
+    GetRootGraphReceived: {
+      ID: "get-root-graph-recv",
+      title: "Retrieved Graph",
+      message: "Received callgraph"
+    },
+    
+    GetGraphRequest: {
+      ID: "get-graph-request",
+      title: "Retrieving Graph",
+      message: "Attempting to retrieve the next callgraph nodes"
+    },
+    GetGraphReceived: {
+      ID: "get-graph-recv",
+      title: "Retrieved Graph",
+      message: "Received callgraph"
+    }
+  },
   Executable: {
     SetCurrent: {
       ID: "prg-set",

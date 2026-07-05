@@ -29,3 +29,9 @@ export function SaveProject(name: string, blobdata: any) {
 		adown.remove();
 		window.URL.revokeObjectURL(uobj);
 }
+
+
+export const Web = {
+	DownloadFile,
+	SaveProject,
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import GlobalBar from '../global/GlobalBar.tsx';
-import ErrorDisplay from './ErrorDisplay.tsx';
+import ErrorDisplay from './error/ErrorDisplay.tsx';
 import { HelpContainer } from './HelpContainer.tsx';
 import { NotifyMessageSpace } from '../global/notify/NotifyMessage.tsx';
 import { ArchWorkspaceContainer } from './WorkspaceContainer.tsx'

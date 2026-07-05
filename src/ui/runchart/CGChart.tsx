@@ -2,9 +2,13 @@ import React, { ReactElement, useEffect, useRef, useState } from "react";
 import style from '../styles/CGChart.module.css';
 import * as d3 from "d3";
 import { ScaleLinear, ScaleLogarithmic } from 'd3-scale';
-import { WorkspaceBufferMap } from "../workspace/WorkspaceBufferMap";
 import { CallGraphStatsData, CUAggrKey, CUDataKeyRef, CUScaleKeyRef, 
 	DataAggregate, DataAggrIdentifier, DataAggrMap } from "./ChartData";
+import { BufferMapKey } from "../workspace/buffermap/BufferMapCommon";
+import { RunChartAll, RunChartAttributes, RunChartCacheOptions, RunChartConstants, RunChartScaleOptions, RunChartSVGGroup } from "./RunChartConstants";
+import { ArchStashMap } from "rottnest-plugin/schema/ArchWorkspace";
+import { noop } from "../../util/Noop";
+import { Util } from "../../util";
 
 type ScaleKey = "Linear" | "Log";
 
@@ -24,6 +28,13 @@ const LineColorList: Array<string> = [
 	'#C26A77',
 	'#9F4A96',
 	'#7E2954',
+	'#FFAD00',
+	'#D22730',
+	'#DB3EB1',
+	'#44D62C',
+	'#00B2A9',
+	'#E59E6D',
+	
 ];
 
 const CircleColorList: Array<string> = [
@@ -236,12 +247,14 @@ const GenerateNodes = (
 	scaleKey: string, 
 	selKey: CUAggrKey,
 	colorStr: string,
-	bmap: WorkspaceBufferMap): Array<ReactElement> => {
+	bmap: ArchStashMap): Array<ReactElement> => {
 
-	const cnode = bmap.get('current_chart_idx');
+	const cnode = bmap.get(BufferMapKey.RunChart.CurrentChartIndex);
+
 	let selectedIdx = -1;
 	let selectedRefId = -1;
 	let selectedLine = -1;
+	
 	if(cnode) {
 		const jcnode = JSON.parse(cnode);
 		if(jcnode) {
@@ -250,30 +263,40 @@ const GenerateNodes = (
 			selectedLine = jcnode.lineIdx;
 		}
 	}
+	
 	let count = 0;
-	// return data.idxs.map((sample, i) => {
 	return data.idxs.map((sample, i) => {
 		
 		const mxid = sample.mxid;
-		const isCuidObj = (sample.cuid !== null && sample.cuid !== undefined)
-		const selectedObj = (selectedIdx === i) &&
+
+		const isCuidObj = (
+			(sample.cuid !== null
+			&& sample.cuid !== undefined));
+
+		const selectedObj = (
+			(selectedIdx === i) &&
 			(selectedRefId === sample.mxid) &&
-			(selectedLine === lIdent);
-		const selStyle = !isCuidObj ? style.cuObjectNotCuidSelected : selectedObj ? 
-			style.cuObjectSelected : '';
+			(selectedLine === lIdent));
+
+		const selStyle = !isCuidObj ?
+				style.cuObjectNotCuidSelected :
+				selectedObj ? 
+					style.cuObjectSelected :
+					RunChartConstants.StyleDefaults.None;
+
 		let measuredValue = data.aggrMap[selKey][i];
 		const onNodeHoverTrigger = (_isCuid: boolean) => {
-			bmap.insert('current_node',
-			JSON.stringify({
-				idx: i //NOTE: This has been disabled
-			}));
-			bmap.insert('current_chart_idx', 
-			JSON.stringify({
-				idx: i,
-				refIdx: sample.mxid, //NOTE: This has been disabled
-				selKey: selKey,
-				lineIdx: lIdent,
-			}));
+			bmap.write(BufferMapKey.RunChart.CurrentNode,
+			{
+				idx: sample.mxid //NOTE: This has been disabled
+			});
+			bmap.write(BufferMapKey.RunChart.CurrentChartIndex, {
+					idx: i,
+					refIdx: sample.mxid, //NOTE: This has been disabled
+					selKey: selKey,
+					lineIdx: lIdent,
+				}
+			);
 			bmap.commit();
 		}
 
@@ -346,7 +369,6 @@ export type HDatKind = {
 
 /**
   * ToggleCacheData
-  * 
   */
 function ToggleCacheData(data: DataAggregate, cacheOn: boolean): DataAggregate {
 	if(cacheOn) {
@@ -381,8 +403,8 @@ function ToggleCacheData(data: DataAggregate, cacheOn: boolean): DataAggregate {
 
 export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 
-	const [cacheref, setCacheRef] = useState<CUScaleKeyRef>({keyvalue: 'ON'});
-	const cacheIncluded = cacheref.keyvalue === 'ON';
+	const [cacheref, setCacheRef] = useState<CUScaleKeyRef>({keyvalue: 'On'});
+	const cacheIncluded = cacheref.keyvalue === 'On';
 	const data = ToggleCacheData(props.graphData, cacheIncluded);
 	const gMaxY = data.globalMinMax.maxY;
 	const keyset = Object.keys(data.aggrMap);
@@ -393,7 +415,6 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	const nLins = LineColorList;	
 	const bmap = props.workspaceData.stash;
 	const [keyref, setKeyRef] = useState<CUDataKeyRef>({ keyvalue: String(props.selKey) });
-
 	const [scaleref, setScaleRef] = useState<CUScaleKeyRef>({keyvalue: 'Linear'});
 	const chartRef = useRef({}) as React.MutableRefObject<SVGSVGElement>;
 	const margins = props.dimensions.margins;
@@ -449,7 +470,8 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 		}
 	}
 
-	const scaleFn = scaleFnStr === 'Linear' ? d3.scaleLinear : d3.scaleLog;
+	const scaleFn = scaleFnStr === RunChartConstants.Scale.Linear ?
+		d3.scaleLinear : d3.scaleLog;
 	const yScale = scaleFn()
 		.domain([yMin || 0, yMax || 0])
 		.range([boundsHeight, 0])
@@ -461,17 +483,17 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 			.remove();
 		const xAxisGen = d3.axisBottom(xScale);
 
-		chartRes.attr('width', width)
-			.attr('height', height)
-			.append('g')
-				.attr('transform',
-				     `translate(${0},${boundsHeight})`)
+		chartRes.attr(RunChartAttributes.Width, width)
+			.attr(RunChartAttributes.Height, height)
+			.append(RunChartSVGGroup)
+				.attr(RunChartAttributes.Transform,
+					Util.Style.CSSTranslate(0,boundsHeight))
 			.call(xAxisGen);
 				
 
 		const yAxisGen = d3.axisLeft(yScale);
 		chartRes
-			.append("g")
+			.append(RunChartSVGGroup)
 			.call(yAxisGen);
 
 				
@@ -495,21 +517,23 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 		//	return GenerateNodes(idx, data, xScale, yScale, selKey, lineCol[idx], bmap)
 		if(enableSet[idx]) {
 
-			const refKey = keyref.keyvalue === 'ALL' ? keyset[idx] : keyref.keyvalue;
+			const refKey = keyref.keyvalue === RunChartAll ?
+				keyset[idx] : keyref.keyvalue;
 			const akey = refKey as keyof DataAggrMap;
-			if(keyref.keyvalue === 'ALL' || d === data.aggrMap[akey]) { 	
+			if(keyref.keyvalue === RunChartAll || d === data.aggrMap[akey]) { 	
 			   return GenerateNodes(idx, data, xScale, yScale, scaleFnStr, akey, nCols[idx], bmap)
 			} else {
 				return <></>
 			}
 		}
 	});
-	const lines = data.dataRefs.map((d, idx) => {
+	const lines =
+	data.dataRefs.map((d, idx) => {
 		if(enableSet[idx]) {
 			const key = `lin_${idx}`;
-			const refKey = keyref.keyvalue === 'ALL' ? keyset[idx] : keyref.keyvalue;
+			const refKey = keyref.keyvalue === RunChartAll ? keyset[idx] : keyref.keyvalue;
 			const akey = refKey as keyof DataAggrMap;
-			if(keyref.keyvalue === 'ALL' || d === data.aggrMap[akey]) { 	
+			if(keyref.keyvalue === RunChartAll || d === data.aggrMap[akey]) { 	
 				return GenerateLine(data, xScale, yScale, akey, nLins[idx], key, idx);
 			} else {
 				return <></>
@@ -522,7 +546,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 	let colorsIncluded = LineColorList;
 	let setEnableProxy: (d: boolean[]) => void = setEnableSet; 
 		
-	if(keyref.keyvalue === 'ALL') {
+	if(keyref.keyvalue === RunChartAll) {
 		legndNames = ChartOptionPairs.slice(1).map((pair) => {
 			return pair.display;
 		});
@@ -534,14 +558,23 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 			if(res) { colorsIncluded.push(LineColorList[idx]) };
 			return res;
 		}).map((p) => p.display);
-		setEnableProxy = (_: Array<boolean>):void => {};
+
+		setEnableProxy = noop;
 
 	}
-	const legendBro = GenerateLegend(legndNames, colorsIncluded, enableSet, setEnableProxy);
+	const legendBro = GenerateLegend(legndNames,
+		colorsIncluded,
+		enableSet,
+		setEnableProxy);
 
-	const cacheOpts = [{value: 'ON', display: 'Cached Included'}, 
-		{value: 'OFF', display: 'Cached Removed'}];
-	const scaleOpts = [{value: 'Linear', display: 'Linear'}, {value: 'Log', display: 'Log'}];
+	const cacheOpts = [
+		RunChartCacheOptions.CacheIncluded, 
+		RunChartCacheOptions.CacheDisabled
+	];
+	const scaleOpts = [
+		RunChartScaleOptions.ScaleLinear,
+		RunChartScaleOptions.ScaleLog
+	];
 	return (
 		<div className={style.graphContainer}>
 			<div className={style.cgvisTab}>
@@ -562,7 +595,7 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 			<g
 				width={boundsWidth}
 				height={boundsHeight}
-				transform={`translate(${[left, top].join(",")})`}
+				transform={Util.Style.CSSTranslate(left, top)}
 				>
 				{lines}	
 			</g>
@@ -570,13 +603,13 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 				width={boundsWidth}
 				height={boundsHeight}
 				ref={chartRef}
-				transform={`translate(${[left, top].join(",")})`}
+				transform={Util.Style.CSSTranslate(left, top)}
 				>
 			</g>
 			<g
 				width={boundsWidth}
 				height={boundsHeight}	
-				transform={`translate(${[left, top].join(",")})`}
+				transform={Util.Style.CSSTranslate(left, top)}
 				>
 				{circs}
 			</g>
@@ -585,7 +618,6 @@ export const CallGraphStatsSpace = (props: CallGraphStatsData) => {
 
 			</div>
 			<div className={style.nodesComponent}>
-			
 			</div>
 
 		</div>

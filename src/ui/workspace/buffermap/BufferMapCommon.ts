@@ -11,5 +11,9 @@ export const BufferMapKey = {
   },
   CallGraph: {
     GraphRef: 'graph_ref'
+  },
+  RunChart: {
+    CurrentNode: 'current_node',
+    CurrentChartIndex: 'current_chart_idx'
   }
 };

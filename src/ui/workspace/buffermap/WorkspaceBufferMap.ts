@@ -50,6 +50,20 @@ export class WorkspaceBufferMap {
 		this.map.set(key, data);
 	}
 
+	/**
+	  * Serialized Write
+	  * Ensures that the data is json'd and assigned a key
+	  * similar to localstorage but temporary
+	  */
+	write(key: string, data: any) {
+		this.map.set(key, JSON.stringify(data));
+	}
+
+	read<T=any>(key: string): T | null {
+		const data = this.get(key);
+		return JSON.parse(data);
+	}
+
 	get(key: string): any | null {
 		const res = this.map.get(key);
 		if(res === null || res === undefined) {
