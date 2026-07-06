@@ -1,4 +1,4 @@
-import { CGHashResult, CGResult, CGStatus, CUHashHex } from "../obj/chart/Metrics";
+import { CGHashResult, CGResult, CGStatus } from "../obj/chart/Metrics";
 import { RunChartContainer } from "../ui/runchart/RunChart";
 import { RefreshService } from "./RefreshService";
 import { StateStorage } from "../store/StateStorage";
@@ -69,6 +69,13 @@ export type RunResultKind = "CUIDObj" | "CUIDTotal"
 export type DecodeResult = [RunResultKey, any]
 
 /**
+  * RunChartSymbolMap
+  * This is to facilitate the dictionary of symbols
+  * that a plugin has and exports to the frontend
+  */
+export type RunChartSymbolMap = { [key: string]: any }
+
+/**
  * RunResultService is used to maintain a list of results
  * and be able to cache components locally
  */
@@ -82,7 +89,6 @@ export class RunResultService {
 	withCUID: Map<string, Array<CGResult>> = new Map();
 	withTotal: Array<CGResult> = []
 	
-	cacheHashes: Set<CUHashHex> = new Set();
 	volumesWithHashes: Map<string, Array<CGHashResult>> = new Map();
 	statusItems: Set<CGStatus> = new Set();
 
@@ -102,8 +108,10 @@ export class RunResultService {
 	// Last entry to be used for total
 	lastEntry: RunResultEntry = RunResultFactory.makeEmptyEntry();
 	resultsIntermediateTotal = true;
-	
 
+	// Not really an entry but something that can be updated
+	symbolMap: RunChartSymbolMap = RunResultFactory.makeEmptyEntry();
+	symbolMapSet: boolean = false;
 
 	/**
 	  * RunResultService - Instance related to the state storage
@@ -135,7 +143,6 @@ export class RunResultService {
 	reset() {
 		this.withCUID = new Map();
 		this.withTotal = []
-		this.cacheHashes = new Set();	
 		this.volumesWithHashes = new Map();
 		this.volumeSet = [];
 		this.volumeSetNonCached = [];
@@ -165,6 +172,31 @@ export class RunResultService {
 			volumeSetNonCached: self.volumeSetNonCached,
 			lastEntry: self.lastEntry,
 		}
+	}
+
+	/**
+	  * SetSymbolMap
+	  * Setting the symbol map can eliminate needing to derive the symbols
+	  */
+	setSymbolMap(symMap: RunChartSymbolMap) {
+		this.symbolMap = symMap;
+		this.symbolMapSet = true;
+	}
+
+	/**
+	  * GetSymbolMap
+	  * This retrieves the symbol map that has been set
+	  */
+	getSymbolMap() {
+		return this.symbolMap;
+	}
+
+	/**
+	  * Outlines if the symbol map has 
+	  * been set or not
+	  */
+	isSymbolMapSet() {
+		return this.symbolMapSet;
 	}
 
 	/**
@@ -564,13 +596,6 @@ export class RunResultService {
 		return this.withTotal;
 	}
 
-	/**
-	  * Gets the cache hash set
-	  * @deprecated
-	  */
-	getCacheHashesSet(): Set<CUHashHex> {
-		return this.cacheHashes;
-	}
 
 	/**
 	  * Volume HashMap

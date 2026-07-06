@@ -7,6 +7,7 @@ import styles from '../styles/CGSpace.module.css'
 import { BufferMapKey } from "../workspace/buffermap/BufferMapCommon.ts";
 import { RunChartConstants } from "./RunChartConstants.ts";
 import { DownloadFile } from "../../util/FileDownload.ts";
+import { ArchContextSymbols } from "rottnest-plugin/schema/ArchSymbols";
 
 
 type NodeData = {
@@ -32,11 +33,13 @@ type CGNodeData = {
   * necessary data
   */
 export type RunChartPanelData = {
-	header: string
+	header: string,
 	fuzzyWordLengths: Array<number>,
 	normalKey: boolean,
 	toExponential: boolean,
-	data: { [key: string]: number | string }
+	data: { [key: string]: number | string },
+	symbolWhitelist: Array<string>,
+	useSymbolWhiteList: boolean,
 }
 
 
@@ -48,8 +51,10 @@ export type RunChartPanelData = {
 export type RunChartDataViewProps = {
 	lastTEntry: string | null,
 	cuTocks: {[key: string]: number},
-	cuVolume: {[key: string]: number}
+	cuVolume: {[key: string]: number},
 	toExponential: boolean,
+	symbolWhitelist: Array<string>,
+	useSymbolWhiteList: boolean,
 }
 
 /**
@@ -62,6 +67,8 @@ const RunChartSegmentDataView = (props: RunChartDataViewProps) => {
 	const cuTocks = props.cuTocks;
 	const cuVolume = props.cuVolume;
 	const expo = props.toExponential;
+	const whiteList = props.symbolWhitelist;
+	const useSymbolList = props.useSymbolWhiteList;
 
 	const tDisp = lastTEntry === null ?
 		<></> :
@@ -69,6 +76,8 @@ const RunChartSegmentDataView = (props: RunChartDataViewProps) => {
 			normalKey={false}
 			fuzzyWordLengths={[1, 2, 3]}
 			toExponential={false}
+			symbolWhitelist={whiteList}
+			useSymbolWhiteList={useSymbolList}
 			data={{ "Source" : lastTEntry }}
 		/>;
 
@@ -77,6 +86,8 @@ const RunChartSegmentDataView = (props: RunChartDataViewProps) => {
 			header={RunChartConstants.Headers.GlobalVolumes}
 			fuzzyWordLengths={[4, 8, 4]}
 			normalKey={true}
+			symbolWhitelist={whiteList}
+			useSymbolWhiteList={useSymbolList}			
 			toExponential={expo}
 			data={cuVolume}
 		/>
@@ -88,6 +99,8 @@ const RunChartSegmentDataView = (props: RunChartDataViewProps) => {
 			normalKey={true}
 			toExponential={expo}
 			fuzzyWordLengths={[9, 9, 9]}
+			symbolWhitelist={whiteList}
+			useSymbolWhiteList={useSymbolList}			
 			data={cuTocks}
 		/>
 
@@ -194,15 +207,27 @@ export class RunChartGlobalData extends React.Component<RunChartPanelData, {}> {
 		const expo = this.props.toExponential;
 		const places = 5;
 
-		for(const key in data) {
+		const symbolWhiteList = this.props.symbolWhitelist;
+		const useWhiteList = this.props.useSymbolWhiteList;
+
+		for(const key in data) {			
+			if(useWhiteList && !(Object.keys(symbolWhiteList).includes(key))) {
+				continue;
+			}
+
+
 			let volValue = data[key];
 			if(expo && typeof volValue === 'number') {
 				
 				volValue = this.toScientificNotationString(Number(volValue), places);
 			}
+
+			
+			
 			
 			const dispKey = !normalKey ? key :
 				this.normaliseKey(key, fuzzyLengths);				
+
 			
 			volumeEntries.push(
 				(
@@ -218,13 +243,13 @@ export class RunChartGlobalData extends React.Component<RunChartPanelData, {}> {
 
 
 		return (
-				<div className={styles.dataSegment}>
-					<header className={styles.runchartDataHeader}>
-					{ headerString }
-					</header>
-					{volumeEntries}
-				</div>
-			)
+			<div className={styles.dataSegment}>
+				<header className={styles.runchartDataHeader}>
+				{ headerString }
+				</header>
+				{volumeEntries}
+			</div>
+		);
 	}		
 }
 
@@ -339,6 +364,27 @@ export class RunChartAuxNode extends React.Component<CGNodeData,
 	}
 
 
+	enableModules() {
+		const container = this.props.workspaceData
+			.architecture as any; //WARN unsafe assumption
+
+		const meta = container.getModulesMeta();
+		// meta.setEnable("Visualiser");
+		// meta.setEnable("CallGraph");
+	}
+
+	/**
+	  * Gets the symbol whitelist that has been specified
+	  * inside run result service
+	  */
+	getSymbolWhiteList() {
+		const rrbuf = this.getRunResultService();
+		return rrbuf.getSymbolMap();
+	}
+
+	/**
+		* Rendering the runchart column
+		*/
 	render() {
 
 		const self = this;
@@ -348,6 +394,11 @@ export class RunChartAuxNode extends React.Component<CGNodeData,
 		const ndata = this.props;
 		const expo = this.state.sciNotation;
 		let nodeIndex = 0;
+		console.log(dataAvailable);
+		if(dataAvailable) {
+			this.enableModules();
+		}
+		
 		if(ndata.nodeData !== null 
 		   && ndata.nodeData !== undefined) {
 			const nd = ndata.nodeData;
@@ -363,6 +414,9 @@ export class RunChartAuxNode extends React.Component<CGNodeData,
 		let cuVolume = cuResults.cuVolume;
 		let cuTocks = cuResults.cuTocks;
 		let cached = cuResults.cached;
+		const useSymbolWhiteList = true;
+		const symbolWhitelist = this.getSymbolWhiteList();
+				
 		let lastTEntry = '';
 		let tdata = [];
 		
@@ -383,7 +437,9 @@ export class RunChartAuxNode extends React.Component<CGNodeData,
 				lastTEntry,
 				cuTocks,
 				cuVolume,
-				toExponential: this.state.sciNotation
+				toExponential: this.state.sciNotation,
+				symbolWhitelist,
+				useSymbolWhiteList	
 			})
 
 		const nodeData = (
@@ -391,6 +447,8 @@ export class RunChartAuxNode extends React.Component<CGNodeData,
 				header={`Id: ${nName}`}
 				fuzzyWordLengths={[5, 12, 12]}
 				normalKey={false}
+				useSymbolWhiteList={false}
+				symbolWhitelist={[]}
 				toExponential={expo}
 				data={{ "Cached" : cached ? 'Yes' : 'No' }} />
 		);
@@ -460,7 +518,8 @@ export type RunChartDataViewState = {
 /**
   * RunChartSelectedNodeBox
   */
-export class RunChartSelectedNodeBox extends React.Component<CGNodeData, RunChartDataViewState>  {
+export class RunChartSelectedNodeBox
+	extends React.Component<CGNodeData, RunChartDataViewState>  {
 
 	state: RunChartDataViewState = {
 		sciNotation: false
@@ -565,9 +624,13 @@ export class RunChartSelectedNodeBox extends React.Component<CGNodeData, RunChar
 			data: serialData.volumeSet,
 			globalVolumes: serialData.lastEntry.volumes,
 			globalTocks: serialData.lastEntry.tocks
-		})],
-				{type:'application/json'});
+		})], {type:'application/json'});
 		DownloadFile(chartLabel, serialBlob);
+	}
+
+	getSymbolList() {
+		const rrbuf = this.getRunResultService();
+		return rrbuf.getSymbolMap();
 	}
 
 	render() {
@@ -582,6 +645,7 @@ export class RunChartSelectedNodeBox extends React.Component<CGNodeData, RunChar
 		let cuDetailsReady = false;
 		let cuTocks = cuResults.tocks;
 
+		const symbolWhiteList = this.getSymbolList();
 
     let tsourceInfo = cuResults.tSource;
 		
@@ -618,6 +682,8 @@ export class RunChartSelectedNodeBox extends React.Component<CGNodeData, RunChar
 				normalKey={false}
 				fuzzyWordLengths={[1, 2, 3]}
 				toExponential={false}
+				useSymbolWhiteList={false}
+				symbolWhitelist={[]}
 				data={{ "Source" : lastTEntry }}
 			/>;
 
@@ -626,6 +692,8 @@ export class RunChartSelectedNodeBox extends React.Component<CGNodeData, RunChar
 				header={RunChartConstants.Headers.GlobalVolumes}
 				fuzzyWordLengths={[4, 8, 4]}
 				normalKey={true}
+				useSymbolWhiteList={true}
+				symbolWhitelist={symbolWhiteList}
 				toExponential={expo}
 				data={cuVolume}
 			/>
@@ -636,6 +704,8 @@ export class RunChartSelectedNodeBox extends React.Component<CGNodeData, RunChar
 			<RunChartGlobalData header={RunChartConstants.Headers.Tocks}
 				normalKey={true}
 				fuzzyWordLengths={[9, 9, 9]}
+				useSymbolWhiteList={true}
+				symbolWhitelist={symbolWhiteList}
 				toExponential={expo}
 				data={cuTocks}
 			/>

@@ -15,6 +15,13 @@
 .widgetBoxContent {
 	/* margin-top: 0.25em; */
 	text-align: center;
+	overflow-y: scroll;
+	scrollbar-gutter: stable both-edges;
+	padding: 0;
+}
+
+.widgetBoxContent::-webkit-scrollbar {
+	display: none;
 }
 
 .rootListComponent {
