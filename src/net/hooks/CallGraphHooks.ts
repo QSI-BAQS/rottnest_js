@@ -27,6 +27,8 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
 		    [CallGraphPacketKind.Node]: super.MakeHookWrapper(this, 'getNodeStatusHook'),
 		    [CallGraphPacketKind.RunNodeConfirmation]: super.MakeHookWrapper(this, 'runNodeHook'),
 		    [CallGraphPacketKind.VisualObject]: super.MakeHookWrapper(this, 'visualObjectHook'),
+				[MessageType.CallGraph.RunGraphNode]:
+					super.MakeHookWrapper(this, 'getRunGraphNode'),
 		  }
   	)
   }
@@ -41,6 +43,19 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
     const appService = container.getServices().getNetworkService();
 
     appService.sendObj(MessageType.CallGraph.GetRootGraph, JSON.stringify({}))
+  }
+
+  /**
+    * Gets the run graph node as a response
+    * Will make a notification and refresh the context
+    */
+  getRunGraphNode(context: any, _jsonObj: any, _asm: AppServiceMessage) {
+  	
+    const container = context.props.architecture;
+    const notifyService = container.getServices().getNotifyService();
+
+    notifyService.makeMessageWithTuple(NotifyID.CallGraph.RunGraphNodeConfirm);
+    
   }
   
 	/**
@@ -159,8 +174,11 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
   	// TODO: Need to handle the visual object case
   	// NOTE: We have the data and we can then set it!
   	const stash = context.props.stash;
-
   	const workspaceArch = context.props.architecture;
+		const services = workspaceArch.getServices();
+		const refreshService = services.getRefreshService();
+		const notifyService = services.getNotifyService();
+		
   	const visobj = jsonObj.payload.result;
   	const obj = {
   		simready:true,
@@ -176,42 +194,48 @@ export class CallGraphWebSocketHooks extends WebSocketHookDefault {
   	workspaceArch.getStateData()
   		.getVisState()
   		.setVizData(visobj);
+		let modMeta = workspaceArch.getModulesMeta();
+		modMeta.setEnable("Visualiser");
+
+		notifyService.makeMessageWithTuple(NotifyID.CallGraph.RunGraphNodeConfirm);
+
+		refreshService.triggerRefresh();
   	
 	}
 
   runNodeHook(context: any, jsonObj: any, _asm: AppServiceMessage) {
-        const cgspace = context;
-        const container = cgspace.props.architecture;
-				let rrBuf = container.getServices().getRunResultService();
-				//A lot of heavy lifting done with this
-				//to address a terrible messaging system
-				const [rkind, mdat] = rrBuf.decodeAndSort(jsonObj
-									  .payload);
-				let shouldUpdate = false;
-				//TODO: This is bloody nasty!
-				// WARNING: You are dealing with something quite gross here!
-				let modMeta = container.getModulesMeta();
-				if(rkind === "CUIDObj" || rkind === "CUIDTotal") {
-					modMeta.setEnable("CallGraph");
-					modMeta.setEnable("RunChart");
-					shouldUpdate = true;
-				}
-					
-				if(rkind === "VisualResult") {
-					container.getStateData()
-						.getVisState()
-						.setVizData(mdat);
-					modMeta.setEnable("Visualiser");
-					cgspace.props.stash.insert('viz_sim_data', JSON.stringify({
-							simready: true }));
-					shouldUpdate = true;
-				}
+    const cgspace = context;
+    const container = cgspace.props.architecture;
+		let rrBuf = container.getServices().getRunResultService();
+		//A lot of heavy lifting done with this
+		//to address a terrible messaging system
+		const [rkind, mdat] = rrBuf.decodeAndSort(jsonObj
+							  .payload);
+		let shouldUpdate = false;
+		//TODO: This is bloody nasty!
+		// WARNING: You are dealing with something quite gross here!
+		let modMeta = container.getModulesMeta();
+		modMeta.setEnable("Visualiser");
+		// if(rkind === "CUIDObj" || rkind === "CUIDTotal") {
+		// 	modMeta.setEnable("RunChart");
+		// 	shouldUpdate = true;
+		// }
+			
+		if(rkind === "VisualResult") {
+			container.getStateData()
+				.getVisState()
+				.setVizData(mdat);
+			modMeta.setEnable("Visualiser");
+			cgspace.props.stash.insert('viz_sim_data', JSON.stringify({
+					simready: true }));
+			shouldUpdate = true;
+		}
 
-				if(shouldUpdate) {
-					container.getServices()
-					  .getRefreshService()
-					  .triggerRefresh();
-				}
+		if(shouldUpdate) {
+			container.getServices()
+			  .getRefreshService()
+			  .triggerRefresh();
+		}
 
 
   }

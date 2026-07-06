@@ -66,6 +66,16 @@ export const NotifyID = {
       ID: "get-graph-recv",
       title: "Retrieved Graph",
       message: "Received callgraph"
+    },
+    RunGraphNodeConfirm: {
+      ID: "run-graph-node-confirm",
+      title: "Node Run Completed",
+      message: "Execution has been completed, visual object attached"
+    },
+    RunGraphNodeRequest: {
+      ID: "run-graph-node-request",
+      title: "Node Run Started",
+      message: "Node has started execution, will retrieve visual object"
     }
   },
   Executable: {
@@ -107,12 +117,12 @@ export const NotifyID = {
     SendArchSuccess: {
       ID: "send-arch-good",
       title: CommonTitles.NetworkCommunications,
-      message: "Object has been sent to process-poll"
+      message: "Object has been sent to process-pool"
     },
     SendArchError: {
       ID: "send-arch-good",
       title: CommonTitles.NetworkCommunications,
-      message: "Object has been sent to process-poll"
+      message: "Object has been sent to process-pool"
     }
   },
   Sync: {

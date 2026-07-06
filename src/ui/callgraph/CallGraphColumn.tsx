@@ -1,5 +1,5 @@
 import React from "react";
-import {CGResult, CGResultDummy, CUReqResult, CUReqResultDummy} 
+import {CGResult, CUReqResult, CUReqResultDummy} 
 	from "../../obj/CallGraph.ts";
 import { ArchStashMap, ArchWorkspace, ArchWorkspaceData } 
 	from "rottnest-plugin/schema/ArchWorkspace";
@@ -10,6 +10,7 @@ import { CallGraphConstants } from "./CallGraphCommon.ts";
 import { BufferMapKey } from "../workspace/buffermap/BufferMapCommon.ts";
 import { RunChartGlobalData } from "../runchart/RunChartColumn.tsx";
 import { RunChartConstants } from "../runchart/RunChartConstants.ts";
+import { NotifyID } from "../../service/NotifyService.ts";
 
 
 type NodeData = {
@@ -72,10 +73,16 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewSta
 		const container = this.props.workspaceData
 			.architecture as any; //WARN: Unsafe assumption
 		
+		const refreshService = container.getServices().getRefreshService();
+		const notifyService = container.getServices().getNotifyService();
 		const appService = container.getConnectionManager().getNetworkService();
 		appService.sendObj(MessageType.CallGraph.RunGraphNode, {
 				graph_id: data.idx
-			})
+			});
+
+		notifyService.makeMessageWithTuple(NotifyID.CallGraph.RunGraphNodeRequest);
+
+		refreshService.triggerRefresh();
 	}
 
 	gotoVisualiserWithData(_data: any) {
@@ -129,11 +136,19 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewSta
 		}
 	}
 
+	getSymbolMap() {
+		const container = this.props.workspaceData
+			.architecture as any; //WARN unsafe assumption
+		const rrbuf = container.getServices().getRunResultService();
+		return rrbuf.getSymbolMap();
+	}
+
 	render() {
 		const ndata = this.props;
 		const expo = this.state.sciNotation;
 		const bmap = this.props.workspaceData.stash;	
 		let cuResults = this.getGlobalVolumes();
+		let symbolMap = this.getSymbolMap();
 		let cuVolume = cuResults.volumes;
 		let cuTocks = cuResults.tocks;
     let tsourceInfo = cuResults.tSource;
@@ -142,7 +157,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewSta
 		let nName = CallGraphConstants.Node.NotSelected;
 		let nDescription = CallGraphConstants.Node.NoDescription;
 		let nKind = CallGraphConstants.Node.NoKind;
-		let compStr = this.getCompilationFinished();
+		// let compStr = this.getCompilationFinished();
 		if(ndata.nodeData !== null 
 		   && ndata.nodeData !== undefined) {
 			const nd = ndata.nodeData;
@@ -184,13 +199,13 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewSta
 		visText = simReady ? CallGraphConstants.Visualiser.VisualisationReady : visText;	
 
 		const vzReadyStyle = simReady || runReady ? '' : styles.vizNotReady;
-		const compInfo = (<div className={styles.dataSegment}>
-				  <header>Compilation State:</header>
-					<span>
-					{compStr}
-					</span>
+		// const compInfo = (<div className={styles.dataSegment}>
+		// 		  <header>Compilation State:</header>
+		// 			<span>
+		// 			{compStr}
+		// 			</span>
 
-			</div>)
+		// 	</div>)
 		// const tockDisp = cuTocks === null ? 
 		// 	<></>:
 		// 	<div className={styles.dataSegment}>
@@ -261,6 +276,8 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewSta
 				normalKey={false}
 				fuzzyWordLengths={[1, 2, 3]}
 				toExponential={false}
+				symbolWhitelist={symbolMap}
+				useSymbolWhiteList={false}
 				data={{ "Source" : lastTEntry }}
 			/>;
 
@@ -269,6 +286,8 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewSta
 			<RunChartGlobalData header={RunChartConstants.Headers.Tocks}
 				normalKey={true}
 				fuzzyWordLengths={[9, 9, 9]}
+				symbolWhitelist={symbolMap}
+				useSymbolWhiteList={true}
 				toExponential={expo}
 				data={cuTocks}
 			/>
@@ -278,6 +297,8 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewSta
 				header={CallGraphConstants.Headers.GlobalVolumes}
 				fuzzyWordLengths={[4, 8, 4]}
 				normalKey={true}
+				useSymbolWhiteList={true}
+				symbolWhitelist={symbolMap}
 				toExponential={expo}
 				data={cuVolume}
 			/>

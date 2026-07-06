@@ -83,6 +83,7 @@ export class WebSocketHookDefault implements WebSocketHookObject  {
       const payload = jsonObj.payload;
       const subkind = payload.kind;
       const method = this.internalMap[subkind]
+      console.log(payload, subkind, method);
       if(method) {
         method(context, jsonObj, asm);
       } else {
