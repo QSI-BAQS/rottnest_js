@@ -232,12 +232,12 @@ export class RunResultService {
 				self.volumeSet = new Array<RunResultDisplayEntry>()
 					.fill({} as any, 0, appendCount);
 				self.volumeSetNonCached = new Array<number>();
-				
 				for(let i = 0; i < appendCount; i++) {
 					const appendKey = `${appendKeyPrefix}_${i}`;
 					this.storageRef.read<RunResultDisplayEntry>(appendKey).then(
 						(obj: SyncObject<RunResultDisplayEntry>) => {
 						self.volumeSet[i] = obj.data;
+						
 						if(!obj.data.CACHED) { 
 							self.volumeSetNonCached.push(i);
 						}
@@ -463,7 +463,6 @@ export class RunResultService {
 			const volMixedData = RunResultFactory.makeFromDecoded(jsonObj,
 				this.volumeSet.length, "CUResultData", jsonObj.status, jsonObj.np_qubits);
 				this.volumeSet.push(volMixedData);
-
 
 			this.updateLastEntry(jsonObj);
 			if(!jsonObj.CACHED) {

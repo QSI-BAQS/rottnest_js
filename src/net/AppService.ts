@@ -209,12 +209,17 @@ export class AppServiceClient {
 		}
 		
 		const onMsgHandler = (e: any) => {
-			const asm = 
-				new AppServiceMessage(e.data);
 
-			asm.parseData();
-			const jsmsg = asm.getJSON();
-			if(jsmsg) {
+			// const asm = 
+			// 	new AppServiceMessage(e.data);
+
+			const result = AppServiceMessage.make(e.data);
+
+			// asm.parseData();
+			
+			if(result.isValid()) {
+				const asm = result.getServiceMessage();
+				const jsmsg = asm.getJSON();
 				let mtype = jsmsg['message'];
 				
 				let fn = this.receiveTriggers

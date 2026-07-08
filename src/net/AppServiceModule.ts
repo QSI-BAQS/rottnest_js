@@ -14,7 +14,6 @@ export function GetNetworkInstance(): AppServiceClient {
  * otherwise true
  */
 export function ConnectionReady(): boolean {
-
 	if(GetNetworkInstance() !== null) {
 		return GetNetworkInstance().isConnected();
 	} else {

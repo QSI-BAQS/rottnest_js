@@ -7,7 +7,6 @@ import {
 import {
 	CallGraphWebSocketHooks }
 	from "../../net/hooks/CallGraphHooks.ts";
-import { AppServiceMessage } from "../../net/AppServiceMessage.ts";
 import { ArchStashMap,
 	ArchWorkspaceData } from "rottnest-plugin/schema/ArchWorkspace";
 import { MessageType } from "../../net/Protocol.ts";
@@ -39,6 +38,7 @@ import { CallGraphRequestState,
 	RequestIsFetching } from "./CallGraphDefaults.ts";
 import { CallGraphConstants } from "./CallGraphCommon.ts";
 import { NotifyID, NotifyService } from "../../service/NotifyService.ts";
+import { AppServiceMessage } from "../../net/AppServiceMessage.ts";
 
 /**
  * CGObject, 

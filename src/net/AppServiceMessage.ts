@@ -1,6 +1,22 @@
 import {DeRott} from "./Serialisation";
 
 
+export type JSONMessagePrimitive = string | number | boolean | object;
+
+export type JSONMessage = {
+	[key: string]: JSONMessage | JSONMessagePrimitive
+}
+
+
+export type AppServiceMessageParseResult = {
+	parsed: boolean,
+	result: AppServiceMessage | object
+	isValid: () => boolean
+	getServiceMessage: () => AppServiceMessage;
+}
+
+
+
 /**
  * Application Service Message,
  * Will be used by the receiver to then process message
@@ -14,11 +30,52 @@ export class AppServiceMessage {
 	dataIsJson: boolean = false;
 	receivedData: boolean = false;
 
+	jsonData: JSONMessage | object = {};
+
 	constructor(data?: string) {
 		if(data) {
 			this.rawData = data;
 			this.receivedData = true;
 		}
+	}
+
+	/**
+	  * Parses the JSON
+	  * If the data cannot be parsed correctly, it will outline this as part
+	  * of the result object returned
+	  */
+	static make(data: string): AppServiceMessageParseResult {
+		let success = true;
+		let result = {};
+		let asm = new AppServiceMessage(data);
+		try {
+			result = JSON.parse(data);
+			
+		} catch(exception) {
+			console.error(exception);
+			success = false;
+		}
+		console.log(result)
+
+		return {
+			result,
+			parsed:success,
+			isValid() { return this.parsed; },
+			getServiceMessage() {
+				return asm;
+			}
+		}
+	}
+
+	/**
+	  * When already initialised, we want to
+	  * 
+	  */
+	setDataFromJSON(data: any) {
+		this.rawData = JSON.stringify(data);
+		this.interpretedData = data;
+		this.dataIsJson = true;
+		this.receivedData = true;
 	}
 
 	/**

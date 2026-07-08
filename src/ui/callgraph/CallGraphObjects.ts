@@ -4,11 +4,10 @@ import {
   CUReqResult }
 from '../../obj/CallGraph';
 
-import { AppServiceMessage }
-	from "../../net/AppServiceMessage.ts";
 import { ArchWorkspaceData }
 	from "rottnest-plugin/schema/ArchWorkspace";
 import { CallGraphRequestStateKey } from './CallGraphDefaults.ts';
+import { AppServiceMessage } from 'rottnest-plugin/schema/ArchDecls';
 
 /**
  * CGUpdateableContext interface

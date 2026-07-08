@@ -6,7 +6,6 @@ import {CUReqResult,
 	} from "../obj/CallGraph.ts";
 
 
-import {AppServiceMessage} from "../../../net/AppServiceMessage.ts";
 
 
 import styles from '../styles/CGSpace.module.css';
@@ -27,7 +26,7 @@ interface CGUpdatable {
 
 
 export interface ASContextHook {
-	serviceHook(asm: AppServiceMessage): void
+	serviceHook(asm: any): void
 }
 
 //TODO: We need to re-evaluate the usage of the call graph here
@@ -544,7 +543,7 @@ export class CallGraphSpace extends
 		aService.hookContext(this, MessageType.Layout.Run);
 	}
 	
-	serviceHook(asm: AppServiceMessage): void {
+	serviceHook(asm: any): void {
 		const cgspace = this;	
 		const container = this.props.architecture as any;
 		//const appService = container.getConnectionManager().getNetworkService();
