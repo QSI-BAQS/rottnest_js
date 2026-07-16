@@ -87,6 +87,10 @@ export class ProgramPluginSettings
     hasBeenModified: false,
   }
 
+  /**
+    * Gets the option index - It is not currently used but is
+    * reserved as a backup
+    */
   getOptionIndex() {
     const prgService = ProgramPluginService.GetPluginService();
     const context = prgService.getContext();
@@ -137,12 +141,6 @@ export class ProgramPluginSettings
       .getServices()
       .getProgramPluginService()
     prgService.saveContext();
-    const params = JSON.parse(prgService.getProgramConfig());
-
-    const nstate = {...this.state };
-    nstate.params = {
-      parameters: params!,
-    }
   }
 
   /**
