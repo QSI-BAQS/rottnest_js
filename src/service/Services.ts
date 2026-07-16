@@ -24,10 +24,9 @@ type AppTarget = UpdateTrigger & ZoomModuleParent;
  * ArchitectureObjects when they need to interact
  * with the application's services
  */
-export class Services implements ServicesHolder {  
+export class Services {  
   refresh: RefreshService = RefreshService.NoRefresh();
   notify: NotifyService = new NotifyService();
-  network: NetworkService = new NetworkService();
   inputs: InputHookService = new InputHookService();
   valservice: ValidationService = new ValidationService();
   programplugins: ProgramPluginService;
@@ -44,13 +43,11 @@ export class Services implements ServicesHolder {
     
     this.refresh = new RefreshService(refreshTarget);
     this.notify = new NotifyService();
-    this.network = new NetworkService();
     this.inputs = new InputHookService();
     this.valservice = new ValidationService();
-    this.programplugins = ProgramPluginService.GetPluginService(this.refresh,
-      this.network);
+    this.programplugins = ProgramPluginService.GetPluginService();
     this.archplugins = ArchPluginService.GetPluginService(schemas, archUpdate,
-      this.refresh, this.network);
+      this.refresh, NetworkService.getInstance());
     this.help = new HelpService(this.refresh, this.inputs);
     this.rrservice = new RunResultService();
     this.zoomService = new ZoomService(100, refreshTarget);
@@ -88,7 +85,7 @@ export class Services implements ServicesHolder {
 	 * client and network
 	 */
   getNetworkService(): NetworkService {
-  	return this.network;
+  	return NetworkService.getInstance();
   }
 
   /**
@@ -175,7 +172,7 @@ export class NoServices extends Services {
   constructor() {
     super({ triggerUpdate: () => {},
       getModuleStates: () => { return {} as any },
-    }, new NoServicesHolder(), () => {},
+    }, new NoServicesHolder() as any, () => {},
     []);
   }
 }
@@ -185,7 +182,7 @@ export class NoServices extends Services {
  * ensure that it can return services too, this is a hacked
  * up class for no-impls
  */
-export class NoServicesHolder implements ServicesHolder {
+export class NoServicesHolder {
 
   /**
    * Gets no refresh service
@@ -219,7 +216,7 @@ export class NoServicesHolder implements ServicesHolder {
    * Gets the network service
    */
   getNetworkService(): NetworkService {
-    return new NetworkService();
+    return NetworkService.getInstance();
   }
 
   /**
@@ -233,9 +230,7 @@ export class NoServicesHolder implements ServicesHolder {
    * Returns the program plugin service
    */
   getProgramPluginService(): ProgramPluginService {
-    return new ProgramPluginService(this.getRefreshService(),
-      this.getNetworkService());
-    // throw new Error("Program Plugin Service is not Implemented")
+    return new ProgramPluginService()
   }
 
 
@@ -245,7 +240,6 @@ export class NoServicesHolder implements ServicesHolder {
   getArchPluginService(): ArchPluginService {
     return new ArchPluginService([], () => {}, this.getRefreshService(),
       this.getNetworkService());
-    // throw new Error("Arch Plugin Service is not Implemented")
   }
 
   /**

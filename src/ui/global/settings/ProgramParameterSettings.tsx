@@ -1,14 +1,16 @@
 import React, { ChangeEvent, MouseEvent } from "react"
-import { ProgramParam } from "../../../obj/plugin/Program"
 import { Services } from "../../../service/Services";
-import style from '../../styles/PluginSettingsForm.module.css';
-import paramStyle from '../../styles/ProgramParameterSettings.module.css';
 import { MessageType } from "../../../net/Protocol";
 import { PluginPackage } from "./GeneralSettings";
+import { ProgramParameterDiffResult, ProgramPluginContext, ProgramPluginService } from "../../../service/ProgramPluginService";
+import style from '../../styles/PluginSettingsForm.module.css';
+import paramStyle from '../../styles/ProgramParameterSettings.module.css';
+
+
 /**
  * Displays and allows the data to be edited
  */
-export type NumericParamterData = {
+export type NumericParameterData = {
   name: string
   kind: string
   value: number
@@ -22,12 +24,10 @@ export type NumericParamterData = {
  * will need to expand for string and others
  */
 export class NumericParameterContainer
-  extends React.Component<NumericParamterData, {}> {
+  extends React.Component<NumericParameterData, {}> {
 
 
   render() {
-
-
     const isFloat = this.props.isFloat;
     const name = this.props.name;
     const kind = this.props.kind;
@@ -37,11 +37,11 @@ export class NumericParameterContainer
     const hasChanged = this.props.hasChanged;
     
     const inputUpdateFn = (e: ChangeEvent<HTMLInputElement>) => {
-      let newValue = e.target.value;
+      let newValue: string | number = e.target.value;
       if(e.target.value.length > 0) {
         newValue = convertFn(newValue);
       }
-      updateFn(newValue);
+      updateFn(newValue as number);
     }
 
     return (
@@ -63,7 +63,7 @@ export class NumericParameterContainer
  */
 export type ProgramParameterData = {
   services: Services,
-  params: Array<ProgramParam>
+  parameterKeys: Array<string>,
   closeFn: (data:PluginPackage) => void
 }
 
@@ -71,133 +71,125 @@ export type ProgramParameterData = {
  * ProgramParameterState, holds a map
  */
 export type ProgramParameterState = {
-  oldState: Map<string, ProgramParam>
-  params: Map<string, ProgramParam>
+  context: ProgramPluginContext;
 }
 
 /**
  * Program parameterisation container
  * Will break it down into what parameters it can set
  */
-export class ProgramParametersContainer extends React.Component<ProgramParameterData, ProgramParameterState> {
+export class ProgramParametersContainer
+  extends React.Component<ProgramParameterData, ProgramParameterState> {
 
-  generateParamMap() {
-    return (() => {
-        const map: Map<string, ProgramParam> = new Map();
-        this.props.params.forEach(e => {
-          map.set(e[0], [...e]);
-        })
-        return map; 
-      })()
-  }
-
+  programService: ProgramPluginService = ProgramPluginService.GetPluginService();
   state: ProgramParameterState = {
-    oldState: this.generateParamMap(),
-    params: this.generateParamMap()
-  }
+    context: this.generateParametersMap()
+  };
 
+  /**
+    * Updates the state given the change of state
+    */
   updateState() {
     const nstate = {...this.state};
     this.setState(nstate);
   }
 
-  closeWindow() {
-    const closeFn = this.props.closeFn;
-    closeFn({})
+  /**
+    * Generates a parameters map
+    * key as first element,
+    * key, kind, value and extra as second 
+    */
+  generateParametersMap() {
+    return this.programService
+      .getContext()
+      .clone()
   }
 
+  /**
+    * Closes the program parameter window
+    */
+  closeWindow() {
+    const closeFn = this.props.closeFn;
+    closeFn({} as any)
+  }
+
+  /**
+    * General render method for the parameter settings
+    */
   render() {
 
     const self = this;
     const services = this.props.services;
+    const programService = services.getProgramPluginService();
+    const programContext = programService.getContext();
+    const currentContext = this.state.context;
+    const parameterKeys = this.props.parameterKeys;
 
-    const validateChanges = (): [Map<string, boolean>, boolean] => {
-      const params = new Array(...self.state.params.entries());
-      const oldParams = self.state.oldState;
-      const valMap = new Map();
-      let notSame = false;
-      for(let i = 0; i < params.length; i++) {
-        const pEntry = params[i];
-
-        const [ pKey, pValue ] = pEntry;
-        const oValue = oldParams.get(pKey);
-        notSame = notSame || (oValue ? oValue[2] !== pValue[2] : true);
-        valMap.set(pKey, oValue ? oValue[2] !== pValue[2] : true)
+    const validateChanges = (): ProgramParameterDiffResult => {
+      if(currentContext !== null) {
+        return programContext.diff(currentContext);
+      } else {
+        return programContext.diff(ProgramPluginContext.empty());
       }
+    };
 
-      return [valMap, notSame];
-    }
+    const { deviates, deviations } = validateChanges();
+    const renderedContainers = parameterKeys
+      .map((key: string) => {
+        const params = programContext.getParameters()[key];
+        const paramName = key;
+        const paramType = params[0];
+        const paramValue = params[1];
 
-    const [valMap, notSame] = validateChanges();
-    const renderedContainers = new Array(...this.state
-      .params.entries().map(entry => {
-        const [k, e] = entry;
 
-        const updateFn = (n: number) => {
-          const ent = self.state.params.get(k);
-          if(ent) {
-            ent[2] = n;
-            self.state.params.set(k, ent);
+        const updateFn = (_n: number) => {
+            currentContext.replaceContext(programContext);
             const nstate = {...self.state};
             self.setState(nstate);
           }
-        }
-        // BUG: value is immediately converting it
+          
         return <NumericParameterContainer
-          key={`numparam_${e[0]}`} name={e[0]} kind={e[1]}
-          hasChanged={valMap.get(e[0])!}
-          value={e[2]}
-          isFloat={e[1] === 'float'}
+          key={`numparam_${paramName}`} name={paramName} kind={paramType}
+          hasChanged={deviations.has(paramName)!}
+          value={paramValue}
+          isFloat={paramType === 'float'}
           updateFn={updateFn}
           />
-      }));
+      });
 
 
     const argsUpdate = (_: MouseEvent<HTMLButtonElement>) => {
-      const notifyserv = services.getNotifyService();
-      const refserv = services.getRefreshService();
-      const paramsGroup: any = {};
-      for(const m of self.state.params) {
-        //console.log(m);
-        const mkey = m[1][0];
-        const val = m[1][2];
-        if(typeof val !== 'string') {
-          paramsGroup[mkey] = [ m[1][1], m[1][2] ];
-        } else {
-          
-          notifyserv.makeMessageWithId('param-set-notify-err',
-            "Program Parameters",
-            `Program parameter "${mkey}" is invalid`);
-          return;
-
-        }
-      }
+      const currentContext = this.state.context;
       
-      // const paramsGroup = self.state.params.entries().map(kv => {
-      //       const [_, v] = kv;
-      //       return v;
-      //     })
+      const notifyserv = services.getNotifyService();
+      const payload = currentContext.parametersToPayload()
+
       services.getNetworkService()
         .getNetworkService().sendObject(
           MessageType.Executable.SetConfig,
           {
-            "executable_config" : paramsGroup
+            "executable_config" : payload
           });
 
-      self.state.oldState = this.state.params;
+      programContext.replaceContext(currentContext);
       notifyserv.makeMessageWithId('param-set-notify',
         "Program Parameters",
         "Program parameters have been set");
       this.closeWindow();
-      // refserv.triggerRefresh();
     }
 
     return (
       <>
       <div className={paramStyle.paramContainer}>
         {renderedContainers}
-        {notSame ? <div style={{textAlign: "center",
-          color: '#ff0000ff', paddingTop: '0.5em'}}>Changes are not saved</div> : <></>}
+        {
+          deviates ? <div style={
+          {
+            textAlign: "center",
+            color: '#ff0000ff',
+            paddingTop: '0.5em'
+          }
+        }>Changes are not saved</div> : <></>}
       </div>
       <div style={{display: 'flex'}}>
       <button className={style.pluginApply}
@@ -205,6 +197,6 @@ export class ProgramParametersContainer extends React.Component<ProgramParameter
       <div className={style.pluginSep}></div>
       </div>
       </>
-    )
+    );
   }
 }

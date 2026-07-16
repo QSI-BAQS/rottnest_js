@@ -55,7 +55,6 @@ export class AppServiceMessage {
 			console.error(exception);
 			success = false;
 		}
-		console.log(result)
 
 		return {
 			result,

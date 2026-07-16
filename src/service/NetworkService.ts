@@ -10,6 +10,8 @@ export class NetworkService {
 
   appService: AppServiceClient;
 	appMapper: AppMessageMapper;
+
+	static #instance: NetworkService | null = null;
 	
   /**
    * Constructs an app service client as part of connecting
@@ -18,6 +20,16 @@ export class NetworkService {
   constructor() { 
 	  this.appService = AppServiceModule.GetNetworkInstance();
 	  this.appMapper = AppMessageMapper.Default();
+  }
+
+  /**
+    * Gets the instance of the websocket itself
+    */
+  static getInstance() {
+    if(this.#instance === null) {
+      this.#instance = new NetworkService();
+    }
+    return this.#instance;
   }
 
   request(messageKind: string, payloadTag: string, payload: any) {

@@ -1,13 +1,12 @@
 import React, { ChangeEvent, MouseEvent } from "react";
-
-
-import styles from '../../styles/PluginSettingsForm.module.css';
 import { CloseOutlined, ProfileOutlined } from "@ant-design/icons";
 import { PluginData } from "../../../obj/plugin/Generic";
 import RottnestApplication from "../../container/RottnestApplication";
 import { ProgramParam } from "../../../obj/plugin/Program";
 import { ProgramParametersContainer } from "./ProgramParameterSettings";
+import { ProgramParameters, ProgramPluginService } from "../../../service/ProgramPluginService";
 
+import styles from '../../styles/PluginSettingsForm.module.css';
 
 /**
  * Data along with the container to update it appropriately
@@ -45,14 +44,13 @@ export interface ProgramPluginSettingsProps {
  * Used for maintaining settings for the pluggable elements
  */
 export interface PluginSettingsData {
-  index: number
-  selected: string | null
-  prevselected: string | null
-  config: string
-  configActive: boolean
-  params: ProgramPluginParams | null
+  index: number,
+  selected: string,
+  parameters: ProgramParameters,
+  config: string,
+  configActive: boolean,
+  params: ProgramPluginParams | null,
   hasBeenModified: boolean,
-  plgArgsData: Array<ProgramParam>,
   plgArgs: any,
 }
 
@@ -72,16 +70,37 @@ export class ProgramPluginSettings
 
   state: PluginSettingsData = {
     index: this.props.index,
-    selected: this.props.getSelected(this.props.container),
-    prevselected: null,
+    selected: ProgramPluginService
+      .GetPluginService()
+      .getContext()
+      .getExecutableName(),
     configActive: true,
     config: this.props.getConfig(this.props.container),
-    plgArgsData: this.props.getParams(this.props.container,
-      this.props.getSelected(this.props.container))!,
+    parameters: ProgramPluginService
+      .GetPluginService()
+      .getContext()
+      .getParameters(),
+
     plgArgs: JSON.stringify(this.props.getParams(this.props.container,
       this.props.getSelected(this.props.container))),
     params: null,
-    hasBeenModified: false
+    hasBeenModified: false,
+  }
+
+  getOptionIndex() {
+    const prgService = ProgramPluginService.GetPluginService();
+    const context = prgService.getContext();
+    const programs = prgService.getProgramList();
+    let index = prgService.getSelectedIndex();
+    for(let i = 0; i < programs.length; i++) {
+      const name = programs[i].name;
+      if(context.getExecutableName() === name) {
+        index = i;
+        break;
+      }
+    }
+
+    return index;
   }
 
   /**
@@ -114,22 +133,12 @@ export class ProgramPluginSettings
    * program
    */
   saveData() {
-    const savfn = this.props.saveDataFn;
-    const sdata = {
-      pluginData: {
-        plgKey: this.state.selected || '',
-        plgValue: this.state.selected || '',
-        params: this.state.plgArgsData
-      },
-      container: this.props.container
-    }
-    savfn(sdata);
-    const container = this.props.container;
-    // const params = this.props.getParams(this.props.container,
-    const prgPluginSrv = container.getServices().getProgramPluginService();
-    const params = JSON.parse(prgPluginSrv.getProgramConfig());
+    const prgService = this.props.container
+      .getServices()
+      .getProgramPluginService()
+    prgService.saveContext();
+    const params = JSON.parse(prgService.getProgramConfig());
 
-    // this.props.getSelected(this.props.container));
     const nstate = {...this.state };
     nstate.params = {
       parameters: params!,
@@ -141,18 +150,10 @@ export class ProgramPluginSettings
    * related to architectures and programs and others
    */
   saveConfig() {
-    const savfn = this.props.saveConfigFn;
-
-    const sdata = {
-      pluginData: {
-        plgKey: 'params',
-        plgValue: JSON.stringify(this.state.plgArgsData),
-        params: []
-      },
-      container: this.props.container
-    }
-    
-    savfn(sdata);
+    const prgService = this.props.container
+      .getServices()
+      .getProgramPluginService()
+    prgService.saveContext(true);
   }
 
   /**
@@ -160,15 +161,9 @@ export class ProgramPluginSettings
    * window
    */
   cancelConfig() {
-    
     const sdata = {
-      pluginData: {
-        plgKey: '',
-        plgValue: '',
-        params: []
-      },
       container: this.props.container
-    }
+    } as any;
     const cancelfn = this.props.cancelFn;
     cancelfn(sdata);
   }
@@ -178,71 +173,30 @@ export class ProgramPluginSettings
    * Renders the component
    */
   render() {
-
-    const tryParams = this.props.getParams(this.props.container,
-      this.props.getSelected(this.props.container))
-
-    const params = tryParams ? tryParams : [];
-
-
     const container = this.props.container;
+    const prgService = container.getServices().getProgramPluginService();
     const plglabel = this.props.plgname;
-    const plgIsSet = container.getServices()
-      .getProgramPluginService()
-      .isCurrentSet();
-    const hasBeenModified = this.state.hasBeenModified;
     const cancelFnWindow = this.props.cancelFn;
-    const plgOptions = this.props.plgItemsGetter(container);
-    let selectedKey = this.props.getSelected(container);
+    const plgOptions = prgService.getProgramList();
+    const selectedKey = this.state.selected;
     
-    if(!plgIsSet && !hasBeenModified) {
-      if(plgOptions.length > 0) {
-        selectedKey = this.state.selected = plgOptions[0].keyName;
-        this.state.plgArgs = JSON.stringify(this.props.getParams(container, selectedKey));
-      }
-    } 
-    if(this.state.selected === null) {
-      this.state.selected = selectedKey;
-    } else if(this.state.selected !== this.state.prevselected) {
-
-      this.state.prevselected = this.state.selected;
-      selectedKey = this.state.selected;
-    } else {
-      selectedKey = this.state.selected;
-    }
-    
-    //const plgArgs = this.state.plgArgsData;
     const ref = this;
     const saveDataOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
+      prgService.setCurrentExecutable(selectedKey);
       ref.saveData();
     };
 
-    //TODO: Possibly remove this
-    // const saveConfigOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
-    //   ref.saveConfig();
-    // };
-
     const configOnClick = (_e: MouseEvent<HTMLButtonElement>) => {
-      // Opens the config data
       ref.toggleConfig();
     };
 
     const configClose = () => {
-      // TODO: Correct this
       const data = {
         container: container
       }
       cancelFnWindow(data as any)
     }
 
-    // const configOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    //   let textCfg = e.target.value;
-    //   let data = {...ref.state};
-    //   data.hasBeenModified = true;
-    //   data.plgArgs = textCfg;
-    //   //data.plgArgs = JSON.parse(textCfg);
-    //   ref.setState(data);
-    // }
 
     const cancelFn = (_e: MouseEvent<HTMLButtonElement>) => {
       ref.cancelConfig();
@@ -253,12 +207,11 @@ export class ProgramPluginSettings
       let nstate = {...ref.state};
       nstate.selected = key;
       ref.setState(nstate);
-    }
+    };
+
     const configEnabled = this.state.configActive;
-    //Config space with current config and executable information
     const currentExe = this.props.getSelected(container);
     const statement = "Currently Selected Program Parameters";
-
     const configContainer = configEnabled && currentExe !== 'NoPrg' ? (
       <>
       <div className={styles.pluginHeader}>
@@ -267,17 +220,11 @@ export class ProgramPluginSettings
       <div className={styles.pluginConfigTextSpace}>
         <ProgramParametersContainer
           services={this.props.container.getServices()}
-            params={params} closeFn={configClose}/>
+          parameterKeys={prgService.getContext().getParameterKeys()}
+          closeFn={configClose}/>
       </div>
       </>
     ) : <></>
-    //
-    // Removed: Adjusting the settings
-    // <textarea className={styles.pluginTextArea}
-    //   value={plgArgs} onChange={configOnChange}>
-    // </textarea>
-    //
-    //
     
     const configSpace = configEnabled ? (
       <div className={styles.pluginConfigTextSpace}>
@@ -297,7 +244,8 @@ export class ProgramPluginSettings
           </div>
           <div>
             <select name={"plg_dropdown"} className={styles.pluginDropDown}
-              onChange={onDropdownChange} defaultValue={selectedKey}>
+              onChange={onDropdownChange} 
+              value={selectedKey}>
               <PluginSettingsList plgItems={plgOptions} selected={selectedKey}/>
             </select>
             <div className={styles.pluginMid}>
@@ -335,7 +283,7 @@ export type PluginEntry = {
  */
 export type PluginOptionsData = {
   selected: string,
-  plgItems: Array<PluginEntry>
+  plgItems: Array<{ name: string }>
 }
 
 
@@ -344,8 +292,8 @@ export type PluginOptionsData = {
  */
 function PluginSettingsList(props: PluginOptionsData) {
   const entries = props.plgItems.map((e) => {
-    return <option key={`program_${e.keyName}`} className={styles.plgOption}
-      value={e.keyName}>{e.keyName}
+    return <option key={`program_${e.name}`} className={styles.plgOption}
+      value={e.name}>{e.name}
       </option>
     
   });

@@ -97,12 +97,12 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
     evtrigger: async (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {
 			const prg = m.getJSON().payload;
 			let prgservice = obj.getServices().getProgramPluginService();
-			prgservice.saveProgramData({
+			prgservice.setProgram({
 				plgKey: prg.name,
 				plgValue: prg.name,
 				params: prg.parameters
 			})
-	
+
       const notify = obj.getServices().getNotifyService();
     	notify.makeMessageWithId(NotifyID.Executable.SetCurrent.ID,
     		NotifyID.Executable.SetCurrent.title,
@@ -163,7 +163,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 
 			let notifyservice = obj.getServices().getNotifyService();
 			let prgservice = obj.getServices().getProgramPluginService();
-			prgservice.saveProgramData({
+			prgservice.setParameters({
 				plgKey: newProg.name,
 				plgValue: newProg.name,
 				params: newProg.params
@@ -185,10 +185,6 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 			const plist = data['executables'];
 			let newProgData: Array<ProgramPlugin> = [];
 			for(const prg of plist) {
-				// const params = prg['prgparams'].map((p: any) => {
-				// 	const [name, kind, arg]: [string, string, any] = p;
-				// 	return [name, kind, arg];
-				// });
 				
 				newProgData.push({
 					name: prg,
@@ -201,6 +197,7 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 
 			prgservice.storePrograms(newProgData);
 
+			// overrides the current parameters
 			if(current) {
 				
 				let newProg: ProgramPlugin = {
@@ -209,11 +206,12 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 					parametersSet: true
 				};
 
-				prgservice.saveProgramData({
+
+				prgservice.setParameters({
 					plgKey: newProg.name,
 					plgValue: newProg.name,
 					params: newProg.params
-				})
+				});
 			}
 			
     	obj.triggerUpdate();
@@ -239,7 +237,17 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
 			appService.consumeFromQueue();
 		}
   },
-
+  recvSetProgramConfig: {
+    evkey: MessageType.Executable.SetConfig,
+    evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
+			console.log("Set Config")
+			let prgservice = obj.getServices().getProgramPluginService();
+			prgservice.storeConfig(m.getJSON().payload);
+    	obj.triggerUpdate();
+			appService.consumeFromQueue();
+		}
+  	
+  },
   getSyncState: {
     evkey: MessageType.Sync.Get,
     evtrigger: (_appService: AppServiceClient, obj: RottnestApplication, m: any) => {

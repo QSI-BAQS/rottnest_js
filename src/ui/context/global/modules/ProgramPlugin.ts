@@ -36,6 +36,9 @@ export class ProgramPluginState {
 		return this.plgstates.getStates()[1];
 	}
 
+	/**
+	  * Gets the programs/requests the program list
+	  */
 	getPrograms() {
 		this.programService.requestProgramList()
 	}
@@ -46,6 +49,7 @@ export class ProgramPluginState {
 	showProgramSettings() {
 		this.getPrograms();
 	  this.swapFn(false, true);
+	  
 		this.updateTrigger.triggerRefresh();
 	}
 
