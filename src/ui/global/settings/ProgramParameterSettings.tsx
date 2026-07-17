@@ -142,11 +142,12 @@ export class ProgramParametersContainer
         const paramValue = params[1];
 
 
-        const updateFn = (_n: number) => {
-            currentContext.replaceContext(programContext);
-            const nstate = {...self.state};
-            self.setState(nstate);
-          }
+        const updateFn = (n: number) => {
+          programContext.setParameterValue(paramName, n);
+          currentContext.replaceContext(programContext);
+          const nstate = {...self.state};
+          self.setState(nstate);
+        }
           
         return <NumericParameterContainer
           key={`numparam_${paramName}`} name={paramName} kind={paramType}
