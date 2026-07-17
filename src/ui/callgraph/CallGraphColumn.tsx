@@ -258,16 +258,16 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewSta
 		// 	</div>
 
 		
-		let lastTEntry = '';
+		let tmap: any = {};
     if(tsourceInfo) {
 			for(const k in tsourceInfo) {
 				const tdat = tsourceInfo[k];
 				tdata.push(
 					<div key={`tdat_${k}`}>
-					{k}:{tdat}	
+					{tdat}	
 					</div>
 				);
-				lastTEntry = `${k}:${tdat}`;	
+				tmap[k] = `${tdat}`;
 			}
 		}
 		const tDisp = tdata === null ?
@@ -278,7 +278,7 @@ class CGSelectedNodeBox extends React.Component<CGNodeData, CallGraphDataViewSta
 				toExponential={false}
 				symbolWhitelist={symbolMap}
 				useSymbolWhiteList={false}
-				data={{ "Source" : lastTEntry }}
+				data={tmap}
 			/>;
 
 		const tocksDisp = cuTocks === null ?
