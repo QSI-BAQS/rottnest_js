@@ -40,6 +40,9 @@ export class NumericParameterContainer
       let newValue: string | number = e.target.value;
       if(e.target.value.length > 0) {
         newValue = convertFn(newValue);
+        if(Number.isNaN(newValue)) {
+          newValue = '';
+        }
       }
       updateFn(newValue as number);
     }
@@ -140,7 +143,6 @@ export class ProgramParametersContainer
         const paramName = key;
         const paramType = params[0];
         const paramValue = params[1];
-
 
         const updateFn = (n: number) => {
           programContext.setParameterValue(paramName, n);

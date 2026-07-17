@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { MouseEvent, ReactElement } from "react";
 import {CGResult, CUReqResult, CUReqResultDummy} 
 	from "../../obj/CallGraph.ts";
 import { ArchWorkspace, ArchWorkspaceData } 
@@ -7,8 +7,8 @@ import styles from '../styles/CGSpace.module.css'
 import { BufferMapKey } from "../workspace/buffermap/BufferMapCommon.ts";
 import { RunChartConstants } from "./RunChartConstants.ts";
 import { DownloadFile } from "../../util/FileDownload.ts";
-import { ArchContextSymbols } from "rottnest-plugin/schema/ArchSymbols";
 
+// const MouseMiddle = 1;
 
 type NodeData = {
 	idx: string 
@@ -365,10 +365,10 @@ export class RunChartAuxNode extends React.Component<CGNodeData,
 
 
 	enableModules() {
-		const container = this.props.workspaceData
-			.architecture as any; //WARN unsafe assumption
+		// const container = this.props.workspaceData
+		// 	.architecture as any; //WARN unsafe assumption
 
-		const meta = container.getModulesMeta();
+		// const meta = container.getModulesMeta();
 		// meta.setEnable("Visualiser");
 		// meta.setEnable("CallGraph");
 	}
@@ -394,7 +394,6 @@ export class RunChartAuxNode extends React.Component<CGNodeData,
 		const ndata = this.props;
 		const expo = this.state.sciNotation;
 		let nodeIndex = 0;
-		console.log(dataAvailable);
 		if(dataAvailable) {
 			this.enableModules();
 		}
@@ -453,8 +452,8 @@ export class RunChartAuxNode extends React.Component<CGNodeData,
 				data={{ "Cached" : cached ? 'Yes' : 'No' }} />
 		);
 
-		const toggleExpo = () => {
-			self.toggleNotation();
+		const toggleExpo = (_e: MouseEvent) => {
+				self.toggleNotation();
 		}
 		const renResult = cuDetailsReady && dataAvailable ? 
 			(<div className={styles.nodePanel}
@@ -649,17 +648,19 @@ export class RunChartSelectedNodeBox
 
     let tsourceInfo = cuResults.tSource;
 		
-		let lastTEntry = '';
-		let tdata = [];		
+		// let lastTEntry = '';
+		let tdata = [];
+		let tmap: any = {};
     if(tsourceInfo) {
 			for(const k in tsourceInfo) {
 				const tdat = tsourceInfo[k];
 				tdata.push(
 					<div key={`tdat_${k}`}>
-					{k}:{tdat}	
+					{tdat}	
 					</div>
 				);
-				lastTEntry = `${k}:${tdat}`;	
+				tmap[k] = `${tdat}`;
+				// lastTEntry = `${k}:${tdat}`;	
 			}
 		}
 
@@ -684,7 +685,7 @@ export class RunChartSelectedNodeBox
 				toExponential={false}
 				useSymbolWhiteList={false}
 				symbolWhitelist={[]}
-				data={{ "Source" : lastTEntry }}
+				data={tmap}
 			/>;
 
 		const volumesData =(
@@ -735,8 +736,8 @@ export class RunChartSelectedNodeBox
 		);
 
 
-		const toggleExpo = () => {
-			self.toggleNotation();
+		const toggleExpo = (_e: MouseEvent) => {
+				self.toggleNotation();
 		}
 		
 		const renResult = !cuDetailsReady && dataAvailable ? 

@@ -240,7 +240,6 @@ export const RTACommEvents: CommEventOps<RottnestApplication> = {
   recvSetProgramConfig: {
     evkey: MessageType.Executable.SetConfig,
     evtrigger: (appService: AppServiceClient, obj: RottnestApplication, m: any) => {
-			console.log("Set Config")
 			let prgservice = obj.getServices().getProgramPluginService();
 			prgservice.storeConfig(m.getJSON().payload);
     	obj.triggerUpdate();

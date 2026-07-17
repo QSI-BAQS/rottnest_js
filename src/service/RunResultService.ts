@@ -8,6 +8,7 @@ import {
 	RunResultFactory,
 	RunResultVolumesDescription } from "../obj/chart/ResultMetrics";
 import { SyncObject, SyncStateOperations } from "../store/SyncObject";
+import { NotifyID, NotifyService } from "./NotifyService";
 
 
 /** RunResult Persistent Storage Keys  */
@@ -447,6 +448,13 @@ export class RunResultService {
 
 			this.writeFull();
 
+			/** Will be used to trigger a refresh of the ui  */
+			if(refreshService !== null) {
+				const notifyService = NotifyService.getInstance();
+				notifyService.makeMessageWithTuple(NotifyID.RunResult.RunCompleted);
+				refreshService.triggerRefresh();
+			}
+				
 			this.resultsIntermediateTotal = false;
 		} else if(result_kind === RunResultKeyKind.RESULT_ENTRY) {
 			this.dataAvailable = true;

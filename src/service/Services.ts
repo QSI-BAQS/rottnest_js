@@ -26,7 +26,7 @@ type AppTarget = UpdateTrigger & ZoomModuleParent;
  */
 export class Services {  
   refresh: RefreshService = RefreshService.NoRefresh();
-  notify: NotifyService = new NotifyService();
+  notify: NotifyService = NotifyService.getInstance();
   inputs: InputHookService = new InputHookService();
   valservice: ValidationService = new ValidationService();
   programplugins: ProgramPluginService;
@@ -42,7 +42,7 @@ export class Services {
     archUpdate: ArchUpdateTrigger, schemas: Array<ArchStorageEntry>) {
     
     this.refresh = new RefreshService(refreshTarget);
-    this.notify = new NotifyService();
+    this.notify = NotifyService.getInstance();
     this.inputs = new InputHookService();
     this.valservice = new ValidationService();
     this.programplugins = ProgramPluginService.GetPluginService();

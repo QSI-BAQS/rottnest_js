@@ -141,6 +141,13 @@ export const NotifyID = {
       title: CommonTitles.SyncState,
       message: "Updated state"
     }
+  },
+  RunResult: {
+    RunCompleted: {
+      ID: "runresult-final-completed",
+      title: "Run Completed",
+      message: "Run has been completed"
+    }
   }
 }
 
@@ -151,12 +158,21 @@ export const NotifyID = {
 export class NotifyService {
   _notifyQueue: NotifyQueue = new NotifyQueue();
 
+  static #instance: NotifyService | null = null;
+
   /**
    * Constructs the notify queue, simple wrapper that
    * doesn't require much more than that
    */
   constructor() {
     this._notifyQueue = new NotifyQueue();
+  }
+
+  static getInstance() {
+    if(this.#instance === null) {
+      this.#instance = new NotifyService();
+    }
+    return this.#instance;
   }
 
   /**
